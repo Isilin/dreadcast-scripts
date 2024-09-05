@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(() => {
   DC.Network.loadSpreadsheet(
     '1Ygt9q6WEU8cR_86GptLpHZ6qLHATfX42R0qcPKaqvqo',
     'BDD',

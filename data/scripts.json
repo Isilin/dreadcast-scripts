@@ -4,5 +4,11 @@
     "name": "Hello World",
     "description": "Ceci est juste un script de test.",
     "url": "https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/examples/helloworld.js"
+  },
+  {
+    "id": "example",
+    "name": "Example",
+    "description": "This is an example of the usage of the DDK.",
+    "url": "https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/examples/index.js"
   }
 ]
