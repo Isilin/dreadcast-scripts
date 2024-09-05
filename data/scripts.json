@@ -3,12 +3,14 @@
     "id": "hello_world",
     "name": "Hello World",
     "description": "Ceci est juste un script de test.",
-    "url": "https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/examples/helloworld.js"
+    "url": "https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/examples/helloworld.js",
+    "settings": true
   },
   {
     "id": "example",
     "name": "Exemple",
     "description": "C'est un exemple de l'utilisation du DDK.",
-    "url": "https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/examples/index.js"
+    "url": "https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/examples/index.js",
+    "settings": false
   }
 ]
