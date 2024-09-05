@@ -82,7 +82,7 @@ $(() => {
               `);
             $('.enabled_cell', line).append(
               DC.UI.Checkbox(
-                'scripts_check',
+                `${script.id}_check`,
                 settings[script.id],
                 () => (settings[script.id] = !settings[script.id]),
               ),

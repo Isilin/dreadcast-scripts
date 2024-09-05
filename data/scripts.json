@@ -7,8 +7,8 @@
   },
   {
     "id": "example",
-    "name": "Example",
-    "description": "This is an example of the usage of the DDK.",
+    "name": "Exemple",
+    "description": "C'est un exemple de l'utilisation du DDK.",
     "url": "https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/examples/index.js"
   }
 ]
