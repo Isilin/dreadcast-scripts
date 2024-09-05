@@ -9,6 +9,7 @@
 // @connect      docs.google.com
 // @connect      googleusercontent.com
 // @connect      sheets.googleapis.com
+// @connect      raw.githubusercontent.com
 // @grant        GM_xmlhttpRequest
 // @grant        GM_addStyle
 // @downloadURL
@@ -35,6 +36,16 @@ const Util = {
   guard: (condition, message) => {
     if (!condition) throw new Error(message);
     return;
+  },
+
+  deprecate: (name, replacement) => {
+    console.warn(
+      name +
+        ': this function has been deprecated and should not be used anymore.' +
+        (replacement && replacement !== ''
+          ? 'Prefer: ' + replacement + '.'
+          : ''),
+    );
   },
 
   isArray: (o, optional = false) =>
@@ -89,22 +100,23 @@ const Util = {
 
 // ===== Overwrite DC functions =====
 
-MenuChat.prototype.original_send = MenuChat.prototype.send;
+MenuChat.prototype.originalSend = MenuChat.prototype.send;
 MenuChat.prototype.sendCallbacks = [];
 MenuChat.prototype.afterSendCallbacks = [];
 MenuChat.prototype.send = function () {
   const $nextFn = () => true;
   const $abortFn = () => false;
+  const $message = $('#chatForm .text_chat').val();
   const $res = this.sendCallbacks.every((callback) =>
-    callback($nextFn, $abortFn),
+    callback($message, $nextFn, $abortFn),
   );
   if (!$res) {
     throw new Error('MenuChat.prototype.send: Error on sending message.');
   }
 
-  this.original_send();
+  this.originalSend();
 
-  this.afterSendCallbacks.every((callback) => callback());
+  this.afterSendCallbacks.every((callback) => callback($message));
 };
 MenuChat.prototype.onSend = (callback) => {
   MenuChat.prototype.sendCallbacks.push(callback);
@@ -179,17 +191,49 @@ DC.TopMenu = {
 DC.UI = {
   Separator: () => $('<li class="separator" />'),
 
-  Menu: (label, fn) =>
-    $(`<li id="${label}" class="couleur5">${label}</li>`).bind('click', fn),
+  Menu: (label, fn) => {
+    Util.guard(
+      Util.isString(label),
+      "DC.UI.Menu: 'label' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isFunction(fn),
+      "DC.UI.Menu: 'fn' parameter should be a function.",
+    );
 
-  SubMenu: (label, fn, separatorBefore = false) =>
-    $(
+    return $(`<li id="${label}" class="couleur5">${label}</li>`).bind(
+      'click',
+      fn,
+    );
+  },
+
+  SubMenu: (label, fn, separatorBefore = false) => {
+    Util.guard(
+      Util.isString(label),
+      "DC.UI.SubMenu: 'label' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isFunction(fn),
+      "DC.UI.SubMenu: 'fn' parameter should be a function.",
+    );
+    Util.guard(
+      Util.isBoolean(separatorBefore),
+      "DC.UI.SubMenu: 'separatorBefore' parameter should be a boolean.",
+    );
+
+    return $(
       `<li class="link couleur2 ${
         separatorBefore ? 'separator' : ''
       }">${label}</li>`,
-    ).bind('click', fn),
+    ).bind('click', fn);
+  },
 
   DropMenu: (label, submenu) => {
+    Util.guard(
+      Util.isString(label),
+      "DC.UI.DropMenu: 'label' parameter should be a string.",
+    );
+
     const $label = label + '▾';
 
     const $list = $('<ul></ul>');
@@ -206,6 +250,15 @@ DC.UI = {
   },
 
   addSubMenuTo: (name, element, index = 0) => {
+    Util.guard(
+      Util.isString(name),
+      "DC.UI.addSubMenuTo: 'name' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isNumber(index),
+      "DC.UI.addSubMenuTo: 'index' parameter should be a string.",
+    );
+
     const $menu = $(`.menus li:contains("${name}") ul`);
 
     if (index === 0) {
@@ -215,15 +268,89 @@ DC.UI = {
     }
   },
 
-  TextButton: (id, label, fn) =>
-    $(`<div id="${id}" class="btnTxt">${label}</div>`).bind('click', fn),
+  TextButton: (id, label, fn) => {
+    Util.guard(
+      Util.isString(id),
+      "DC.UI.TextButton: 'id' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isString(label),
+      "DC.UI.TextButton: 'label' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isFunction(fn),
+      "DC.UI.TextButton: 'fn' parameter should be a function.",
+    );
 
-  Button: (id, label, fn) =>
-    $(
+    return $(`<div id="${id}" class="btnTxt">${label}</div>`).bind('click', fn);
+  },
+
+  Button: (id, label, fn) => {
+    Util.guard(
+      Util.isString(id),
+      "DC.UI.Button: 'id' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isString(label),
+      "DC.UI.Button: 'label' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isFunction(fn),
+      "DC.UI.Button: 'fn' parameter should be a function.",
+    );
+
+    return $(
       `<div id="${id}" class="btn add link infoAide"><div class="gridCenter">${label}</div></div>`,
-    ).bind('click', fn),
+    ).bind('click', fn);
+  },
+
+  Checkbox: (id, defaultEnable = true, onAfterClick) => {
+    Util.guard(
+      Util.isString(id),
+      "DC.UI.Checkbox: 'id' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isBoolean(defaultEnable),
+      "DC.UI.Checkbox: 'defaultEnable' parameter should be a boolean.",
+    );
+    Util.guard(
+      Util.isFunction(onAfterClick, true),
+      "DC.UI.Checkbox: 'onAfterClick' optional parameter should be a function.",
+    );
+
+    DC.Style.apply(`
+      .dc_ui_checkbox {
+        cursor: pointer;
+        width: 30px;
+        height: 18px;
+        background: url(../../../images/fr/design/boutons/b_0.png) 0 0 no-repeat;
+      }
+
+      .dc_ui_checkbox_on {
+        background: url(../../../images/fr/design/boutons/b_1.png) 0 0 no-repeat;
+      }
+    `);
+
+    return $(
+      `<div id="${id}" class="dc_ui_checkbox ${
+        defaultEnable ? 'dc_ui_checkbox_on' : ''
+      }" />`,
+    ).bind('click', () => {
+      $(`#${id}`).toggleClass('dc_ui_checkbox_on');
+      onAfterClick?.($(`#${id}`).hasClass('dc_ui_checkbox_on'));
+    });
+  },
 
   PopUp: (id, title, content) => {
+    Util.guard(
+      Util.isString(id),
+      "DC.UI.PopUp: 'id' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isString(title),
+      "DC.UI.PopUp: 'title' parameter should be a string.",
+    );
+
     $('#loader').fadeIn('fast');
 
     const html = `
@@ -240,16 +367,30 @@ DC.UI = {
         </div>
         <div class="dbloader"></div>
         <div class="content">
-          ${content}
         </div>
       </relative>
     </div>`;
 
     engine.displayDataBox(html);
+    $(`#${id} .content`).append(content);
+
     $('#loader').hide();
   },
 
   SideMenu: (id, label, content) => {
+    Util.guard(
+      Util.isString(id),
+      "DC.UI.SideMenu: 'id' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isString(label),
+      "DC.UI.SideMenu: 'label' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isString(content),
+      "DC.UI.SideMenu: 'content' parameter should be a string.",
+    );
+
     const idContainer = id + '_container';
     const idButton = id + '_button';
     const idContent = id + '_content';
@@ -333,30 +474,97 @@ DC.UI = {
   },
 };
 
-DC.DB = {
-  loadSpreadsheet: (sheetId, tabName, range, apiKey, onLoad) => {
+DC.Network = {
+  fetch: (args) => {
+    return new Promise((resolve, reject) => {
+      GM_xmlhttpRequest(
+        Object.assign({}, args, {
+          onload: (e) => resolve(e.response),
+          onerror: reject,
+          ontimeout: reject,
+        }),
+      );
+    });
+  },
+
+  loadSpreadsheet: async (sheetId, tabName, range, apiKey, onLoad) => {
+    Util.guard(
+      Util.isString(sheetId),
+      "DC.Network.loadSpreadsheet: 'sheetId' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isString(tabName),
+      "DC.Network.loadSpreadsheet: 'tabName' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isString(range),
+      "DC.Network.loadSpreadsheet: 'range' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isString(apiKey),
+      "DC.Network.loadSpreadsheet: 'apiKey' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isFunction(onLoad),
+      "DC.Network.loadSpreadsheet: 'onLoad' parameter should be a function.",
+    );
+
     const urlGoogleSheetDatabase = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${tabName}!${range}?key=${apiKey}`;
-    GM_xmlhttpRequest({
+    const result = await DC.Network.fetch({
       method: 'GET',
       url: urlGoogleSheetDatabase,
       headers: {
         'Content-Type': 'application/json',
       },
       responseType: 'json',
-      onload: function (response) {
-        const result = response.response.values;
-        onLoad(result);
-      },
-      onerror: (err) => console.log(err),
     });
+    onLoad(result.values);
+  },
+
+  loadScript: async (url, onAfterLoad) => {
+    Util.guard(
+      Util.isString(url),
+      "DC.Network.loadScript: 'url' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isFunction(onAfterLoad, true),
+      "DC.Network.loadScript: 'onAfterLoad' optional parameter should be a function.",
+    );
+
+    const result = await DC.Network.fetch({
+      method: 'GET',
+      url,
+      headers: {
+        'Content-Type': 'text/javascript',
+      },
+    });
+    eval(result);
+    onAfterLoad?.();
+  },
+
+  loadJson: async (url) => {
+    Util.guard(
+      Util.isString(url),
+      "DC.Network.loadJson: 'url' parameter should be a string.",
+    );
+
+    const result = await DC.Network.fetch({
+      method: 'GET',
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      responseType: 'json',
+    });
+    return result;
   },
 };
 
 DC.Chat = {
   sendMessage: (message) => {
-    UTil.guard(
+    Util.guard(
       Util.isString(message),
-      "DC.Chat.sendMessage: 'message'parameter should be a string.",
+      "DC.Chat.sendMessage: 'message' parameter should be a string.",
     );
 
     $('#chatForm .text_chat').val(message);
@@ -364,6 +572,10 @@ DC.Chat = {
   },
 
   t: (message, decoration) => {
+    Util.guard(
+      Util.isString(message, true),
+      "DC.Chat.t: 'message' parameter should be a string.",
+    );
     Util.guard(
       Util.isBoolean(decoration.bold, true),
       "DC.Chat.t: 'bold' optional parameter should be a boolean.",
@@ -396,5 +608,37 @@ DC.Chat = {
     }
 
     return prefix + message + suffix;
+  },
+
+  addCommand: (label, fn) => {
+    Util.guard(
+      Util.isString(label),
+      "DC.Chat.addCommand: 'label' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isFunction(fn),
+      "DC.Chat.addCommand: 'fn' parameter should be a function.",
+    );
+
+    navigator.getChat().onSend((message, next, abort) => {
+      const forbiden = ['me', 'y', 'ye', 'yme', 'w', 'we', 'wme', 'roll', ''];
+
+      const labelUsed = message.split(' ')[0].substr(1);
+      if (
+        message[0] !== '/' ||
+        labelUsed !== label ||
+        forbiden.includes(labelUsed)
+      ) {
+        return next();
+      }
+
+      const content = message.substr(labelUsed.length + 1);
+
+      if (fn(labelUsed, content)) {
+        return next();
+      } else {
+        return abort();
+      }
+    });
   },
 };

@@ -1,6 +1,5 @@
 $(document).ready(function () {
-  // Loading a spreadhseet en displaying the result.
-  DC.DB.loadSpreadsheet(
+  DC.Network.loadSpreadsheet(
     '1Ygt9q6WEU8cR_86GptLpHZ6qLHATfX42R0qcPKaqvqo',
     'BDD',
     'A:C',
@@ -8,7 +7,6 @@ $(document).ready(function () {
     (response) => console.log(response),
   );
 
-  // Modifying the top menu
   DC.TopMenu.add(DC.UI.Separator(), 3);
   DC.TopMenu.add(
     DC.UI.DropMenu('Test', [
@@ -31,17 +29,14 @@ $(document).ready(function () {
     4,
   );
 
-  // Adding to sidemenu on the right
   DC.UI.SideMenu('test', 'Test', '<p>Coucou</p>');
   DC.UI.SideMenu('test2', 'Test 2', '<p>Coucou encore</p>');
 
-  // Using the BBCode DC-like.
   console.log(
     DC.Chat.t('coucou', { bold: true, italic: true, color: 'ababab' }),
   );
 
-  // Intercepting chat events
-  nav.getChat().onSend((next, abort) => {
+  nav.getChat().onSend((message, next, abort) => {
     console.log('BEFORE');
     return next();
   });

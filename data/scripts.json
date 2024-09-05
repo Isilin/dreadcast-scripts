@@ -1,0 +1,8 @@
+[
+  {
+    "id": "hello_world",
+    "name": "Hello World",
+    "description": "Ceci est juste un script de test.",
+    "url": "https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/examples/helloworld.js"
+  }
+]
