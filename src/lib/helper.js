@@ -2,7 +2,7 @@
 // @name        Scouter
 // @namespace   Violentmonkey Scripts
 // @match       https://www.dreadcast.net/Main
-// @version     1.0.3
+// @version     1.0.4
 // @author      Pelagia/IsilinBN
 // @description 13/11/2023 02:55:01
 // @license      http://creativecommons.org/licenses/by-nc-nd/4.0/
@@ -17,7 +17,11 @@
 // ==/UserScript==
 
 // ===== Load only ONCE =====
-if (!Admin.prototype.ddk) {
+if (
+  !Admin.prototype.ddk ||
+  Admin.prototype.ddk === undefined ||
+  Admin.prototype.ddk === null
+) {
   Admin.prototype.ddk = true;
 
   // ===== JQuery utilities =====
