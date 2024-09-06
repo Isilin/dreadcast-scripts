@@ -175,37 +175,49 @@ $(() => {
               );
               if (script.settings) {
                 $('.setting_cell', line).append(
-                  DC.UI.Button(
-                    `${script.id}_setting`,
-                    '<i class="fas fa-cog"></i>',
-                    () => {},
+                  DC.UI.Tooltip(
+                    'Settings',
+                    DC.UI.Button(
+                      `${script.id}_setting`,
+                      '<i class="fas fa-cog"></i>',
+                      () => {},
+                    ),
                   ),
                 );
               }
               if (script.doc && script.doc !== '') {
                 $('.doc_cell', line).append(
-                  DC.UI.Button(
-                    `${script.id}_doc`,
-                    '<i class="fas fa-book"></i>',
-                    () => window.open(script.doc, '_blank'),
+                  DC.UI.Tooltip(
+                    'Documentation',
+                    DC.UI.Button(
+                      `${script.id}_doc`,
+                      '<i class="fas fa-book"></i>',
+                      () => window.open(script.doc, '_blank'),
+                    ),
                   ),
                 );
               }
               if (script.rp && script.rp !== '') {
                 $('.rp_cell', line).append(
-                  DC.UI.Button(
-                    `${script.id}_rp`,
-                    '<div class=""gridCenter>RP</div>',
-                    () => window.open(script.doc, '_blank'),
+                  DC.UI.Tooltip(
+                    'Topic RP',
+                    DC.UI.Button(
+                      `${script.id}_rp`,
+                      '<div class=""gridCenter>RP</div>',
+                      () => window.open(script.doc, '_blank'),
+                    ),
                   ),
                 );
               }
               if (script.contact && script.contact !== '') {
                 $('.contact_cell', line).append(
-                  DC.UI.Button(
-                    `${script.id}_rp`,
-                    '<i class="fas fa-envelope"></i>',
-                    () => nav.getMessagerie().newMessage(script.contact),
+                  DC.UI.Tooltip(
+                    'Topic RP',
+                    DC.UI.Button(
+                      `${script.id}_rp`,
+                      '<i class="fas fa-envelope"></i>',
+                      () => nav.getMessagerie().newMessage(script.contact),
+                    ),
                   ),
                 );
               }

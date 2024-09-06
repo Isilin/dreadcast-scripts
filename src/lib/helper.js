@@ -472,6 +472,33 @@ DC.UI = {
       }
     `);
   },
+
+  Tooltip: (text, content) => {
+    DC.Style.apply(`
+      .tooltip {
+        position: relative;
+        display: inline-block;
+      }
+      .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        padding: 5px 0;
+        border-radius: 6px;
+        position: absolute;
+        z-index: 1;
+      }/
+      .tooltip:hover .tooltiptext {
+        visibility: visible;
+      }
+      `);
+
+    return $(`<div class="tooltip">${content}
+      <span class="tooltiptext">${text}</span>
+      </div>`);
+  },
 };
 
 DC.Network = {
