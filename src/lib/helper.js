@@ -2,7 +2,7 @@
 // @name        Scouter
 // @namespace   Violentmonkey Scripts
 // @match       https://www.dreadcast.net/Main
-// @version     1.0.0
+// @version     1.0.1
 // @author      Pelagia/IsilinBN
 // @description 13/11/2023 02:55:01
 // @license      http://creativecommons.org/licenses/by-nc-nd/4.0/
@@ -647,7 +647,7 @@ DC.Chat = {
       "DC.Chat.addCommand: 'fn' parameter should be a function.",
     );
 
-    navigator.getChat().onSend((message, next, abort) => {
+    nav.getChat().onSend((message, next, abort) => {
       const forbiden = ['me', 'y', 'ye', 'yme', 'w', 'we', 'wme', 'roll', ''];
 
       const labelUsed = message.split(' ')[0].substr(1);
