@@ -489,15 +489,15 @@ DC.UI = {
         border-radius: 6px;
         position: absolute;
         z-index: 1;
-      }/
+      }
       .tooltip:hover .tooltiptext {
         visibility: visible;
       }
-      `);
+    `);
 
-    return $(`<div class="tooltip">${content}
+    return $(`<div class="tooltip">
       <span class="tooltiptext">${text}</span>
-      </div>`);
+      </div>`).prepend(content);
   },
 };
 
