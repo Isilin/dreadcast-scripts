@@ -7,7 +7,8 @@
     "doc": "https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/examples/helloworld.js",
     "rp": "https://www.dreadcast.net/Forum/2-144706-ni-23612u-nomura-incorporated---sommaire",
     "contact": "Pelagia",
-    "settings": true
+    "settings": true,
+    "category": "misc"
   },
   {
     "id": "example",
@@ -17,6 +18,18 @@
     "doc": "https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/examples/index.js",
     "rp": "https://www.dreadcast.net/Forum/2-144706-ni-23612u-nomura-incorporated---sommaire",
     "contact": "Pelagia",
-    "settings": false
+    "settings": false,
+    "category": "misc"
+  },
+  {
+    "id": "visio3d",
+    "name": "Visio 3D",
+    "description": "Utilitaire pour récupérer les plans et FW d'un bâtiment.",
+    "url": "https://update.greasyfork.org/scripts/481981/Visio%203D.user.js",
+    "doc": "https://www.dreadcast.net/Forum/2-144695-ns-v13612u-visio-3d---logiciel-utilitaire-pour-la-decoration-dinterieur?1",
+    "rp": "https://www.dreadcast.net/Forum/2-144695-ns-v13612u-visio-3d---logiciel-utilitaire-pour-la-decoration-dinterieur?1",
+    "contact": "Pelagia",
+    "settings": false,
+    "category": "ui"
   }
 ]

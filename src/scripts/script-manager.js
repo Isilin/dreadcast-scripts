@@ -18,6 +18,8 @@
 const LIST_TAG = 'dcm_list';
 const ALL_DISABLED_TAG = 'dcm_all_disabled';
 
+let newSettings, newAllDisabled;
+
 const initPersistence = () => {
   // Init persistent memory if needed.
   DC.LocalMemory.init(LIST_TAG, {});
@@ -30,6 +32,100 @@ const initPersistence = () => {
   return { settings, allDisabled };
 };
 
+const synchronizeSettings = (settings, scripts) => {
+  let tmp = settings;
+
+  scripts.forEach((script) => {
+    if (!Object.hasOwn(tmp, script.id)) {
+      // Update the settings, if there is new scripts.
+      tmp[script.id] = false;
+    }
+  });
+
+  // Remove in settings, scripts that doesn't exist anymore.
+  tmp = Object.keys(tmp)
+    .filter((key) => scripts.find((script) => script.id === key) !== undefined)
+    .reduce((obj, key) => {
+      obj[key] = tmp[key];
+      return obj;
+    }, {});
+
+  // Save the new settings in persistent memory.
+  DC.LocalMemory.set(LIST_TAG, tmp);
+
+  return tmp;
+};
+
+const createScriptLine = (script, index) => {
+  const line = $(`
+    <tr style="border-top: 1px solid white; border-left: 1px solid white; border-right: 1px solid white;">
+      <td style="padding: 5px 0 0 5px">${index}</td>
+      <td style="padding: 5px 0">${script.name}</td>
+      <td class="enabled_cell" style="padding: 5px 0; display: flex; justify-content: center;"></td>
+      <td class="setting_cell" style="padding: 5px 5px 0 0;"></td>
+      <td class="doc_cell" style="padding: 5px 5px 0 0;"></td>
+      <td class="rp_cell" style="padding: 5px 5px 0 0;"></td>
+      <td class="contact_cell" style="padding: 5px 5px 0 0;"></td>
+    </tr>
+    <tr style="border-bottom: 1px solid white; border-left: 1px solid white; border-right: 1px solid white;">
+      <td /><td colspan="2" style="padding: 0 5px 5px 5px"><small><em class="couleur5">${script.description}</em></small></td>
+    </tr>
+  `);
+  $('.enabled_cell', line).append(
+    DC.UI.Checkbox(
+      `${script.id}_check`,
+      newSettings[script.id],
+      () => (newSettings[script.id] = !newSettings[script.id]),
+    ),
+  );
+  if (script.settings) {
+    $('.setting_cell', line).append(
+      DC.UI.Tooltip(
+        'Settings',
+        DC.UI.Button(
+          `${script.id}_setting`,
+          '<i class="fas fa-cog"></i>',
+          () => {},
+        ),
+      ),
+    );
+  }
+  if (script.doc && script.doc !== '') {
+    $('.doc_cell', line).append(
+      DC.UI.Tooltip(
+        'Documentation',
+        DC.UI.Button(`${script.id}_doc`, '<i class="fas fa-book"></i>', () =>
+          window.open(script.doc, '_blank'),
+        ),
+      ),
+    );
+  }
+  if (script.rp && script.rp !== '') {
+    $('.rp_cell', line).append(
+      DC.UI.Tooltip(
+        'Topic RP',
+        DC.UI.Button(
+          `${script.id}_rp`,
+          '<div class=""gridCenter>RP</div>',
+          () => window.open(script.doc, '_blank'),
+        ),
+      ),
+    );
+  }
+  if (script.contact && script.contact !== '') {
+    $('.contact_cell', line).append(
+      DC.UI.Tooltip(
+        'Contact',
+        DC.UI.Button(`${script.id}_rp`, '<i class="fas fa-envelope"></i>', () =>
+          nav.getMessagerie().newMessage(script.contact),
+        ),
+      ),
+    );
+  }
+
+  return line;
+};
+
 $(() => {
   let { settings, allDisabled } = initPersistence();
 
@@ -38,25 +134,7 @@ $(() => {
     'https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/data/scripts.json',
   )
     .then((scripts) => {
-      scripts.forEach((script) => {
-        if (!Object.hasOwn(settings, script.id)) {
-          // Update the settings, if there is new scripts.
-          settings[script.id] = false;
-        }
-      });
-
-      // Remove in settings, scripts that doesn't exist anymore.
-      settings = Object.keys(settings)
-        .filter(
-          (key) => scripts.find((script) => script.id === key) !== undefined,
-        )
-        .reduce((obj, key) => {
-          obj[key] = settings[key];
-          return obj;
-        }, {});
-
-      // Save the new settings in persistent memory.
-      DC.LocalMemory.set(LIST_TAG, settings);
+      settings = synchronizeSettings(settings, scripts);
 
       // Create the interface.
       DC.UI.addSubMenuTo(
@@ -64,11 +142,11 @@ $(() => {
         DC.UI.SubMenu(
           'Scripts & Skins',
           () => {
-            // TODO ajouter des catégories aux scripts dans la liste, et filtrer avec un radio input selon la catégorie.
-            // TODO ajouter dans la liste tous les scripts (en utilisant le lien gresemonkey) et remplacer petit à petit par les versions locales nettoyées.
+            // TODO ajouter dans la liste tous les scripts (en utilisant le lien greasemonkey) et remplacer petit à petit par les versions locales nettoyées.
 
-            let newSettings = settings;
-            let newAllDisabled = allDisabled;
+            // On récupère une config temporaire qu'on appliquera uniquement si sauvegardée.
+            newSettings = settings;
+            newAllDisabled = allDisabled;
 
             const content = $(`<div style="color: white; max-width: 450px;">
               <div id="scripts_all_switch" style="display: flex;gap: 1rem;margin-bottom: 1rem;">
@@ -126,9 +204,18 @@ $(() => {
 
               // Empty the table
               $('tbody', content).empty();
-              // TODO Then we populate it with the filtered list.
+              // Add filtered lines
+              scripts
+                .filter(
+                  (script) => script.category === filter || filter === 'all',
+                )
+                .forEach((script, index) => {
+                  const line = createScriptLine(script, index);
+                  $('tbody', content).append(line);
+                });
             });
 
+            // Sauvegarder les paramètres.
             content.append(
               DC.UI.TextButton('scripts_refresh', 'Sauvegarder', () => {
                 settings = newSettings;
@@ -144,6 +231,8 @@ $(() => {
              Pensez à sauvegarder votre travail en cours avant.</em></p>`,
               ),
             );
+
+            // Switch button pour désactiver tous les scripts.
             $('#scripts_all_switch', content).append(
               DC.UI.Checkbox(
                 'scripts_all_check',
@@ -153,76 +242,7 @@ $(() => {
             );
 
             scripts.forEach((script, index) => {
-              const line = $(`
-              <tr style="border-top: 1px solid white; border-left: 1px solid white; border-right: 1px solid white;">
-                <td style="padding: 5px 0 0 5px">${index}</td>
-                <td style="padding: 5px 0">${script.name}</td>
-                <td class="enabled_cell" style="padding: 5px 0; display: flex; justify-content: center;"></td>
-                <td class="setting_cell" style="padding: 5px 5px 0 0;"></td>
-                <td class="doc_cell" style="padding: 5px 5px 0 0;"></td>
-                <td class="rp_cell" style="padding: 5px 5px 0 0;"></td>
-                <td class="contact_cell" style="padding: 5px 5px 0 0;"></td>
-              </tr>
-              <tr style="border-bottom: 1px solid white; border-left: 1px solid white; border-right: 1px solid white;">
-                <td /><td colspan="2" style="padding: 0 5px 5px 5px"><small><em class="couleur5">${script.description}</em></small></td>
-              </tr>
-              `);
-              $('.enabled_cell', line).append(
-                DC.UI.Checkbox(
-                  `${script.id}_check`,
-                  newSettings[script.id],
-                  () => (newSettings[script.id] = !newSettings[script.id]),
-                ),
-              );
-              if (script.settings) {
-                $('.setting_cell', line).append(
-                  DC.UI.Tooltip(
-                    'Settings',
-                    DC.UI.Button(
-                      `${script.id}_setting`,
-                      '<i class="fas fa-cog"></i>',
-                      () => {},
-                    ),
-                  ),
-                );
-              }
-              if (script.doc && script.doc !== '') {
-                $('.doc_cell', line).append(
-                  DC.UI.Tooltip(
-                    'Documentation',
-                    DC.UI.Button(
-                      `${script.id}_doc`,
-                      '<i class="fas fa-book"></i>',
-                      () => window.open(script.doc, '_blank'),
-                    ),
-                  ),
-                );
-              }
-              if (script.rp && script.rp !== '') {
-                $('.rp_cell', line).append(
-                  DC.UI.Tooltip(
-                    'Topic RP',
-                    DC.UI.Button(
-                      `${script.id}_rp`,
-                      '<div class=""gridCenter>RP</div>',
-                      () => window.open(script.doc, '_blank'),
-                    ),
-                  ),
-                );
-              }
-              if (script.contact && script.contact !== '') {
-                $('.contact_cell', line).append(
-                  DC.UI.Tooltip(
-                    'Contact',
-                    DC.UI.Button(
-                      `${script.id}_rp`,
-                      '<i class="fas fa-envelope"></i>',
-                      () => nav.getMessagerie().newMessage(script.contact),
-                    ),
-                  ),
-                );
-              }
-
+              const line = createScriptLine(script, index);
               $('tbody', content).append(line);
             });
 
