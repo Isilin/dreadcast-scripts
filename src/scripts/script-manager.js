@@ -14,16 +14,23 @@
 // @updateURL
 // ==/UserScript==
 
-const PERSISTENCE_TAG = 'dcm_list';
+const LIST_TAG = 'dcm_list';
+const ALL_DISABLED_TAG = 'dcm_all_disabled';
 
-$(() => {
-  console.log('DCM START');
-
+const initPersistence = () => {
   // Init persistent memory if needed.
-  DC.LocalMemory.init(PERSISTENCE_TAG, {});
+  DC.LocalMemory.init(LIST_TAG, {});
+  DC.LocalMemory.init(ALL_DISABLED_TAG, false);
 
   // Load the current settings.
-  let settings = DC.LocalMemory.get(PERSISTENCE_TAG);
+  let settings = DC.LocalMemory.get(LIST_TAG);
+  let allDisabled = DC.LocalMemory.get(ALL_DISABLED_TAG);
+
+  return { settings, allDisabled };
+};
+
+$(() => {
+  let { settings, allDisabled } = initPersistence();
 
   // Load list of scripts
   DC.Network.loadJson(
@@ -48,7 +55,7 @@ $(() => {
         }, {});
 
       // Save the new settings in persistent memory.
-      DC.LocalMemory.set(PERSISTENCE_TAG, settings);
+      DC.LocalMemory.set(LIST_TAG, settings);
 
       // Create the interface.
       DC.UI.addSubMenuTo(
@@ -56,27 +63,91 @@ $(() => {
         DC.UI.SubMenu(
           'Scripts & Skins',
           () => {
-            const content = $(`<div style="color: white;">
-            <table style="border-collapse: collapse; width: 100%; border: 1px solid white; padding: 5px; font-size: 15px; text-align: center;">
-              <thead>
-                <th style="padding: 5px 0 5px 5px" scope="col">#</th>
-                <th style="padding: 5px 0 5px 0" scope="col">Nom</th>
-                <th style="padding: 5px 5px 5px 0" scope="col">Actif</th>
-                <th />
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>`);
+            // TODO ajouter des catégories aux scripts dans la liste, et filtrer avec un radio input selon la catégorie.
+            // TODO ajouter dans la liste tous les scripts (en utilisant le lien gresemonkey) et remplacer petit à petit par les versions locales nettoyées.
+
+            let newSettings = settings;
+            let newAllDisabled = allDisabled;
+
+            const content = $(`<div style="color: white; max-width: 450px;">
+              <div id="scripts_all_switch" style="display: flex;gap: 1rem;margin-bottom: 1rem;">
+                <p>Tout désactiver</p>
+              </div>
+              <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <legend style="margin-right: 1rem; min-width: 60px;">Filtrer :</legend>
+                <div style="display: flex; gap: 5%; flex-wrap: wrap;">
+                  <div>
+                    <input type="radio" id="all_category" name ="category" value ="all" checked />
+                    <label for="all_category">All</label>
+                  </div>
+                  <div>
+                    <input type="radio" id="mailing_category" name ="category" value ="mailing" />
+                    <label for="mailing_category">Messagerie</label>
+                  </div>
+                  <div>
+                    <input type="radio" id="chat_category" name ="category" value ="chat" />
+                    <label for="chat_category">Chat</label>
+                  </div>
+                  <div>
+                    <input type="radio" id="silhouette_category" name ="category" value ="silhouette" />
+                    <label for="silhouette_category">Silhouette</label>
+                  </div>
+                  <div>
+                    <input type="radio" id="forum_category" name ="category" value ="forum" />
+                    <label for="forum_category">Forum</label>
+                  </div>
+                  <div>
+                    <input type="radio" id="ui_category" name ="category" value ="ui" />
+                    <label for="ui_category">UI</label>
+                  </div>
+                  <div>
+                    <input type="radio" id="misc_category" name ="category" value ="misc" />
+                    <label for="misc_category">Autres</label>
+                  </div>
+                </div>
+              </div>
+              <table style="border-collapse: collapse; width: 100%; border: 1px solid white; padding: 5px; font-size: 15px; text-align: center;">
+                <thead>
+                  <th style="padding: 5px 0 5px 5px" scope="col">#</th>
+                  <th style="padding: 5px 0 5px 0" scope="col">Nom</th>
+                  <th style="padding: 5px 5px 5px 0" scope="col">Actif</th>
+                  <th class="short" />
+                  <th class="short" />
+                  <th class="short" />
+                  <th class="short" />
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>`);
+
+            $(document).on('change', "input[name='category']", (e) => {
+              const filter = e.target.value;
+
+              // Empty the table
+              $('tbody', content).empty();
+              // TODO Then we populate it with the filtered list.
+            });
+
             content.append(
               DC.UI.TextButton('scripts_refresh', 'Sauvegarder', () => {
-                DC.LocalMemory.set(PERSISTENCE_TAG, settings);
+                settings = newSettings;
+                allDisabled = newAllDisabled;
+                DC.LocalMemory.set(LIST_TAG, settings);
+                DC.LocalMemory.set(ALL_DISABLED_TAG, allDisabled);
                 location.reload();
               }),
             );
             content.append(
               $(
-                `<p><em>⚠ Sauvegarder votre configuration va raffraichir la page.<br />
+                `<p><em class="couleur5">⚠ Sauvegarder votre configuration va raffraichir la page.<br />
              Pensez à sauvegarder votre travail en cours avant.</em></p>`,
+              ),
+            );
+            $('#scripts_all_switch', content).append(
+              DC.UI.Checkbox(
+                'scripts_all_check',
+                newAllDisabled,
+                () => (newAllDisabled = !newAllDisabled),
               ),
             );
 
@@ -87,16 +158,19 @@ $(() => {
                 <td style="padding: 5px 0">${script.name}</td>
                 <td class="enabled_cell" style="padding: 5px 0; display: flex; justify-content: center;"></td>
                 <td class="setting_cell" style="padding: 5px 5px 0 0;"></td>
+                <td class="doc_cell" style="padding: 5px 5px 0 0;"></td>
+                <td class="rp_cell" style="padding: 5px 5px 0 0;"></td>
+                <td class="contact_cell" style="padding: 5px 5px 0 0;"></td>
               </tr>
               <tr style="border-bottom: 1px solid white; border-left: 1px solid white; border-right: 1px solid white;">
-                <td /><td colspan="2" style="padding: 0 5px 5px 5px"><small><em>${script.description}</em></small></td>
+                <td /><td colspan="2" style="padding: 0 5px 5px 5px"><small><em class="couleur5">${script.description}</em></small></td>
               </tr>
               `);
               $('.enabled_cell', line).append(
                 DC.UI.Checkbox(
                   `${script.id}_check`,
-                  settings[script.id],
-                  () => (settings[script.id] = !settings[script.id]),
+                  newSettings[script.id],
+                  () => (newSettings[script.id] = !newSettings[script.id]),
                 ),
               );
               if (script.settings) {
@@ -105,6 +179,33 @@ $(() => {
                     `${script.id}_setting`,
                     '<i class="fas fa-cog"></i>',
                     () => {},
+                  ),
+                );
+              }
+              if (script.doc && script.doc !== '') {
+                $('.doc_cell', line).append(
+                  DC.UI.Button(
+                    `${script.id}_doc`,
+                    '<i class="fas fa-book"></i>',
+                    () => window.open(script.doc, '_blank'),
+                  ),
+                );
+              }
+              if (script.rp && script.rp !== '') {
+                $('.rp_cell', line).append(
+                  DC.UI.Button(
+                    `${script.id}_rp`,
+                    '<div class=""gridCenter>RP</div>',
+                    () => window.open(script.doc, '_blank'),
+                  ),
+                );
+              }
+              if (script.contact && script.contact !== '') {
+                $('.contact_cell', line).append(
+                  DC.UI.Button(
+                    `${script.id}_rp`,
+                    '<i class="fas fa-envelope"></i>',
+                    () => nav.getMessagerie().newMessage(script.contact),
                   ),
                 );
               }
@@ -120,21 +221,23 @@ $(() => {
       );
 
       // Load the scripts
-      scripts.forEach((script) => {
-        if (settings[script.id]) {
-          DC.Network.loadScript(script.url)
-            .then(() => {
-              console.info(
-                `DSM - '${script.name}' script has been loaded successfully.`,
-              );
-            })
-            .catch((err) => {
-              console.error(
-                `DSM - Error loading '${script.name}' script: ` + err,
-              );
-            });
-        }
-      });
+      if (!allDisabled) {
+        scripts.forEach((script) => {
+          if (settings[script.id]) {
+            DC.Network.loadScript(script.url)
+              .then(() => {
+                console.info(
+                  `DSM - '${script.name}' script has been loaded successfully.`,
+                );
+              })
+              .catch((err) => {
+                console.error(
+                  `DSM - Error loading '${script.name}' script: ` + err,
+                );
+              });
+          }
+        });
+      }
     })
     .catch((err) => {
       console.error('DSM - Error loading the list of scripts :' + err);

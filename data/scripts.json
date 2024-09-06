@@ -4,6 +4,9 @@
     "name": "Hello World",
     "description": "Ceci est juste un script de test.",
     "url": "https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/examples/helloworld.js",
+    "doc": "https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/examples/helloworld.js",
+    "rp": "https://www.dreadcast.net/Forum/2-144706-ni-23612u-nomura-incorporated---sommaire",
+    "contact": "Pelagia",
     "settings": true
   },
   {
@@ -11,6 +14,9 @@
     "name": "Exemple",
     "description": "C'est un exemple de l'utilisation du DDK.",
     "url": "https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/examples/index.js",
+    "doc": "https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/examples/index.js",
+    "rp": "https://www.dreadcast.net/Forum/2-144706-ni-23612u-nomura-incorporated---sommaire",
+    "contact": "Pelagia",
     "settings": false
   }
 ]
