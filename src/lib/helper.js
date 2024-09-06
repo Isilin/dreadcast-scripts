@@ -2,7 +2,7 @@
 // @name        Scouter
 // @namespace   Violentmonkey Scripts
 // @match       https://www.dreadcast.net/Main
-// @version     1.0.1
+// @version     1.0.2
 // @author      Pelagia/IsilinBN
 // @description 13/11/2023 02:55:01
 // @license      http://creativecommons.org/licenses/by-nc-nd/4.0/
@@ -99,6 +99,13 @@ const Util = {
 };
 
 // ===== Overwrite DC functions =====
+
+if (
+  MenuChat.prototype.originalSend !== null &&
+  MenuChat.prototype.originalSend != undefined
+) {
+  console.log('AIE AIE AIE !');
+}
 
 MenuChat.prototype.originalSend = MenuChat.prototype.send;
 MenuChat.prototype.sendCallbacks = [];
@@ -312,7 +319,6 @@ DC.UI = {
       }
       .tooltip .tooltiptext {
         visibility: hidden;
-        width: 120px;
         background-color: black;
         color: #fff;
         text-align: center;
@@ -320,6 +326,7 @@ DC.UI = {
         border-radius: 6px;
         position: absolute;
         z-index: 1;
+        font-size: 1rem;
       }
       .tooltip:hover .tooltiptext {
         visibility: visible;
