@@ -2,7 +2,7 @@
 // @name        Scouter
 // @namespace   Violentmonkey Scripts
 // @match       https://www.dreadcast.net/Main
-// @version     1.0.4
+// @version     1.0.5
 // @author      Pelagia/IsilinBN
 // @description 13/11/2023 02:55:01
 // @license      http://creativecommons.org/licenses/by-nc-nd/4.0/
@@ -16,98 +16,91 @@
 // @updateURL
 // ==/UserScript==
 
-// ===== Load only ONCE =====
-if (
-  !Admin.prototype.ddk ||
-  Admin.prototype.ddk === undefined ||
-  Admin.prototype.ddk === null
-) {
-  Admin.prototype.ddk = true;
+// ===== JQuery utilities =====
 
-  // ===== JQuery utilities =====
+$.fn.insertAt = function (index, element) {
+  var lastIndex = this.children().size();
+  if (index < 0) {
+    index = Math.max(0, lastIndex + 1 + index);
+  }
+  this.append(element);
+  if (index < lastIndex) {
+    this.children().eq(index).before(this.children().last());
+  }
+  return this;
+};
 
-  $.fn.insertAt = function (index, element) {
-    var lastIndex = this.children().size();
-    if (index < 0) {
-      index = Math.max(0, lastIndex + 1 + index);
-    }
-    this.append(element);
-    if (index < lastIndex) {
-      this.children().eq(index).before(this.children().last());
-    }
-    return this;
-  };
+// ===== Lib =====
 
-  // ===== Lib =====
+const Util = {
+  guard: (condition, message) => {
+    if (!condition) throw new Error(message);
+    return;
+  },
 
-  const Util = {
-    guard: (condition, message) => {
-      if (!condition) throw new Error(message);
-      return;
-    },
+  deprecate: (name, replacement) => {
+    console.warn(
+      name +
+        ': this function has been deprecated and should not be used anymore.' +
+        (replacement && replacement !== ''
+          ? 'Prefer: ' + replacement + '.'
+          : ''),
+    );
+  },
 
-    deprecate: (name, replacement) => {
-      console.warn(
-        name +
-          ': this function has been deprecated and should not be used anymore.' +
-          (replacement && replacement !== ''
-            ? 'Prefer: ' + replacement + '.'
-            : ''),
+  isArray: (o, optional = false) =>
+    $.type(o) === 'array' ||
+    (optional && ($.type(o) === 'undefined' || $.type(o) === 'null')),
+
+  isString: (o, optional = false) =>
+    $.type(o) === 'string' ||
+    (optional && ($.type(o) === 'undefined' || $.type(o) === 'null')),
+
+  isBoolean: (o, optional = false) =>
+    $.type(o) === 'boolean' ||
+    (optional && ($.type(o) === 'undefined' || $.type(o) === 'null')),
+
+  isNumber: (o, optional = false) =>
+    $.type(o) === 'number' ||
+    (optional && ($.type(o) === 'undefined' || $.type(o) === 'null')),
+
+  isFunction: (o, optional = false) =>
+    $.type(o) === 'function' ||
+    (optional && ($.type(o) === 'undefined' || $.type(o) === 'null')),
+
+  isDate: (o, optional = false) =>
+    $.type(o) === 'date' ||
+    (optional && ($.type(o) === 'undefined' || $.type(o) === 'null')),
+
+  isError: (o, optional = false) =>
+    $.type(o) === 'error' ||
+    (optional && ($.type(o) === 'undefined' || $.type(o) === 'null')),
+
+  isRegex: (o, optional = false) =>
+    $.type(o) === 'regexp' ||
+    (optional && ($.type(o) === 'undefined' || $.type(o) === 'null')),
+
+  isObject: (o, optional = false) =>
+    $.type(o) === 'object' ||
+    (optional && ($.type(o) === 'undefined' || $.type(o) === 'null')),
+
+  isColor: (o, optional = false) => {
+    if (optional && ($.type(o) === 'undefined' || $.type(o) === 'null'))
+      return true;
+    else {
+      const colors = ['rouge', 'bleu', 'vert', 'jaune'];
+      return (
+        $.type(o) === 'string' &&
+        (colors.includes(o) ||
+          o.match(/^[0-9a-f]{8}|[0-9a-f]{6}|[0-9a-f]{4}|[0-9a-f]{3}$/gi))
       );
-    },
+    }
+  },
+};
 
-    isArray: (o, optional = false) =>
-      $.type(o) === 'array' ||
-      (optional && ($.type(o) === 'undefined' || $.type(o) === 'null')),
+// ===== Overwrite DC functions =====
 
-    isString: (o, optional = false) =>
-      $.type(o) === 'string' ||
-      (optional && ($.type(o) === 'undefined' || $.type(o) === 'null')),
-
-    isBoolean: (o, optional = false) =>
-      $.type(o) === 'boolean' ||
-      (optional && ($.type(o) === 'undefined' || $.type(o) === 'null')),
-
-    isNumber: (o, optional = false) =>
-      $.type(o) === 'number' ||
-      (optional && ($.type(o) === 'undefined' || $.type(o) === 'null')),
-
-    isFunction: (o, optional = false) =>
-      $.type(o) === 'function' ||
-      (optional && ($.type(o) === 'undefined' || $.type(o) === 'null')),
-
-    isDate: (o, optional = false) =>
-      $.type(o) === 'date' ||
-      (optional && ($.type(o) === 'undefined' || $.type(o) === 'null')),
-
-    isError: (o, optional = false) =>
-      $.type(o) === 'error' ||
-      (optional && ($.type(o) === 'undefined' || $.type(o) === 'null')),
-
-    isRegex: (o, optional = false) =>
-      $.type(o) === 'regexp' ||
-      (optional && ($.type(o) === 'undefined' || $.type(o) === 'null')),
-
-    isObject: (o, optional = false) =>
-      $.type(o) === 'object' ||
-      (optional && ($.type(o) === 'undefined' || $.type(o) === 'null')),
-
-    isColor: (o, optional = false) => {
-      if (optional && ($.type(o) === 'undefined' || $.type(o) === 'null'))
-        return true;
-      else {
-        const colors = ['rouge', 'bleu', 'vert', 'jaune'];
-        return (
-          $.type(o) === 'string' &&
-          (colors.includes(o) ||
-            o.match(/^[0-9a-f]{8}|[0-9a-f]{6}|[0-9a-f]{4}|[0-9a-f]{3}$/gi))
-        );
-      }
-    },
-  };
-
-  // ===== Overwrite DC functions =====
-
+if (MenuChat.prototype.originalSend === undefined) {
   MenuChat.prototype.originalSend = MenuChat.prototype.send;
   MenuChat.prototype.sendCallbacks = [];
   MenuChat.prototype.afterSendCallbacks = [];
@@ -132,191 +125,189 @@ if (
   MenuChat.prototype.onAfterSend = (callback) => {
     MenuChat.prototype.afterSendCallbacks.push(callback);
   };
+}
 
-  // ============================
+// ============================
 
-  const DC = {};
+const DC = {};
 
-  DC.LocalMemory = {
-    init: (label, defaultValue) => {
-      const $currentVal = GM_getValue(label);
-      if ($currentVal === undefined) {
-        GM_setValue(label, defaultValue);
-        return defaultValue;
-      } else {
-        return $currentVal;
-      }
-    },
+DC.LocalMemory = {
+  init: (label, defaultValue) => {
+    const $currentVal = GM_getValue(label);
+    if ($currentVal === undefined) {
+      GM_setValue(label, defaultValue);
+      return defaultValue;
+    } else {
+      return $currentVal;
+    }
+  },
 
-    set: (label, value) => GM_setValue(label, value),
+  set: (label, value) => GM_setValue(label, value),
 
-    get: (label) => GM_getValue(label),
+  get: (label) => GM_getValue(label),
 
-    delete: (label) => GM_deleteValue(label),
+  delete: (label) => GM_deleteValue(label),
 
-    list: () => GM_listValues(),
-  };
+  list: () => GM_listValues(),
+};
 
-  DC.Style = {
-    apply: (css) => {
-      Util.guard(
-        Util.isString(css, true),
-        "DC.Style.apply: 'css' parameter should be a string.",
+DC.Style = {
+  apply: (css) => {
+    Util.guard(
+      Util.isString(css, true),
+      "DC.Style.apply: 'css' parameter should be a string.",
+    );
+
+    if (typeof GM_addStyle !== 'undefined') {
+      GM_addStyle(css);
+    } else {
+      let $styleNode = document.createElement('style');
+      $styleNode.appendChild(document.createTextNode(css));
+      (document.querySelector('head') || document.documentElement).appendChild(
+        $styleNode,
       );
+    }
+  },
+};
 
-      if (typeof GM_addStyle !== 'undefined') {
-        GM_addStyle(css);
-      } else {
-        let $styleNode = document.createElement('style');
-        $styleNode.appendChild(document.createTextNode(css));
-        (
-          document.querySelector('head') || document.documentElement
-        ).appendChild($styleNode);
-      }
-    },
-  };
+DC.TopMenu = {
+  get: () => {
+    return $('.menus');
+  },
 
-  DC.TopMenu = {
-    get: () => {
-      return $('.menus');
-    },
+  add: (element, index = 0) => {
+    Util.guard(
+      Util.isNumber(index),
+      "DC.TopMenu.add: 'index' parameter should be a number.",
+    );
 
-    add: (element, index = 0) => {
-      Util.guard(
-        Util.isNumber(index),
-        "DC.TopMenu.add: 'index' parameter should be a number.",
-      );
+    const $dom = DC.TopMenu.get();
+    if (index === 0) {
+      $dom.prepend(element);
+    } else {
+      $dom.insertAt(index, element);
+    }
+  },
+};
 
-      const $dom = DC.TopMenu.get();
-      if (index === 0) {
-        $dom.prepend(element);
-      } else {
-        $dom.insertAt(index, element);
-      }
-    },
-  };
+DC.UI = {
+  Separator: () => $('<li class="separator" />'),
 
-  DC.UI = {
-    Separator: () => $('<li class="separator" />'),
+  Menu: (label, fn) => {
+    Util.guard(
+      Util.isString(label),
+      "DC.UI.Menu: 'label' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isFunction(fn),
+      "DC.UI.Menu: 'fn' parameter should be a function.",
+    );
 
-    Menu: (label, fn) => {
-      Util.guard(
-        Util.isString(label),
-        "DC.UI.Menu: 'label' parameter should be a string.",
-      );
-      Util.guard(
-        Util.isFunction(fn),
-        "DC.UI.Menu: 'fn' parameter should be a function.",
-      );
+    return $(`<li id="${label}" class="couleur5">${label}</li>`).bind(
+      'click',
+      fn,
+    );
+  },
 
-      return $(`<li id="${label}" class="couleur5">${label}</li>`).bind(
-        'click',
-        fn,
-      );
-    },
+  SubMenu: (label, fn, separatorBefore = false) => {
+    Util.guard(
+      Util.isString(label),
+      "DC.UI.SubMenu: 'label' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isFunction(fn),
+      "DC.UI.SubMenu: 'fn' parameter should be a function.",
+    );
+    Util.guard(
+      Util.isBoolean(separatorBefore),
+      "DC.UI.SubMenu: 'separatorBefore' parameter should be a boolean.",
+    );
 
-    SubMenu: (label, fn, separatorBefore = false) => {
-      Util.guard(
-        Util.isString(label),
-        "DC.UI.SubMenu: 'label' parameter should be a string.",
-      );
-      Util.guard(
-        Util.isFunction(fn),
-        "DC.UI.SubMenu: 'fn' parameter should be a function.",
-      );
-      Util.guard(
-        Util.isBoolean(separatorBefore),
-        "DC.UI.SubMenu: 'separatorBefore' parameter should be a boolean.",
-      );
+    return $(
+      `<li class="link couleur2 ${
+        separatorBefore ? 'separator' : ''
+      }">${label}</li>`,
+    ).bind('click', fn);
+  },
 
-      return $(
-        `<li class="link couleur2 ${
-          separatorBefore ? 'separator' : ''
-        }">${label}</li>`,
-      ).bind('click', fn);
-    },
+  DropMenu: (label, submenu) => {
+    Util.guard(
+      Util.isString(label),
+      "DC.UI.DropMenu: 'label' parameter should be a string.",
+    );
 
-    DropMenu: (label, submenu) => {
-      Util.guard(
-        Util.isString(label),
-        "DC.UI.DropMenu: 'label' parameter should be a string.",
-      );
+    const $label = label + '▾';
 
-      const $label = label + '▾';
+    const $list = $('<ul></ul>');
+    if (!Array.isArray(submenu)) {
+      throw new Error("'submenu' should be an array in DC.UI.DropMenu !");
+    }
+    submenu.forEach(($submenu) => {
+      $($list).append($submenu);
+    });
 
-      const $list = $('<ul></ul>');
-      if (!Array.isArray(submenu)) {
-        throw new Error("'submenu' should be an array in DC.UI.DropMenu !");
-      }
-      submenu.forEach(($submenu) => {
-        $($list).append($submenu);
-      });
+    return $(
+      `<li id="${label}" class="parametres couleur5 right hover" onclick="$(this).find('ul').slideDown();">${$label}</li>`,
+    ).append($list);
+  },
 
-      return $(
-        `<li id="${label}" class="parametres couleur5 right hover" onclick="$(this).find('ul').slideDown();">${$label}</li>`,
-      ).append($list);
-    },
+  addSubMenuTo: (name, element, index = 0) => {
+    Util.guard(
+      Util.isString(name),
+      "DC.UI.addSubMenuTo: 'name' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isNumber(index),
+      "DC.UI.addSubMenuTo: 'index' parameter should be a string.",
+    );
 
-    addSubMenuTo: (name, element, index = 0) => {
-      Util.guard(
-        Util.isString(name),
-        "DC.UI.addSubMenuTo: 'name' parameter should be a string.",
-      );
-      Util.guard(
-        Util.isNumber(index),
-        "DC.UI.addSubMenuTo: 'index' parameter should be a string.",
-      );
+    const $menu = $(`.menus li:contains("${name}") ul`);
 
-      const $menu = $(`.menus li:contains("${name}") ul`);
+    if (index === 0) {
+      $menu.prepend(element);
+    } else {
+      $menu.insertAt(index, element);
+    }
+  },
 
-      if (index === 0) {
-        $menu.prepend(element);
-      } else {
-        $menu.insertAt(index, element);
-      }
-    },
+  TextButton: (id, label, fn) => {
+    Util.guard(
+      Util.isString(id),
+      "DC.UI.TextButton: 'id' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isString(label),
+      "DC.UI.TextButton: 'label' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isFunction(fn),
+      "DC.UI.TextButton: 'fn' parameter should be a function.",
+    );
 
-    TextButton: (id, label, fn) => {
-      Util.guard(
-        Util.isString(id),
-        "DC.UI.TextButton: 'id' parameter should be a string.",
-      );
-      Util.guard(
-        Util.isString(label),
-        "DC.UI.TextButton: 'label' parameter should be a string.",
-      );
-      Util.guard(
-        Util.isFunction(fn),
-        "DC.UI.TextButton: 'fn' parameter should be a function.",
-      );
+    return $(`<div id="${id}" class="btnTxt">${label}</div>`).bind('click', fn);
+  },
 
-      return $(`<div id="${id}" class="btnTxt">${label}</div>`).bind(
-        'click',
-        fn,
-      );
-    },
+  Button: (id, label, fn) => {
+    Util.guard(
+      Util.isString(id),
+      "DC.UI.Button: 'id' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isString(label),
+      "DC.UI.Button: 'label' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isFunction(fn),
+      "DC.UI.Button: 'fn' parameter should be a function.",
+    );
 
-    Button: (id, label, fn) => {
-      Util.guard(
-        Util.isString(id),
-        "DC.UI.Button: 'id' parameter should be a string.",
-      );
-      Util.guard(
-        Util.isString(label),
-        "DC.UI.Button: 'label' parameter should be a string.",
-      );
-      Util.guard(
-        Util.isFunction(fn),
-        "DC.UI.Button: 'fn' parameter should be a function.",
-      );
+    return $(
+      `<div id="${id}" class="btn add link infoAide"><div class="gridCenter">${label}</div></div>`,
+    ).bind('click', fn);
+  },
 
-      return $(
-        `<div id="${id}" class="btn add link infoAide"><div class="gridCenter">${label}</div></div>`,
-      ).bind('click', fn);
-    },
-
-    Tooltip: (text, content) => {
-      DC.Style.apply(`
+  Tooltip: (text, content) => {
+    DC.Style.apply(`
         .tooltip {
           position: relative;
           display: inline-block;
@@ -337,26 +328,26 @@ if (
         }
       `);
 
-      return $(`<div class="tooltip">
+    return $(`<div class="tooltip">
         <span class="tooltiptext">${text}</span>
         </div>`).prepend(content);
-    },
+  },
 
-    Checkbox: (id, defaultEnable = true, onAfterClick) => {
-      Util.guard(
-        Util.isString(id),
-        "DC.UI.Checkbox: 'id' parameter should be a string.",
-      );
-      Util.guard(
-        Util.isBoolean(defaultEnable),
-        "DC.UI.Checkbox: 'defaultEnable' parameter should be a boolean.",
-      );
-      Util.guard(
-        Util.isFunction(onAfterClick, true),
-        "DC.UI.Checkbox: 'onAfterClick' optional parameter should be a function.",
-      );
+  Checkbox: (id, defaultEnable = true, onAfterClick) => {
+    Util.guard(
+      Util.isString(id),
+      "DC.UI.Checkbox: 'id' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isBoolean(defaultEnable),
+      "DC.UI.Checkbox: 'defaultEnable' parameter should be a boolean.",
+    );
+    Util.guard(
+      Util.isFunction(onAfterClick, true),
+      "DC.UI.Checkbox: 'onAfterClick' optional parameter should be a function.",
+    );
 
-      DC.Style.apply(`
+    DC.Style.apply(`
         .dc_ui_checkbox {
           cursor: pointer;
           width: 30px;
@@ -369,29 +360,29 @@ if (
         }
       `);
 
-      return $(
-        `<div id="${id}" class="dc_ui_checkbox ${
-          defaultEnable ? 'dc_ui_checkbox_on' : ''
-        }" />`,
-      ).bind('click', () => {
-        $(`#${id}`).toggleClass('dc_ui_checkbox_on');
-        onAfterClick?.($(`#${id}`).hasClass('dc_ui_checkbox_on'));
-      });
-    },
+    return $(
+      `<div id="${id}" class="dc_ui_checkbox ${
+        defaultEnable ? 'dc_ui_checkbox_on' : ''
+      }" />`,
+    ).bind('click', () => {
+      $(`#${id}`).toggleClass('dc_ui_checkbox_on');
+      onAfterClick?.($(`#${id}`).hasClass('dc_ui_checkbox_on'));
+    });
+  },
 
-    PopUp: (id, title, content) => {
-      Util.guard(
-        Util.isString(id),
-        "DC.UI.PopUp: 'id' parameter should be a string.",
-      );
-      Util.guard(
-        Util.isString(title),
-        "DC.UI.PopUp: 'title' parameter should be a string.",
-      );
+  PopUp: (id, title, content) => {
+    Util.guard(
+      Util.isString(id),
+      "DC.UI.PopUp: 'id' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isString(title),
+      "DC.UI.PopUp: 'title' parameter should be a string.",
+    );
 
-      $('#loader').fadeIn('fast');
+    $('#loader').fadeIn('fast');
 
-      const html = `
+    const html = `
         <div id="${id}" class="dataBox"  onClick="engine.switchDataBox(this)" style="display: block; z-index: 5; left: 764px; top: 16px;">
           <relative>
             <div class="head" ondblclick="$('#${id}').toggleClass('reduced');">
@@ -409,65 +400,63 @@ if (
         </relative>
       </div>`;
 
-      engine.displayDataBox(html);
-      $(`#${id} .content`).append(content);
+    engine.displayDataBox(html);
+    $(`#${id} .content`).append(content);
 
-      $('#loader').hide();
-    },
+    $('#loader').hide();
+  },
 
-    SideMenu: (id, label, content) => {
-      Util.guard(
-        Util.isString(id),
-        "DC.UI.SideMenu: 'id' parameter should be a string.",
-      );
-      Util.guard(
-        Util.isString(label),
-        "DC.UI.SideMenu: 'label' parameter should be a string.",
-      );
-      Util.guard(
-        Util.isString(content),
-        "DC.UI.SideMenu: 'content' parameter should be a string.",
-      );
+  SideMenu: (id, label, content) => {
+    Util.guard(
+      Util.isString(id),
+      "DC.UI.SideMenu: 'id' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isString(label),
+      "DC.UI.SideMenu: 'label' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isString(content),
+      "DC.UI.SideMenu: 'content' parameter should be a string.",
+    );
 
-      const idContainer = id + '_container';
-      const idButton = id + '_button';
-      const idContent = id + '_content';
+    const idContainer = id + '_container';
+    const idButton = id + '_button';
+    const idContent = id + '_content';
 
-      if ($('div#zone_sidemenu').length === 0) {
-        $('body').append('<div id="zone_sidemenu"></div>');
-      }
-      $('#zone_sidemenu').append(
-        `<div id="${idContainer}" class="sidemenu_container"></div>`,
-      );
+    if ($('div#zone_sidemenu').length === 0) {
+      $('body').append('<div id="zone_sidemenu"></div>');
+    }
+    $('#zone_sidemenu').append(
+      `<div id="${idContainer}" class="sidemenu_container"></div>`,
+    );
 
-      $(`#${idContainer}`).append(
-        DC.UI.TextButton(
-          idButton,
-          '<i class="fas fa-chevron-left"></i>' + label,
-          () => {
-            const isOpen = $(`#${idButton}`)
-              .html()
-              .includes('fa-chevron-right');
-            if (isOpen) {
-              $(`#${idButton}`)
-                .empty()
-                .append('<i class="fas fa-chevron-left"></i>' + label);
-              $(`#${idContainer}`).css('right', '-220px');
-            } else {
-              $(`#${idButton}`)
-                .empty()
-                .append('<i class="fas fa-chevron-right"></i>' + label);
-              $(`#${idContainer}`).css('right', '0px');
-            }
-          },
-        ),
-      );
+    $(`#${idContainer}`).append(
+      DC.UI.TextButton(
+        idButton,
+        '<i class="fas fa-chevron-left"></i>' + label,
+        () => {
+          const isOpen = $(`#${idButton}`).html().includes('fa-chevron-right');
+          if (isOpen) {
+            $(`#${idButton}`)
+              .empty()
+              .append('<i class="fas fa-chevron-left"></i>' + label);
+            $(`#${idContainer}`).css('right', '-220px');
+          } else {
+            $(`#${idButton}`)
+              .empty()
+              .append('<i class="fas fa-chevron-right"></i>' + label);
+            $(`#${idContainer}`).css('right', '0px');
+          }
+        },
+      ),
+    );
 
-      $(`#${idContainer}`).append(
-        `<div id="${idContent}" class="sidemenu_content">${content}</div>`,
-      );
+    $(`#${idContainer}`).append(
+      `<div id="${idContent}" class="sidemenu_content">${content}</div>`,
+    );
 
-      DC.Style.apply(`
+    DC.Style.apply(`
         #zone_sidemenu {
           display: flex;
           flex-direction: column;
@@ -511,175 +500,174 @@ if (
           width: 200px;
         }
       `);
-    },
-  };
+  },
+};
 
-  DC.Network = {
-    fetch: (args) => {
-      return new Promise((resolve, reject) => {
-        GM_xmlhttpRequest(
-          Object.assign({}, args, {
-            onload: (e) => resolve(e.response),
-            onerror: reject,
-            ontimeout: reject,
-          }),
-        );
-      });
-    },
+DC.Network = {
+  fetch: (args) => {
+    return new Promise((resolve, reject) => {
+      GM_xmlhttpRequest(
+        Object.assign({}, args, {
+          onload: (e) => resolve(e.response),
+          onerror: reject,
+          ontimeout: reject,
+        }),
+      );
+    });
+  },
 
-    loadSpreadsheet: async (sheetId, tabName, range, apiKey, onLoad) => {
-      Util.guard(
-        Util.isString(sheetId),
-        "DC.Network.loadSpreadsheet: 'sheetId' parameter should be a string.",
-      );
-      Util.guard(
-        Util.isString(tabName),
-        "DC.Network.loadSpreadsheet: 'tabName' parameter should be a string.",
-      );
-      Util.guard(
-        Util.isString(range),
-        "DC.Network.loadSpreadsheet: 'range' parameter should be a string.",
-      );
-      Util.guard(
-        Util.isString(apiKey),
-        "DC.Network.loadSpreadsheet: 'apiKey' parameter should be a string.",
-      );
-      Util.guard(
-        Util.isFunction(onLoad),
-        "DC.Network.loadSpreadsheet: 'onLoad' parameter should be a function.",
-      );
+  loadSpreadsheet: async (sheetId, tabName, range, apiKey, onLoad) => {
+    Util.guard(
+      Util.isString(sheetId),
+      "DC.Network.loadSpreadsheet: 'sheetId' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isString(tabName),
+      "DC.Network.loadSpreadsheet: 'tabName' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isString(range),
+      "DC.Network.loadSpreadsheet: 'range' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isString(apiKey),
+      "DC.Network.loadSpreadsheet: 'apiKey' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isFunction(onLoad),
+      "DC.Network.loadSpreadsheet: 'onLoad' parameter should be a function.",
+    );
 
-      const urlGoogleSheetDatabase = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${tabName}!${range}?key=${apiKey}`;
-      const result = await DC.Network.fetch({
-        method: 'GET',
-        url: urlGoogleSheetDatabase,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        responseType: 'json',
-      });
-      onLoad(result.values);
-    },
+    const urlGoogleSheetDatabase = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${tabName}!${range}?key=${apiKey}`;
+    const result = await DC.Network.fetch({
+      method: 'GET',
+      url: urlGoogleSheetDatabase,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      responseType: 'json',
+    });
+    onLoad(result.values);
+  },
 
-    loadScript: async (url, onAfterLoad) => {
-      Util.guard(
-        Util.isString(url),
-        "DC.Network.loadScript: 'url' parameter should be a string.",
-      );
-      Util.guard(
-        Util.isFunction(onAfterLoad, true),
-        "DC.Network.loadScript: 'onAfterLoad' optional parameter should be a function.",
-      );
+  loadScript: async (url, onAfterLoad) => {
+    Util.guard(
+      Util.isString(url),
+      "DC.Network.loadScript: 'url' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isFunction(onAfterLoad, true),
+      "DC.Network.loadScript: 'onAfterLoad' optional parameter should be a function.",
+    );
 
-      const result = await DC.Network.fetch({
-        method: 'GET',
-        url,
-        headers: {
-          'Content-Type': 'text/javascript',
-        },
-      });
-      eval(result);
-      onAfterLoad?.();
-    },
+    const result = await DC.Network.fetch({
+      method: 'GET',
+      url,
+      headers: {
+        'Content-Type': 'text/javascript',
+      },
+    });
+    eval(result);
+    onAfterLoad?.();
+  },
 
-    loadJson: async (url) => {
-      Util.guard(
-        Util.isString(url),
-        "DC.Network.loadJson: 'url' parameter should be a string.",
-      );
+  loadJson: async (url) => {
+    Util.guard(
+      Util.isString(url),
+      "DC.Network.loadJson: 'url' parameter should be a string.",
+    );
 
-      const result = await DC.Network.fetch({
-        method: 'GET',
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        responseType: 'json',
-      });
-      return result;
-    },
-  };
+    const result = await DC.Network.fetch({
+      method: 'GET',
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      responseType: 'json',
+    });
+    return result;
+  },
+};
 
-  DC.Chat = {
-    sendMessage: (message) => {
-      Util.guard(
-        Util.isString(message),
-        "DC.Chat.sendMessage: 'message' parameter should be a string.",
-      );
+DC.Chat = {
+  sendMessage: (message) => {
+    Util.guard(
+      Util.isString(message),
+      "DC.Chat.sendMessage: 'message' parameter should be a string.",
+    );
 
-      $('#chatForm .text_chat').val(message);
-      $('#chatForm .text_valider').click();
-    },
+    $('#chatForm .text_chat').val(message);
+    $('#chatForm .text_valider').click();
+  },
 
-    t: (message, decoration) => {
-      Util.guard(
-        Util.isString(message, true),
-        "DC.Chat.t: 'message' parameter should be a string.",
-      );
-      Util.guard(
-        Util.isBoolean(decoration.bold, true),
-        "DC.Chat.t: 'bold' optional parameter should be a boolean.",
-      );
-      Util.guard(
-        Util.isBoolean(decoration.italic, true),
-        "DC.Chat.t: 'italic' optional parameter should be a boolean.",
-      );
-      Util.guard(
-        Util.isColor(decoration.color, true),
-        "DC.Chat.t: 'color' optional parameter should be a color string.",
-      );
+  t: (message, decoration) => {
+    Util.guard(
+      Util.isString(message, true),
+      "DC.Chat.t: 'message' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isBoolean(decoration.bold, true),
+      "DC.Chat.t: 'bold' optional parameter should be a boolean.",
+    );
+    Util.guard(
+      Util.isBoolean(decoration.italic, true),
+      "DC.Chat.t: 'italic' optional parameter should be a boolean.",
+    );
+    Util.guard(
+      Util.isColor(decoration.color, true),
+      "DC.Chat.t: 'color' optional parameter should be a color string.",
+    );
 
-      var prefix = '';
-      var suffix = '';
+    var prefix = '';
+    var suffix = '';
 
-      if (decoration.bold) {
-        prefix += '[b]';
-        suffix += '[b]';
+    if (decoration.bold) {
+      prefix += '[b]';
+      suffix += '[b]';
+    }
+
+    if (decoration.italic) {
+      prefix += '[i]';
+      suffix = '[/i]' + suffix;
+    }
+
+    if (decoration.color && decoration.color !== '') {
+      prefix += '[c=' + decoration.color + ']';
+      suffix = '[/c]' + suffix;
+    }
+
+    return prefix + message + suffix;
+  },
+
+  addCommand: (label, fn) => {
+    Util.guard(
+      Util.isString(label),
+      "DC.Chat.addCommand: 'label' parameter should be a string.",
+    );
+    Util.guard(
+      Util.isFunction(fn),
+      "DC.Chat.addCommand: 'fn' parameter should be a function.",
+    );
+
+    nav.getChat().onSend((message, next, abort) => {
+      const forbiden = ['me', 'y', 'ye', 'yme', 'w', 'we', 'wme', 'roll', ''];
+
+      const labelUsed = message.split(' ')[0].substr(1);
+      if (
+        message[0] !== '/' ||
+        labelUsed !== label ||
+        forbiden.includes(labelUsed)
+      ) {
+        return next();
       }
 
-      if (decoration.italic) {
-        prefix += '[i]';
-        suffix = '[/i]' + suffix;
+      const content = message.substr(labelUsed.length + 1);
+
+      if (fn(labelUsed, content)) {
+        return next();
+      } else {
+        return abort();
       }
-
-      if (decoration.color && decoration.color !== '') {
-        prefix += '[c=' + decoration.color + ']';
-        suffix = '[/c]' + suffix;
-      }
-
-      return prefix + message + suffix;
-    },
-
-    addCommand: (label, fn) => {
-      Util.guard(
-        Util.isString(label),
-        "DC.Chat.addCommand: 'label' parameter should be a string.",
-      );
-      Util.guard(
-        Util.isFunction(fn),
-        "DC.Chat.addCommand: 'fn' parameter should be a function.",
-      );
-
-      nav.getChat().onSend((message, next, abort) => {
-        const forbiden = ['me', 'y', 'ye', 'yme', 'w', 'we', 'wme', 'roll', ''];
-
-        const labelUsed = message.split(' ')[0].substr(1);
-        if (
-          message[0] !== '/' ||
-          labelUsed !== label ||
-          forbiden.includes(labelUsed)
-        ) {
-          return next();
-        }
-
-        const content = message.substr(labelUsed.length + 1);
-
-        if (fn(labelUsed, content)) {
-          return next();
-        } else {
-          return abort();
-        }
-      });
-    },
-  };
-}
+    });
+  },
+};
