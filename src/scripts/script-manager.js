@@ -15,6 +15,10 @@
 // @updateURL
 // ==/UserScript==
 
+// TODO add function to export, import settings, and to reset all settings.
+// TODO add text to say that disabling a script does not remove settings.
+// TODO add icon for scripts
+
 const LIST_TAG = 'dcm_list';
 const ALL_DISABLED_TAG = 'dcm_all_disabled';
 
@@ -59,8 +63,13 @@ const synchronizeSettings = (settings, scripts) => {
 const createScriptLine = (script, index) => {
   const line = $(`
     <tr style="border-top: 1px solid white; border-left: 1px solid white; border-right: 1px solid white;">
-      <td style="padding: 5px 0 0 5px">${index}</td>
-      <td style="padding: 5px 0">${script.name}</td>
+      <td style="padding: 5px 0 0 5px" rowspan="2">${index}</td>
+      ${
+        script.icon && script.icon !== ''
+          ? `<td style="padding: 5px" rowspan="2"><img src="${script.icon}" width="48" height="48" /></td>`
+          : '<td class="short" rowspan="2" />'
+      }
+      <td style="padding: 5px 0; min-width: 120px">${script.name}</td>
       <td class="enabled_cell" style="padding: 5px 0; display: flex; justify-content: center;"></td>
       <td class="setting_cell" style="padding: 5px 5px 0 0;"></td>
       <td class="doc_cell" style="padding: 5px 5px 0 0;"></td>
@@ -68,7 +77,9 @@ const createScriptLine = (script, index) => {
       <td class="contact_cell" style="padding: 5px 5px 0 0;"></td>
     </tr>
     <tr style="border-bottom: 1px solid white; border-left: 1px solid white; border-right: 1px solid white;">
-      <td /><td colspan="2" style="padding: 0 5px 5px 5px"><small><em class="couleur5">${script.description}</em></small></td>
+      <td /><td colspan="6" style="padding: 0 5px 5px 5px"><small><em class="couleur5">${
+        script.description
+      }</em></small></td>
     </tr>
   `);
   $('.enabled_cell', line).append(
@@ -148,7 +159,7 @@ $(() => {
             newSettings = settings;
             newAllDisabled = allDisabled;
 
-            const content = $(`<div style="color: white; max-width: 450px;">
+            const content = $(`<div style="color: white; max-width: 500px;">
               <div id="scripts_all_switch" style="display: flex;gap: 1rem;margin-bottom: 1rem;">
                 <p>Tout désactiver</p>
               </div>
@@ -188,12 +199,13 @@ $(() => {
               <table style="border-collapse: collapse; width: 100%; border: 1px solid white; padding: 5px; font-size: 15px; text-align: center;">
                 <thead>
                   <th style="padding: 5px 0 5px 5px" scope="col">#</th>
+                  <th class="short" />
                   <th style="padding: 5px 0 5px 0" scope="col">Nom</th>
                   <th style="padding: 5px 5px 5px 0" scope="col">Actif</th>
-                  <th class="short" />
-                  <th class="short" />
-                  <th class="short" />
-                  <th class="short" />
+                  <th class="short" style="width: 40px;" />
+                  <th class="short" style="width: 40px;" />
+                  <th class="short" style="width: 40px;" />
+                  <th class="short" style="width: 40px;" />
                 </thead>
                 <tbody></tbody>
               </table>
