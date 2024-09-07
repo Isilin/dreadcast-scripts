@@ -1,17 +1,17 @@
 // ==UserScript==
-// @name        Scouter
+// @name        Dreadcast Development Kit
 // @namespace   Violentmonkey Scripts
 // @match       https://www.dreadcast.net/Main
 // @version     1.0.10
-// @author      Pelagia/IsilinBN
+// @author      Pelagia/Isilin
 // @description 13/11/2023 02:55:01
-// @license      http://creativecommons.org/licenses/by-nc-nd/4.0/
-// @connect      docs.google.com
-// @connect      googleusercontent.com
-// @connect      sheets.googleapis.com
-// @connect      raw.githubusercontent.com
-// @grant        GM_xmlhttpRequest
-// @grant        GM_addStyle
+// @license     http://creativecommons.org/licenses/by-nc-nd/4.0/
+// @connect     docs.google.com
+// @connect     googleusercontent.com
+// @connect     sheets.googleapis.com
+// @connect     raw.githubusercontent.com
+// @grant       GM_xmlhttpRequest
+// @grant       GM_addStyle
 // @downloadURL
 // @updateURL
 // ==/UserScript==

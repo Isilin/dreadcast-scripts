@@ -87,7 +87,7 @@
     "id": "mailprotect",
     "name": "DC - Mail Protect",
     "description": "Ajoute un mode permettant de demander la confirmation avant de fermer un message en cours de réaction.",
-    "authors": "Nasty, Odul, DarkKobalt",
+    "authors": "Nasty, Odul, Valion",
     "icon": "",
     "url": "https://update.greasyfork.org/scripts/480707/DC%20-%20Mail Protect.user.js",
     "doc": "",
@@ -143,7 +143,7 @@
     "id": "skinsilhouette",
     "name": "SkinSilhouette",
     "description": "Voir des silhouettes personnalisées.",
-    "authors": "Odul, Lorkah, DarkKobalt",
+    "authors": "Odul, Lorkah, Valion",
     "icon": "",
     "url": "https://update.greasyfork.org/scripts/6081/SkinSilhouette.user.js",
     "doc": "",
@@ -394,11 +394,11 @@
   {
     "id": "tpoverhaul",
     "name": "TP Overhaul",
-    "description": "",
+    "description": "Modernisation de l'interface du Terminal Portable.",
     "authors": "Eldrik, Altaïr",
     "icon": "https://www.dreadcast.net/images/objets/mini/TERMINAL%20PORTABLE2.png",
     "url": "https://update.greasyfork.org/scripts/488053/TP%20Overhaul.user.js",
-    "doc": "https://www.dreadcast.net/Forum/2-145540-script-tp-overhaul?2",
+    "doc": "https://www.dreadcast.net/Forum/2-145540-script-tp-overhaul",
     "rp": "",
     "contact": "Altaïr",
     "settings": false,
@@ -472,7 +472,7 @@
     "rp": "",
     "contact": "",
     "settings": false,
-    "section": ["forum"],
+    "section": ["forum", "edc"],
     "category": ["mech"]
   }
 ]
