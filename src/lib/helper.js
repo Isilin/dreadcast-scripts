@@ -2,7 +2,7 @@
 // @name        Dreadcast Development Kit
 // @namespace   Violentmonkey Scripts
 // @match       https://www.dreadcast.net/Main
-// @version     1.0.10
+// @version     1.0.11
 // @author      Pelagia/Isilin
 // @description 13/11/2023 02:55:01
 // @license     http://creativecommons.org/licenses/by-nc-nd/4.0/
@@ -12,8 +12,8 @@
 // @connect     raw.githubusercontent.com
 // @grant       GM_xmlhttpRequest
 // @grant       GM_addStyle
-// @downloadURL
-// @updateURL
+// @downloadURL https://update.greasyfork.org/scripts/507382/Dreadcast%20Development%20Kit.user.js
+// @updateURL   https://update.greasyfork.org/scripts/507382/Dreadcast%20Development%20Kit.meta.js
 // ==/UserScript==
 
 // TODO add guards in each function to check Game/EDC/Forum
