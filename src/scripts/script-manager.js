@@ -15,6 +15,7 @@
 // @updateURL
 // ==/UserScript==
 
+// TODO ajouter dans la liste tous les scripts (en utilisant le lien greasemonkey) et remplacer petit à petit par les versions locales nettoyées.
 // TODO add function to export, import settings, and to reset all settings.
 // TODO add text to say that disabling a script does not remove settings.
 // TODO add version for edc/forum/wiki
@@ -70,8 +71,11 @@ const createScriptLine = (script, index) => {
           : '<td class="short" rowspan="2" />'
       }
       <td style="padding: 5px 0; min-width: 120px; text-align: left;">${
-        script.name
+        script.name || ''
       }</td>
+      <td style="padding: 5px 0; min-width: 120px; text-align: left;"><small>${
+        script.authors || ''
+      }</small></td>
       <td class="enabled_cell" style="padding: 5px 0; display: flex; justify-content: center;"></td>
       <td class="setting_cell" style="padding: 5px 5px 0 0;"></td>
       <td class="doc_cell" style="padding: 5px 5px 0 0;"></td>
@@ -79,8 +83,8 @@ const createScriptLine = (script, index) => {
       <td class="contact_cell" style="padding: 5px 5px 0 0;"></td>
     </tr>
     <tr style="border-bottom: 1px solid white; border-left: 1px solid white; border-right: 1px solid white;">
-      <td colspan="6" style="padding: 0 5px 5px 5px; text-align: left;"><small><em class="couleur5">${
-        script.description
+      <td colspan="7" style="padding: 0 5px 5px 5px; text-align: left;"><small><em class="couleur5">${
+        script.description || ''
       }</em></small></td>
     </tr>
   `);
@@ -142,6 +146,173 @@ const createScriptLine = (script, index) => {
 $(() => {
   let { settings, allDisabled } = initPersistence();
 
+  const createUI = (scripts, settings) => {
+    DC.UI.addSubMenuTo(
+      'Paramètres ▾',
+      DC.UI.SubMenu(
+        'Scripts & Skins',
+        () => {
+          // On récupère une config temporaire qu'on appliquera uniquement si sauvegardée.
+          newSettings = settings;
+          newAllDisabled = allDisabled;
+
+          const sections = [
+            { id: 'all', label: 'Tous' },
+            { id: 'game', label: 'Jeu' },
+            { id: 'forum', label: 'Forum' },
+            { id: 'edc', label: 'EDC' },
+            { id: 'wiki', label: 'Wiki' },
+          ];
+
+          const categories = [
+            { id: 'all', label: 'Tous' },
+            { id: 'mailing', label: 'Messagerie' },
+            { id: 'chat', label: 'Chat' },
+            { id: 'silhouette', label: 'Silhouette' },
+            { id: 'ui', label: 'UI' },
+            { id: 'mech', label: 'Mécaniques' },
+            { id: 'misc', label: 'Autres' },
+          ];
+
+          const content = $(`<div style="color: white; max-width: 600px;">
+            <div id="scripts_all_switch" style="display: flex;gap: 1rem;margin-bottom: 1rem;">
+              <p>Tout désactiver</p>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+              <legend style="margin-right: 1rem; min-width: 60px;">Filtrer :</legend>
+              <div style="display: flex; gap: 5%; flex-wrap: wrap; width: 100%;">
+                ${sections
+                  .map(
+                    (section, index) => `
+                    <div>
+                      <input type="radio" id="${
+                        section.id
+                      }_section" name ="section" value ="${section.id}" ${
+                      index === 0 ? 'checked' : ''
+                    } />
+                      <label for="${section.id}_section">${
+                      section.label
+                    }</label>
+                    </div>
+                `,
+                  )
+                  .join('')}
+              </div>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+              <legend style="margin-right: 1rem; min-width: 60px;">Filtrer :</legend>
+              <div style="display: flex; gap: 5%; flex-wrap: wrap; width: 100%;">
+                ${categories
+                  .map(
+                    (category, index) => `
+                    <div>
+                      <input type="radio" id="${
+                        category.id
+                      }_category" name ="category" value ="${category.id}" ${
+                      index === 0 ? 'checked' : ''
+                    } />
+                      <label for="${category.id}_category">${
+                      category.label
+                    }</label>
+                    </div>
+                `,
+                  )
+                  .join('')}
+              </div>
+            </div>
+            <table style="border-collapse: collapse; width: 100%; border: 1px solid white; padding: 5px; font-size: 15px; text-align: center;">
+              <thead>
+                <th style="padding: 5px 0 5px 5px" scope="col">#</th>
+                <th class="short" />
+                <th style="padding: 5px 0 5px 0" scope="col">Nom</th>
+                <th style="padding: 5px 0 5px 0" scope="col">Auteurs</th>
+                <th style="padding: 5px 0 5px 0" scope="col">Actif</th>
+                <th class="short" style="width: 40px;" />
+                <th class="short" style="width: 40px;" />
+                <th class="short" style="width: 40px;" />
+                <th class="short" style="width: 40px;" />
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>`);
+
+          $(document).on('change', "input[name='category']", (e) => {
+            const category = e.target.value;
+            const section = $("input[name='section']:checked").val();
+
+            // Empty the table
+            $('tbody', content).empty();
+            // Add filtered lines
+            scripts
+              .filter(
+                (script) =>
+                  (script.section.includes(section) || section === 'all') &&
+                  (script.category.includes(category) || category === 'all'),
+              )
+              .forEach((script, index) => {
+                const line = createScriptLine(script, index);
+                $('tbody', content).append(line);
+              });
+          });
+
+          $(document).on('change', "input[name='section']", (e) => {
+            const section = e.target.value;
+            const category = $("input[name='category']:checked").val();
+
+            // Empty the table
+            $('tbody', content).empty();
+            // Add filtered lines
+            scripts
+              .filter(
+                (script) =>
+                  (script.section.includes(section) || section === 'all') &&
+                  (script.category.includes(category) || category === 'all'),
+              )
+              .forEach((script, index) => {
+                const line = createScriptLine(script, index);
+                $('tbody', content).append(line);
+              });
+          });
+
+          // Sauvegarder les paramètres.
+          content.append(
+            DC.UI.TextButton('scripts_refresh', 'Sauvegarder', () => {
+              settings = newSettings;
+              allDisabled = newAllDisabled;
+              DC.LocalMemory.set(LIST_TAG, settings);
+              DC.LocalMemory.set(ALL_DISABLED_TAG, allDisabled);
+              location.reload();
+            }),
+          );
+          content.append(
+            $(
+              `<p><em class="couleur5">⚠ Sauvegarder votre configuration va raffraichir la page.<br />
+           Pensez à sauvegarder votre travail en cours avant.</em></p>`,
+            ),
+          );
+
+          // Switch button pour désactiver tous les scripts.
+          $('#scripts_all_switch', content).append(
+            DC.UI.Checkbox(
+              'scripts_all_check',
+              newAllDisabled,
+              () => (newAllDisabled = !newAllDisabled),
+            ),
+          );
+
+          scripts.forEach((script, index) => {
+            const line = createScriptLine(script, index);
+            $('tbody', content).append(line);
+          });
+
+          return DC.UI.PopUp('scripts_modal', 'Scripts & Skins', content);
+        },
+        true,
+      ),
+      5,
+    );
+  };
+
   // Load list of scripts
   DC.Network.loadJson(
     'https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/data/scripts.json',
@@ -150,171 +321,9 @@ $(() => {
       settings = synchronizeSettings(settings, scripts);
 
       // Create the interface.
-      DC.UI.addSubMenuTo(
-        'Paramètres ▾',
-        DC.UI.SubMenu(
-          'Scripts & Skins',
-          () => {
-            // TODO ajouter dans la liste tous les scripts (en utilisant le lien greasemonkey) et remplacer petit à petit par les versions locales nettoyées.
-
-            // On récupère une config temporaire qu'on appliquera uniquement si sauvegardée.
-            newSettings = settings;
-            newAllDisabled = allDisabled;
-
-            const sections = [
-              { id: 'all', label: 'Tous' },
-              { id: 'game', label: 'Jeu' },
-              { id: 'forum', label: 'Forum' },
-              { id: 'edc', label: 'EDC' },
-              { id: 'wiki', label: 'Wiki' },
-            ];
-
-            const categories = [
-              { id: 'all', label: 'Tous' },
-              { id: 'mailing', label: 'Messagerie' },
-              { id: 'chat', label: 'Chat' },
-              { id: 'silhouette', label: 'Silhouette' },
-              { id: 'ui', label: 'UI' },
-              { id: 'mech', label: 'Mécaniques' },
-              { id: 'misc', label: 'Autres' },
-            ];
-
-            const content = $(`<div style="color: white; max-width: 500px;">
-              <div id="scripts_all_switch" style="display: flex;gap: 1rem;margin-bottom: 1rem;">
-                <p>Tout désactiver</p>
-              </div>
-              <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                <legend style="margin-right: 1rem; min-width: 60px;">Filtrer :</legend>
-                <div style="display: flex; gap: 5%; flex-wrap: wrap; width: 100%;">
-                  ${sections
-                    .map(
-                      (section, index) => `
-                      <div>
-                        <input type="radio" id="${
-                          section.id
-                        }_section" name ="section" value ="${section.id}" ${
-                        index === 0 ? 'checked' : ''
-                      } />
-                        <label for="${section.id}_section">${
-                        section.label
-                      }</label>
-                      </div>
-                  `,
-                    )
-                    .join('')}
-                </div>
-              </div>
-              <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                <legend style="margin-right: 1rem; min-width: 60px;">Filtrer :</legend>
-                <div style="display: flex; gap: 5%; flex-wrap: wrap; width: 100%;">
-                  ${categories
-                    .map(
-                      (category, index) => `
-                      <div>
-                        <input type="radio" id="${
-                          category.id
-                        }_category" name ="category" value ="${category.id}" ${
-                        index === 0 ? 'checked' : ''
-                      } />
-                        <label for="${category.id}_category">${
-                        category.label
-                      }</label>
-                      </div>
-                  `,
-                    )
-                    .join('')}
-                </div>
-              </div>
-              <table style="border-collapse: collapse; width: 100%; border: 1px solid white; padding: 5px; font-size: 15px; text-align: center;">
-                <thead>
-                  <th style="padding: 5px 0 5px 5px" scope="col">#</th>
-                  <th class="short" />
-                  <th style="padding: 5px 0 5px 0" scope="col">Nom</th>
-                  <th style="padding: 5px 5px 5px 0" scope="col">Actif</th>
-                  <th class="short" style="width: 40px;" />
-                  <th class="short" style="width: 40px;" />
-                  <th class="short" style="width: 40px;" />
-                  <th class="short" style="width: 40px;" />
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>`);
-
-            $(document).on('change', "input[name='category']", (e) => {
-              const category = e.target.value;
-              const section = $("input[name='section']:checked").val();
-
-              // Empty the table
-              $('tbody', content).empty();
-              // Add filtered lines
-              scripts
-                .filter(
-                  (script) =>
-                    (script.section.includes(section) || section === 'all') &&
-                    (script.category.includes(category) || category === 'all'),
-                )
-                .forEach((script, index) => {
-                  const line = createScriptLine(script, index);
-                  $('tbody', content).append(line);
-                });
-            });
-
-            $(document).on('change', "input[name='section']", (e) => {
-              const section = e.target.value;
-              const category = $("input[name='category']:checked").val();
-
-              // Empty the table
-              $('tbody', content).empty();
-              // Add filtered lines
-              scripts
-                .filter(
-                  (script) =>
-                    (script.section.includes(section) || section === 'all') &&
-                    (script.category.includes(category) || category === 'all'),
-                )
-                .forEach((script, index) => {
-                  const line = createScriptLine(script, index);
-                  $('tbody', content).append(line);
-                });
-            });
-
-            // Sauvegarder les paramètres.
-            content.append(
-              DC.UI.TextButton('scripts_refresh', 'Sauvegarder', () => {
-                settings = newSettings;
-                allDisabled = newAllDisabled;
-                DC.LocalMemory.set(LIST_TAG, settings);
-                DC.LocalMemory.set(ALL_DISABLED_TAG, allDisabled);
-                location.reload();
-              }),
-            );
-            content.append(
-              $(
-                `<p><em class="couleur5">⚠ Sauvegarder votre configuration va raffraichir la page.<br />
-             Pensez à sauvegarder votre travail en cours avant.</em></p>`,
-              ),
-            );
-
-            // Switch button pour désactiver tous les scripts.
-            $('#scripts_all_switch', content).append(
-              DC.UI.Checkbox(
-                'scripts_all_check',
-                newAllDisabled,
-                () => (newAllDisabled = !newAllDisabled),
-              ),
-            );
-
-            scripts.forEach((script, index) => {
-              const line = createScriptLine(script, index);
-              $('tbody', content).append(line);
-            });
-
-            return DC.UI.PopUp('scripts_modal', 'Scripts & Skins', content);
-          },
-          true,
-        ),
-        5,
-      );
+      if (Util.isGame()) {
+        createUI(scripts, settings);
+      }
 
       // Load the scripts
       if (!allDisabled) {
