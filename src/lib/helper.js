@@ -2,7 +2,7 @@
 // @name        Scouter
 // @namespace   Violentmonkey Scripts
 // @match       https://www.dreadcast.net/Main
-// @version     1.0.7
+// @version     1.0.8
 // @author      Pelagia/IsilinBN
 // @description 13/11/2023 02:55:01
 // @license      http://creativecommons.org/licenses/by-nc-nd/4.0/
@@ -15,6 +15,9 @@
 // @downloadURL
 // @updateURL
 // ==/UserScript==
+
+// TODO add guards in each function to check Game/EDC/Forum
+console.log('DDK - Loading ...');
 
 // ===== JQuery utilities =====
 
@@ -119,7 +122,7 @@ const Util = {
 
 // ===== Overwrite DC functions =====
 
-if (MenuChat.prototype.originalSend === undefined) {
+if (Util.isGame() && MenuChat.prototype.originalSend === undefined) {
   MenuChat.prototype.originalSend = MenuChat.prototype.send;
   MenuChat.prototype.sendCallbacks = [];
   MenuChat.prototype.afterSendCallbacks = [];

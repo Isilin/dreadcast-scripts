@@ -6,12 +6,11 @@
 // @match       https://www.dreadcast.net/Forum/*
 // @match       https://www.dreadcast.net/EDC
 // @match       https://www.dreadcast.net/EDC/*
-// @match       http://wiki.dreadcast.eu/wiki/*
 // @version     1.0.0
 // @author      Pelagia/IsilinBN
 // @description 13/11/2023 02:55:01
 // @license      http://creativecommons.org/licenses/by-nc-nd/4.0/
-// @require      https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/src/lib/helper.js?version=1.0.7
+// @require      https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/src/lib/helper.js?version=1.0.8
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_xmlhttpRequest
@@ -166,7 +165,6 @@ $(() => {
             { id: 'game', label: 'Jeu' },
             { id: 'forum', label: 'Forum' },
             { id: 'edc', label: 'EDC' },
-            { id: 'wiki', label: 'Wiki' },
           ];
 
           const categories = [
