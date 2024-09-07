@@ -10,7 +10,7 @@
 // @author      Pelagia/Isilin
 // @description 13/11/2023 02:55:01
 // @license     http://creativecommons.org/licenses/by-nc-nd/4.0/
-// @require     https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/src/lib/helper.js?version=1.0.10
+// @require     https://update.greasyfork.org/scripts/507382/Dreadcast%20Development%20Kit.user.js
 // @grant       GM_setValue
 // @grant       GM_getValue
 // @grant       GM_deleteValue
