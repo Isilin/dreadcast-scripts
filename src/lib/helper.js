@@ -2,7 +2,7 @@
 // @name        Scouter
 // @namespace   Violentmonkey Scripts
 // @match       https://www.dreadcast.net/Main
-// @version     1.0.8
+// @version     1.0.9
 // @author      Pelagia/IsilinBN
 // @description 13/11/2023 02:55:01
 // @license      http://creativecommons.org/licenses/by-nc-nd/4.0/
@@ -589,7 +589,11 @@ DC.Network = {
         'Content-Type': 'text/javascript',
       },
     });
-    eval(result);
+    //    eval(result);
+    let script = document.createElement('script');
+    script.textContent = result;
+    document.head.appendChild(script);
+
     onAfterLoad?.();
   },
 

@@ -10,7 +10,7 @@
 // @author      Pelagia/IsilinBN
 // @description 13/11/2023 02:55:01
 // @license      http://creativecommons.org/licenses/by-nc-nd/4.0/
-// @require      https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/src/lib/helper.js?version=1.0.8
+// @require      https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/src/lib/helper.js?version=1.0.9
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_xmlhttpRequest
@@ -22,7 +22,6 @@
 // TODO ajouter dans la liste tous les scripts (en utilisant le lien greasemonkey) et remplacer petit à petit par les versions locales nettoyées.
 // TODO add function to export, import settings, and to reset all settings.
 // TODO add text to say that disabling a script does not remove settings.
-// TODO add version for edc/forum/wiki
 
 const LIST_TAG = 'dcm_list';
 const ALL_DISABLED_TAG = 'dcm_all_disabled';
@@ -72,7 +71,7 @@ const createScriptLine = (script, index) => {
       ${
         script.icon && script.icon !== ''
           ? `<td style="padding: 5px" rowspan="2"><img src="${script.icon}" width="48" height="48" /></td>`
-          : '<td class="short" rowspan="2" />'
+          : '<td class="short" style="width: 58px;" rowspan="2" />'
       }
       <td style="padding: 5px 0; min-width: 120px; text-align: left;">${
         script.name || ''
@@ -226,7 +225,7 @@ $(() => {
             <table style="border-collapse: collapse; width: 100%; border: 1px solid white; padding: 5px; font-size: 15px; text-align: center;">
               <thead>
                 <th style="padding: 5px 0 5px 5px" scope="col">#</th>
-                <th class="short" />
+                <th class="short" style="width:58px;" />
                 <th style="padding: 5px 0 5px 0" scope="col">Nom</th>
                 <th style="padding: 5px 0 5px 0" scope="col">Auteurs</th>
                 <th style="padding: 5px 0 5px 0" scope="col">Actif</th>
