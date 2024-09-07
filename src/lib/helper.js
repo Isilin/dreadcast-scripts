@@ -414,7 +414,7 @@ DC.UI = {
             <div class="title">${title}</div>
           </div>
           <div class="dbloader"></div>
-          <div class="content" style="max-width: 800px; max-height: 600px; overflow: auto;">
+          <div class="content" style="max-width: 800px; max-height: 600px; overflow-y: auto; overflow-x: hidden;">
           </div>
         </relative>
       </div>`;

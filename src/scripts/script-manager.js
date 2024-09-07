@@ -2,6 +2,11 @@
 // @name        Dreadcast Script Manager
 // @namespace   Violentmonkey Scripts
 // @match       https://www.dreadcast.net/Main
+// @match       https://www.dreadcast.net/Forum
+// @match       https://www.dreadcast.net/Forum/*
+// @match       https://www.dreadcast.net/EDC
+// @match       https://www.dreadcast.net/EDC/*
+// @match       http://wiki.dreadcast.eu/wiki/*
 // @version     1.0.0
 // @author      Pelagia/IsilinBN
 // @description 13/11/2023 02:55:01
@@ -174,7 +179,7 @@ $(() => {
             { id: 'misc', label: 'Autres' },
           ];
 
-          const content = $(`<div style="color: white; max-width: 600px;">
+          const content = $(`<div style="color: white;">
             <div id="scripts_all_switch" style="display: flex;gap: 1rem;margin-bottom: 1rem;">
               <p>Tout désactiver</p>
             </div>
