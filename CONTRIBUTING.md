@@ -1,144 +1,107 @@
-<!-- omit in toc -->
-# Contributing to dreadcast-scripts
+# Contribution à Dreadcast Scripts
 
-First off, thanks for taking the time to contribute! ❤️
+Avant toute chose, merci de prendre le temps de contribuer à ce projet ! ❤️
 
-All types of contributions are encouraged and valued. See the [Table of Contents](#table-of-contents) for different ways to help and details about how this project handles them. Please make sure to read the relevant section before making your contribution. It will make it a lot easier for us maintainers and smooth out the experience for all involved. The community looks forward to your contributions. 🎉
+Tout type de contribution est encouragé et apprécié. Lisez la suite pour découvrir toutes les manières d'aider et comment elles sont mises en oeuvre dans ce projet. Veuillez vous assurer de lire la section concernée avant d'apporter votre contribution. Cela rendra la tâche beaucoup plus facile pour nous, les responsables, et facilitera l'expérience de toutes les personnes impliquées. La communauté attend avec impatience vos contributions. 🎉
 
-> And if you like the project, but just don't have time to contribute, that's fine. There are other easy ways to support the project and show your appreciation, which we would also be very happy about:
+> Et si vous aimez le projet, mais que vous n'avez tout simplement pas le temps d'y contribuer, ce n'est pas un problème. Il existe d'autres moyens simples de soutenir le projet et de montrer votre appréciation, dont nous serions également très heureux :
 >
-> - Star the project
-> - Tweet about it
-> - Refer this project in your project's readme
-> - Mention the project at local meetups and tell your friends/colleagues
+> - Etoiler le projet.
+> - Nous [remercier](https://www.dreadcast.net/Forum/2-127566-merci-topic-des-remerciements) sur le forum du jeu.
+> - Parler du projet aux autres joueurs de la communauté
 
-<!-- omit in toc -->
-## Table of Contents
+## Code de conduite
 
-- [Code of Conduct](#code-of-conduct)
-- [I Have a Question](#i-have-a-question)
-- [I Want To Contribute](#i-want-to-contribute)
-  - [Reporting Bugs](#reporting-bugs)
-  - [Suggesting Enhancements](#suggesting-enhancements)
-  - [Your First Code Contribution](#your-first-code-contribution)
-  - [Improving The Documentation](#improving-the-documentation)
-- [Styleguides](#styleguides)
-  - [Commit Messages](#commit-messages)
-- [Join The Project Team](#join-the-project-team)
+Ce projet et tous ceux qui y participent sont régis par le
+[Code de conduite](https://github.com/Isilin/dreadcast-scripts/wiki/Code-de-conduite).
+En participant, vous êtes censé respecter ce code. Veuillez signaler un comportement inacceptable à [Isilin](mailto:isilinbn@gmail.com?subject=[GitHub]%20Dreadcast%20Scripts).
 
-## Code of Conduct
+## J'ai une question
 
-This project and everyone participating in it is governed by the
-[dreadcast-scripts Code of Conduct](https://framagit.org/Isilin/dreadcast-scripts/blob//CODE_OF_CONDUCT.md).
-By participating, you are expected to uphold this code. Please report unacceptable behavior
-to .
+> Si vous avez une question, nous supposons que vous avez déjà pris connaissance de la [documentation](https://github.com/Isilin/dreadcast-scripts/wiki) disponible.
 
-## I Have a Question
+Avant de poser une question, il est préférable de chercher parmi les [tickets](https://github.com/Isilin/dreadcast-scripts/issues) existants et qui pourraient vous aider. Si vous avez trouvé un ticket approprié mais avez encore besoin de précisions, vous pouvez écrire votre question à la suite de ce ticket. Il est également conseillé de rechercher d’abord des réponses sur Internet.
 
-> If you want to ask a question, we assume that you have read the available [Documentation](https://framagit.org/Isilin/dreadcast-scripts/-/blob/main/README.md).
+Si vous ressentez encore le besoin de poser une question et avez besoin d’éclaircissements, nous vous recommandons ce qui suit :
 
-Before you ask a question, it is best to search for existing [Issues](https://framagit.org/Isilin/dreadcast-scripts/issues) that might help you. In case you have found a suitable issue and still need clarification, you can write your question in this issue. It is also advisable to search the internet for answers first.
+- Ouvrer un [ticket](https://github.com/Isilin/dreadcast-scripts/issues/new).
+- Fournissez autant de contexte que possible sur ce que vous rencontrez.
+- Fournissez les versions du projet et de la plateforme (navigateur, OS, etc...), en fonction de ce qui semble pertinent.
 
-If you then still feel the need to ask a question and need clarification, we recommend the following:
+Nous nous occuperons alors du problème dans les plus brefs délais.
 
-- Open an [Issue](https://framagit.org/Isilin/dreadcast-scripts/issues/new).
-- Provide as much context as you can about what you're running into.
-- Provide project and platform versions (nodejs, npm, etc), depending on what seems relevant.
+## Je veux contribuer
 
-We will then take care of the issue as soon as possible.
-
-<!--
-You might want to create a separate issue tag for questions and include it in this description. People should then tag their issues accordingly.
-
-Depending on how large the project is, you may want to outsource the questioning, e.g. to Stack Overflow or Gitter. You may add additional contact and information possibilities:
-- IRC
-- Slack
-- Gitter
-- Stack Overflow tag
-- Blog
-- FAQ
-- Roadmap
-- E-Mail List
-- Forum
--->
-
-## I Want To Contribute
-
-> ### Legal Notice <!-- omit in toc -->
+> ### Notice légale
 >
-> When contributing to this project, you must agree that you have authored 100% of the content, that you have the necessary rights to the content and that the content you contribute may be provided under the project licence.
+> Lorsque vous contribuez à ce projet, vous devez accepter que vous êtes l'auteur de 100 % du contenu, que vous disposez des droits nécessaires sur le contenu et que le contenu que vous contribuez peut être fourni sous la licence du projet.
 
-### Reporting Bugs
+### Signaler des bugs
 
-<!-- omit in toc -->
-#### Before Submitting a Bug Report
+#### Avant de soumettre un ticket
 
-A good bug report shouldn't leave others needing to chase you up for more information. Therefore, we ask you to investigate carefully, collect information and describe the issue in detail in your report. Please complete the following steps in advance to help us fix any potential bug as fast as possible.
+Un bon ticket ne devrait pas obliger les autres à vous demander plus d'informations. Par conséquent, nous vous demandons d’enquêter attentivement, de collecter des informations et de décrire le problème en détail dans votre rapport. Veuillez suivre les étapes suivantes à l'avance pour nous aider à corriger tout bug potentiel le plus rapidement possible.
 
-- Make sure that you are using the latest version.
-- Determine if your bug is really a bug and not an error on your side e.g. using incompatible environment components/versions (Make sure that you have read the [documentation](https://framagit.org/Isilin/dreadcast-scripts/-/blob/main/README.md). If you are looking for support, you might want to check [this section](#i-have-a-question)).
-- To see if other users have experienced (and potentially already solved) the same issue you are having, check if there is not already a bug report existing for your bug or error in the [bug tracker](https://framagit.org/Isilin/dreadcast-scripts/issues?q=label%3Abug).
-- Also make sure to search the internet (including Stack Overflow) to see if users outside of the GitHub community have discussed the issue.
-- Collect information about the bug:
-- Stack trace (Traceback)
-- OS, Platform and Version (Windows, Linux, macOS, x86, ARM)
-- Version of the interpreter, compiler, SDK, runtime environment, package manager, depending on what seems relevant.
-- Possibly your input and the output
-- Can you reliably reproduce the issue? And can you also reproduce it with older versions?
+- Assurez-vous que vous utilisez la dernière version des scripts.
+- Déterminez si votre bug est vraiment un bug et non une erreur de votre part, par ex. en utilisant un environnement incompatibles (Assurez-vous d'avoir lu la [documentation](https://github.com/Isilin/dreadcast-scripts/wiki). Si vous recherchez de l'aide, vous voudrez peut-être consulter [cette section](#jai-une-question)).
+- Pour voir si d'autres utilisateurs ont rencontré (et potentiellement déjà résolu) le même problème que vous, vérifiez s'il n'existe pas déjà un ticket pour votre bug ou erreur dans les [tickets](https://github.com/Isilin/dreadcast-scripts/issues).
+- Assurez-vous également de rechercher sur le [forum Dreadcast](https://www.dreadcast.net/Forum) pour voir si d'autres joueurs ont discuté du problème.
+- Collecter des informations sur le bug :
+  - Trace de pile (Traceback) dans la console du navigateur
+  - Système d'exploitation, plateforme, navigateur et version
+  - Scripts concernés et versions de ceux-ci
+  - Eventuellement votre manipulation
+- Pouvez-vous reproduire le problème de manière fiable ? Et pouvez-vous également le reproduire avec des versions plus anciennes ?
 
-<!-- omit in toc -->
-#### How Do I Submit a Good Bug Report?
+#### Comment puis-je soumettre un bon ticket ?
 
-> You must never report security related issues, vulnerabilities or bugs including sensitive information to the issue tracker, or elsewhere in public. Instead sensitive bugs must be sent by email to .
-<!-- You may add a PGP key to allow the messages to be sent encrypted as well. -->
+> Vous ne devez jamais signaler les problèmes, vulnérabilités ou bogues liés à la sécurité, y compris les informations sensibles, au système de suivi des problèmes ou ailleurs en public. Au lieu de cela, les bogues sensibles doivent être envoyés par courrier électronique à [Isilin](mailto:isilinbn@gmail.com?subject=[GitHub]%20Dreadcast%20Scripts).
 
-We use GitHub issues to track bugs and errors. If you run into an issue with the project:
+Nous utilisons les tickets GitHub pour suivre les bugs et les erreurs. Si vous rencontrez un problème avec le projet :
 
-- Open an [Issue](https://framagit.org/Isilin/dreadcast-scripts/issues/new). (Since we can't be sure at this point whether it is a bug or not, we ask you not to talk about a bug yet and not to label the issue.)
-- Explain the behavior you would expect and the actual behavior.
-- Please provide as much context as possible and describe the *reproduction steps* that someone else can follow to recreate the issue on their own. This usually includes your code. For good bug reports you should isolate the problem and create a reduced test case.
-- Provide the information you collected in the previous section.
+- Ouvrez un [ticket](https://github.com/Isilin/dreadcast-scripts/issues/new). (Comme nous ne pouvons pas être sûrs à ce stade s'il s'agit d'un bug ou non, nous vous demandons de ne pas encore parler d'un bug et de ne pas étiqueter le problème.)
+- Expliquez le comportement auquel vous vous attendez et le comportement réel.
+- Veuillez fournir autant de contexte que possible et décrire les _étapes de reproduction_ que quelqu'un d'autre peut suivre pour recréer le problème par lui-même.
+- Fournissez les informations que vous avez collectées dans la section précédente.
 
-Once it's filed:
+Une fois fait :
 
-- The project team will label the issue accordingly.
-- A team member will try to reproduce the issue with your provided steps. If there are no reproduction steps or no obvious way to reproduce the issue, the team will ask you for those steps and mark the issue as `needs-repro`. Bugs with the `needs-repro` tag will not be addressed until they are reproduced.
-- If the team is able to reproduce the issue, it will be marked `needs-fix`, as well as possibly other tags (such as `critical`), and the issue will be left to be [implemented by someone](#your-first-code-contribution).
+- L'équipe du projet étiquettera le problème en conséquence.
+- Un membre de l'équipe tentera de reproduire le problème en suivant les étapes fournies. S'il n'y a aucune étape de reproduction ou aucun moyen évident de reproduire le problème, l'équipe vous demandera ces étapes et marquera le problème comme `needs-repro`. Les bogues avec la balise `needs-repro` ne seront pas résolus tant qu'ils ne seront pas reproductible.
+- Si l'équipe est capable de reproduire le problème, il sera marqué `needs-fix`, ainsi que éventuellement d'autres balises (telles que `critical`), et le problème sera laissé pour être [implémenté par quelqu'un](#votre-première-contribution-au-code).
 
-<!-- You might want to create an issue template for bugs and errors that can be used as a guide and that defines the structure of the information to be included. If you do so, reference it here in the description. -->
+### Suggérer des améliorations
 
-### Suggesting Enhancements
+Cette section vous guide dans la soumission d'une suggestion d'amélioration pour Dreadcast Scripts, **y compris des fonctionnalités entièrement nouvelles ou des améliorations mineures des fonctionnalités existantes**. Le respect de ces directives aidera les responsables et la communauté à comprendre votre suggestion et à trouver des suggestions associées.
 
-This section guides you through submitting an enhancement suggestion for dreadcast-scripts, **including completely new features and minor improvements to existing functionality**. Following these guidelines will help maintainers and the community to understand your suggestion and find related suggestions.
+#### Avant de soumettre une amélioration
 
-<!-- omit in toc -->
-#### Before Submitting an Enhancement
+- Assurez-vous d'utilisez la dernière version du script concerné.
+- Lisez attentivement la [documentation](https://github.com/Isilin/dreadcast-scripts/wiki) et découvrez si la fonctionnalité est déjà couverte.
+- Effectuez une [recherche](https://github.com/Isilin/dreadcast-scripts/issues) pour voir si l'amélioration a déjà été suggérée. Si c'est le cas, ajoutez un commentaire au problème existant au lieu d'en ouvrir un nouveau.
+- Découvrez si votre idée correspond au périmètre et aux objectifs du script et du projet. A vous de présenter des arguments solides pour convaincre les développeurs du projet du bien-fondé de cette fonctionnalité.
 
-- Make sure that you are using the latest version.
-- Read the [documentation](https://framagit.org/Isilin/dreadcast-scripts/-/blob/main/README.md) carefully and find out if the functionality is already covered, maybe by an individual configuration.
-- Perform a [search](https://framagit.org/Isilin/dreadcast-scripts/issues) to see if the enhancement has already been suggested. If it has, add a comment to the existing issue instead of opening a new one.
-- Find out whether your idea fits with the scope and aims of the project. It's up to you to make a strong case to convince the project's developers of the merits of this feature. Keep in mind that we want features that will be useful to the majority of our users and not just a small subset. If you're just targeting a minority of users, consider writing an add-on/plugin library.
+#### Comment puis-je soumettre une bonne suggestion d’amélioration ?
 
-<!-- omit in toc -->
-#### How Do I Submit a Good Enhancement Suggestion?
+Les suggestions d'amélioration sont suivies en tant que [tickets Github](https://github.com/Isilin/dreadcast-scripts/issues).
 
-Enhancement suggestions are tracked as [GitHub issues](https://framagit.org/Isilin/dreadcast-scripts/issues).
-
-- Use a **clear and descriptive title** for the issue to identify the suggestion.
-- Provide a **step-by-step description of the suggested enhancement** in as many details as possible.
-- **Describe the current behavior** and **explain which behavior you expected to see instead** and why. At this point you can also tell which alternatives do not work for you.
-- You may want to **include screenshots or screen recordings** which help you demonstrate the steps or point out the part which the suggestion is related to. You can use [LICEcap](https://www.cockos.com/licecap/) to record GIFs on macOS and Windows, and the built-in [screen recorder in GNOME](https://help.gnome.org/users/gnome-help/stable/screen-shot-record.html.en) or [SimpleScreenRecorder](https://github.com/MaartenBaert/ssr) on Linux. <!-- this should only be included if the project has a GUI -->
-- **Explain why this enhancement would be useful** to most dreadcast-scripts users. You may also want to point out the other projects that solved it better and which could serve as inspiration.
+- Utilisez un **titre clair et descriptif** pour le problème afin d'identifier la suggestion.
+- Fournissez une **description étape par étape de l'amélioration suggérée** avec autant de détails que possible.
+- **Décrivez le comportement actuel** et **expliquez quel comportement vous vous attendiez à voir à la place** et pourquoi. À ce stade, vous pouvez également identifier les alternatives qui ne fonctionnent pas pour vous.
+- Vous souhaiterez peut-être **inclure des captures d'écran ou des enregistrements d'écran** qui vous aideront à démontrer les étapes ou à souligner la partie à laquelle la suggestion est liée.
+- **Expliquez pourquoi cette amélioration serait utile** à la plupart des utilisateurs de Dreadcast Scripts. Vous voudrez peut-être également souligner les autres projets qui ont mieux résolu le problème et qui pourraient servir d’inspiration.
 
 <!-- You might want to create an issue template for enhancement suggestions that can be used as a guide and that defines the structure of the information to be included. If you do so, reference it here in the description. -->
 
-### Your First Code Contribution
+### Votre première contribution au code
+
 <!-- TODO
 include Setup of env, IDE and typical getting started instructions?
 
 -->
 
-### Improving The Documentation
+### Améliorer la documentation
+
 <!-- TODO
 Updating, improving and correcting the documentation
 
@@ -146,15 +109,14 @@ Updating, improving and correcting the documentation
 
 ## Styleguides
 
-### Commit Messages
+### Messages de commit
+
 <!-- TODO
 
 -->
 
-## Join The Project Team
-<!-- TODO -->
-
 <!-- omit in toc -->
+
 ## Attribution
 
-This guide is based on the **contributing-gen**. [Make your own](https://github.com/bttger/contributing-gen)!
+Ce guide est basé sur **contributing-gen**. [Créez le vôtre](https://github.com/bttger/contributing-gen) !
