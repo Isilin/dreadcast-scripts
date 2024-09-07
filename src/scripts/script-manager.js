@@ -9,12 +9,18 @@
 // @version     1.0.0
 // @author      Pelagia/IsilinBN
 // @description 13/11/2023 02:55:01
-// @license      http://creativecommons.org/licenses/by-nc-nd/4.0/
-// @require      https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/src/lib/helper.js?version=1.0.10
-// @grant        GM_setValue
-// @grant        GM_getValue
-// @grant        GM_xmlhttpRequest
-// @grant        GM_addStyle
+// @license     http://creativecommons.org/licenses/by-nc-nd/4.0/
+// @require     https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/src/lib/helper.js?version=1.0.10
+// @grant       GM_setValue
+// @grant       GM_getValue
+// @grant       GM_deleteValue
+// @grant       GM_listValues
+// @grant       GM_xmlhttpRequest
+// @grant       GM_addStyle
+// @connect     docs.google.com
+// @connect     googleusercontent.com
+// @connect     sheets.googleapis.com
+// @connect     raw.githubusercontent.com
 // @downloadURL
 // @updateURL
 // ==/UserScript==
@@ -173,6 +179,7 @@ $(() => {
             { id: 'silhouette', label: 'Silhouette' },
             { id: 'ui', label: 'UI' },
             { id: 'mech', label: 'Mécaniques' },
+            { id: 'fix', label: 'Correctifs' },
             { id: 'misc', label: 'Autres' },
           ];
 

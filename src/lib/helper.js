@@ -17,6 +17,7 @@
 // ==/UserScript==
 
 // TODO add guards in each function to check Game/EDC/Forum
+// TODO add function to add deck command
 console.log('DDK - Loading ...');
 
 // ===== JQuery utilities =====
@@ -582,6 +583,7 @@ DC.Network = {
       "DC.Network.loadScript: 'onAfterLoad' optional parameter should be a function.",
     );
 
+    // TODO we should check that url is from a valid and secure source.
     const result = await DC.Network.fetch({
       method: 'GET',
       url,
@@ -589,6 +591,7 @@ DC.Network = {
         'Content-Type': 'text/javascript',
       },
     });
+    // TODO we have to secure more this call
     eval(result);
 
     onAfterLoad?.();
