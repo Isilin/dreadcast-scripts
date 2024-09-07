@@ -9,7 +9,7 @@ Il s'agit d'un projet de joueurs autour du jeu [Dreadcast](https://www.dreadcast
 Ce dépôt a été créé pour répertorier les scripts, bibliothèques, skins, et autres qui peuvent être utilisé en jeu.
 Quelques outils, tel le gestionnaire de script sont également proposés aux utilisateurs.
 
-![Scripts Manager](https://i.imgur.com/L2NEhx1.png)
+![Scripts Manager](https://i.imgur.com/ZmJfpau.png)
 
 ## Démarrage
 
