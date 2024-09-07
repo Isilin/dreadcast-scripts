@@ -6,7 +6,7 @@
 // @author      Pelagia/IsilinBN
 // @description 13/11/2023 02:55:01
 // @license      http://creativecommons.org/licenses/by-nc-nd/4.0/
-// @require      https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/src/lib/helper.js?version=1.0.6
+// @require      https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/src/lib/helper.js?version=1.0.7
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_xmlhttpRequest
@@ -318,21 +318,25 @@ $(() => {
 
       // Load the scripts
       if (!allDisabled) {
-        scripts.forEach((script) => {
-          if (settings[script.id]) {
-            DC.Network.loadScript(script.url)
-              .then(() => {
-                console.info(
-                  `DSM - '${script.name}' script has been loaded successfully.`,
-                );
-              })
-              .catch((err) => {
-                console.error(
-                  `DSM - Error loading '${script.name}' script: ` + err,
-                );
-              });
-          }
-        });
+        const context = Util.getContext();
+
+        scripts
+          .filter((script) => script.section.includes(context))
+          .forEach((script) => {
+            if (settings[script.id]) {
+              DC.Network.loadScript(script.url)
+                .then(() => {
+                  console.info(
+                    `DSM - '${script.name}' script has been loaded successfully.`,
+                  );
+                })
+                .catch((err) => {
+                  console.error(
+                    `DSM - Error loading '${script.name}' script: ` + err,
+                  );
+                });
+            }
+          });
       }
     })
     .catch((err) => {

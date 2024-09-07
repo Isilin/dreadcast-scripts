@@ -2,7 +2,7 @@
 // @name        Scouter
 // @namespace   Violentmonkey Scripts
 // @match       https://www.dreadcast.net/Main
-// @version     1.0.6
+// @version     1.0.7
 // @author      Pelagia/IsilinBN
 // @description 13/11/2023 02:55:01
 // @license      http://creativecommons.org/licenses/by-nc-nd/4.0/
@@ -105,6 +105,16 @@ const Util = {
   isEDC: () => window.location.href.includes('https://www.dreadcast.net/EDC'),
 
   isWiki: () => window.location.href.includes('http://wiki.dreadcast.eu/wiki'),
+
+  getContext: () => {
+    return Util.isGame()
+      ? 'game'
+      : Util.isForum()
+      ? 'forum'
+      : Util.isEDC()
+      ? 'edc'
+      : 'wiki';
+  },
 };
 
 // ===== Overwrite DC functions =====
