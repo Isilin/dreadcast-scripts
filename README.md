@@ -23,7 +23,7 @@ Dans un second temps, il vous faudra installer les scripts que vous souhaitez. D
 
 Les [tickets](https://github.com/Isilin/dreadcast-scripts/issues) et les [pull request](https://github.com/Isilin/dreadcast-scripts/pulls) sur Github sont les bienvenues. Si vous êtes intéressé pour contribuer au code ou remonter une erreur ou une possible amélioration, merci d'ouvrir un ticket pour en discuter.
 
-Un guide détaillé de contribution peut-être trouvé [ici](https://github.com/Isilin/dreadcast-scripts/blob/main/CONTRIBUTING.md).
+Un guide détaillé de contribution peut-être trouvé [ICI](https://github.com/Isilin/dreadcast-scripts/blob/main/CONTRIBUTING.md).
 
 ## License
 

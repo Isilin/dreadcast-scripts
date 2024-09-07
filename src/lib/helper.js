@@ -96,6 +96,15 @@ const Util = {
       );
     }
   },
+
+  isGame: () => window.location.href.includes('https://www.dreadcast.net/Main'),
+
+  isForum: () =>
+    window.location.href.includes('https://www.dreadcast.net/Forum'),
+
+  isEDC: () => window.location.href.includes('https://www.dreadcast.net/EDC'),
+
+  isWiki: () => window.location.href.includes('http://wiki.dreadcast.eu/wiki'),
 };
 
 // ===== Overwrite DC functions =====

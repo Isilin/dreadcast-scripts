@@ -17,7 +17,7 @@
 
 // TODO add function to export, import settings, and to reset all settings.
 // TODO add text to say that disabling a script does not remove settings.
-// TODO add icon for scripts
+// TODO add version for edc/forum/wiki
 
 const LIST_TAG = 'dcm_list';
 const ALL_DISABLED_TAG = 'dcm_all_disabled';
@@ -161,41 +161,68 @@ $(() => {
             newSettings = settings;
             newAllDisabled = allDisabled;
 
+            const sections = [
+              { id: 'all', label: 'Tous' },
+              { id: 'game', label: 'Jeu' },
+              { id: 'forum', label: 'Forum' },
+              { id: 'edc', label: 'EDC' },
+              { id: 'wiki', label: 'Wiki' },
+            ];
+
+            const categories = [
+              { id: 'all', label: 'Tous' },
+              { id: 'mailing', label: 'Messagerie' },
+              { id: 'chat', label: 'Chat' },
+              { id: 'silhouette', label: 'Silhouette' },
+              { id: 'ui', label: 'UI' },
+              { id: 'mech', label: 'Mécaniques' },
+              { id: 'misc', label: 'Autres' },
+            ];
+
             const content = $(`<div style="color: white; max-width: 500px;">
               <div id="scripts_all_switch" style="display: flex;gap: 1rem;margin-bottom: 1rem;">
                 <p>Tout désactiver</p>
               </div>
               <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
                 <legend style="margin-right: 1rem; min-width: 60px;">Filtrer :</legend>
-                <div style="display: flex; gap: 5%; flex-wrap: wrap;">
-                  <div>
-                    <input type="radio" id="all_category" name ="category" value ="all" checked />
-                    <label for="all_category">All</label>
-                  </div>
-                  <div>
-                    <input type="radio" id="mailing_category" name ="category" value ="mailing" />
-                    <label for="mailing_category">Messagerie</label>
-                  </div>
-                  <div>
-                    <input type="radio" id="chat_category" name ="category" value ="chat" />
-                    <label for="chat_category">Chat</label>
-                  </div>
-                  <div>
-                    <input type="radio" id="silhouette_category" name ="category" value ="silhouette" />
-                    <label for="silhouette_category">Silhouette</label>
-                  </div>
-                  <div>
-                    <input type="radio" id="forum_category" name ="category" value ="forum" />
-                    <label for="forum_category">Forum</label>
-                  </div>
-                  <div>
-                    <input type="radio" id="ui_category" name ="category" value ="ui" />
-                    <label for="ui_category">UI</label>
-                  </div>
-                  <div>
-                    <input type="radio" id="misc_category" name ="category" value ="misc" />
-                    <label for="misc_category">Autres</label>
-                  </div>
+                <div style="display: flex; gap: 5%; flex-wrap: wrap; width: 100%;">
+                  ${sections
+                    .map(
+                      (section, index) => `
+                      <div>
+                        <input type="radio" id="${
+                          section.id
+                        }_section" name ="section" value ="${section.id}" ${
+                        index === 0 ? 'checked' : ''
+                      } />
+                        <label for="${section.id}_section">${
+                        section.label
+                      }</label>
+                      </div>
+                  `,
+                    )
+                    .join('')}
+                </div>
+              </div>
+              <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <legend style="margin-right: 1rem; min-width: 60px;">Filtrer :</legend>
+                <div style="display: flex; gap: 5%; flex-wrap: wrap; width: 100%;">
+                  ${categories
+                    .map(
+                      (category, index) => `
+                      <div>
+                        <input type="radio" id="${
+                          category.id
+                        }_category" name ="category" value ="${category.id}" ${
+                        index === 0 ? 'checked' : ''
+                      } />
+                        <label for="${category.id}_category">${
+                        category.label
+                      }</label>
+                      </div>
+                  `,
+                    )
+                    .join('')}
                 </div>
               </div>
               <table style="border-collapse: collapse; width: 100%; border: 1px solid white; padding: 5px; font-size: 15px; text-align: center;">
@@ -214,14 +241,36 @@ $(() => {
             </div>`);
 
             $(document).on('change', "input[name='category']", (e) => {
-              const filter = e.target.value;
+              const category = e.target.value;
+              const section = $("input[name='section']:checked").val();
 
               // Empty the table
               $('tbody', content).empty();
               // Add filtered lines
               scripts
                 .filter(
-                  (script) => script.category === filter || filter === 'all',
+                  (script) =>
+                    (script.section.includes(section) || section === 'all') &&
+                    (script.category.includes(category) || category === 'all'),
+                )
+                .forEach((script, index) => {
+                  const line = createScriptLine(script, index);
+                  $('tbody', content).append(line);
+                });
+            });
+
+            $(document).on('change', "input[name='section']", (e) => {
+              const section = e.target.value;
+              const category = $("input[name='category']:checked").val();
+
+              // Empty the table
+              $('tbody', content).empty();
+              // Add filtered lines
+              scripts
+                .filter(
+                  (script) =>
+                    (script.section.includes(section) || section === 'all') &&
+                    (script.category.includes(category) || category === 'all'),
                 )
                 .forEach((script, index) => {
                   const line = createScriptLine(script, index);

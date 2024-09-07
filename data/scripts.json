@@ -9,7 +9,8 @@
     "rp": "",
     "contact": "Pelagia",
     "settings": true,
-    "category": "misc"
+    "section": ["game"],
+    "category": ["misc"]
   },
   {
     "id": "example",
@@ -21,7 +22,8 @@
     "rp": "",
     "contact": "Pelagia",
     "settings": false,
-    "category": "misc"
+    "section": ["game"],
+    "category": ["misc"]
   },
   {
     "id": "visio3d",
@@ -33,6 +35,7 @@
     "rp": "https://www.dreadcast.net/Forum/2-144695-ns-v13612u-visio-3d---logiciel-utilitaire-pour-la-decoration-dinterieur?1",
     "contact": "Pelagia",
     "settings": false,
-    "category": "ui"
+    "section": ["game"],
+    "category": ["ui"]
   }
 ]
