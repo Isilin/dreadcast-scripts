@@ -6,7 +6,7 @@
 // @match       https://www.dreadcast.net/Forum/*
 // @match       https://www.dreadcast.net/EDC
 // @match       https://www.dreadcast.net/EDC/*
-// @version     1.0.0
+// @version     1.0.1
 // @author      Pelagia/Isilin
 // @description 13/11/2023 02:55:01
 // @license     http://creativecommons.org/licenses/by-nc-nd/4.0/
@@ -21,8 +21,8 @@
 // @connect     googleusercontent.com
 // @connect     sheets.googleapis.com
 // @connect     raw.githubusercontent.com
-// @downloadURL
-// @updateURL
+// @downloadURL https://update.greasyfork.org/scripts/507383/Dreadcast%20Script%20Manager.user.js
+// @updateURL   https://update.greasyfork.org/scripts/507383/Dreadcast%20Script%20Manager.meta.js
 // ==/UserScript==
 
 // TODO ajouter dans la liste tous les scripts (en utilisant le lien greasemonkey) et remplacer petit à petit par les versions locales nettoyées.
