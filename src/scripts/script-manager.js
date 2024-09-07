@@ -6,7 +6,7 @@
 // @author      Pelagia/IsilinBN
 // @description 13/11/2023 02:55:01
 // @license      http://creativecommons.org/licenses/by-nc-nd/4.0/
-// @require      https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/src/lib/helper.js?version=1.0.5
+// @require      https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/src/lib/helper.js?version=1.0.6
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_xmlhttpRequest
@@ -69,7 +69,9 @@ const createScriptLine = (script, index) => {
           ? `<td style="padding: 5px" rowspan="2"><img src="${script.icon}" width="48" height="48" /></td>`
           : '<td class="short" rowspan="2" />'
       }
-      <td style="padding: 5px 0; min-width: 120px">${script.name}</td>
+      <td style="padding: 5px 0; min-width: 120px; text-align: left;">${
+        script.name
+      }</td>
       <td class="enabled_cell" style="padding: 5px 0; display: flex; justify-content: center;"></td>
       <td class="setting_cell" style="padding: 5px 5px 0 0;"></td>
       <td class="doc_cell" style="padding: 5px 5px 0 0;"></td>
@@ -77,7 +79,7 @@ const createScriptLine = (script, index) => {
       <td class="contact_cell" style="padding: 5px 5px 0 0;"></td>
     </tr>
     <tr style="border-bottom: 1px solid white; border-left: 1px solid white; border-right: 1px solid white;">
-      <td /><td colspan="6" style="padding: 0 5px 5px 5px"><small><em class="couleur5">${
+      <td colspan="6" style="padding: 0 5px 5px 5px; text-align: left;"><small><em class="couleur5">${
         script.description
       }</em></small></td>
     </tr>

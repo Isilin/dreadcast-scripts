@@ -2,7 +2,7 @@
 // @name        Scouter
 // @namespace   Violentmonkey Scripts
 // @match       https://www.dreadcast.net/Main
-// @version     1.0.5
+// @version     1.0.6
 // @author      Pelagia/IsilinBN
 // @description 13/11/2023 02:55:01
 // @license      http://creativecommons.org/licenses/by-nc-nd/4.0/
@@ -395,7 +395,7 @@ DC.UI = {
             <div class="title">${title}</div>
           </div>
           <div class="dbloader"></div>
-          <div class="content">
+          <div class="content" style="max-width: 800px; max-height: 600px; overflow: auto;">
           </div>
         </relative>
       </div>`;
