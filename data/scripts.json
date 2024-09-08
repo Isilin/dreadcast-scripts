@@ -198,7 +198,7 @@
   {
     "id": "stopmultiplemessageforumonly",
     "name": "StopMultipleMessageForumOnly",
-    "description": "Block spam on over-clicking.",
+    "description": "Empêche les messages doublons accidentels sur le forum.",
     "authors": "Kmaschta, Valion",
     "icon": "",
     "url": "https://update.greasyfork.org/scripts/30691/StopMultipleMessageForumOnly.user.js",
@@ -268,7 +268,7 @@
   {
     "id": "datefixed",
     "name": "DC - Date fixed",
-    "description": "Display DC's date on top of the screen, or on your deck!",
+    "description": "Affiche la date en jeu, et des commandes sur le deck.",
     "authors": "Ianouf, Ladoria, Nasty",
     "icon": "",
     "url": "https://update.greasyfork.org/scripts/453281/DC%20-%20Date%20fixed.user.js",
@@ -352,7 +352,7 @@
   {
     "id": "bougetafeuille",
     "name": "DC - Bouge ta feuille",
-    "description": "Rend la lecture plus agréable en permettant de déplacer plus facilement une feuille",
+    "description": "Rend la lecture plus agréable en permettant de déplacer plus facilement une feuille.",
     "authors": "Nasty",
     "icon": "",
     "url": "https://update.greasyfork.org/scripts/453476/DC%20-%20Bouge%20ta%20feuille.user.js",
@@ -381,7 +381,7 @@
     "id": "neuvopackoverhaul",
     "name": "Neuvopack Overhaul",
     "description": "Modifie l'interface des neuvopacks pour un usage plus agréable (suivi en direct du contenu, extraction des condensés rapide).",
-    "authors": "Eldrik, Altaïr",
+    "authors": "Altaïr",
     "icon": "https://www.dreadcast.net/images/objets/NEUVOPACK_262px.png",
     "url": "https://update.greasyfork.org/scripts/468141/Neuvopack%20Overhaul.user.js",
     "doc": "https://www.dreadcast.net/Forum/2-144257-script-neuvopack-overhaul?1",
@@ -395,7 +395,7 @@
     "id": "tpoverhaul",
     "name": "TP Overhaul",
     "description": "Modernisation de l'interface du Terminal Portable.",
-    "authors": "Eldrik, Altaïr",
+    "authors": "Altaïr",
     "icon": "https://www.dreadcast.net/images/objets/mini/TERMINAL%20PORTABLE2.png",
     "url": "https://update.greasyfork.org/scripts/488053/TP%20Overhaul.user.js",
     "doc": "https://www.dreadcast.net/Forum/2-145540-script-tp-overhaul",
@@ -417,7 +417,7 @@
     "contact": "Pelagia",
     "settings": false,
     "section": ["game"],
-    "category": ["ui"]
+    "category": ["ui", "mech"]
   },
   {
     "id": "eccb",
@@ -431,7 +431,7 @@
     "contact": "Pelagia",
     "settings": false,
     "section": ["game"],
-    "category": ["ui, mech"]
+    "category": ["ui", "mech"]
   },
   {
     "id": "autostock",
@@ -445,7 +445,7 @@
     "contact": "Amane-Mochizuki",
     "settings": false,
     "section": ["game"],
-    "category": ["ui, mech"]
+    "category": ["ui", "mech"]
   },
   {
     "id": "silmerionwindowfix",
@@ -464,7 +464,7 @@
   {
     "id": "skwikker",
     "name": "Skwikker",
-    "description": "",
+    "description": "Pour accéder au célèbre réseau social Skwikker.",
     "authors": "Valion",
     "icon": "",
     "url": "https://update.greasyfork.org/scripts/30182/Skwikker.user.js",

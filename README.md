@@ -1,7 +1,5 @@
 # Dreadcast Scripts
 
-Bienvenue sur le wiki de Dreadcast-Scripts !
-
 Il s'agit d'un projet de joueurs autour du jeu [Dreadcast](https://www.dreadcast.net), sans aucune intention commerciale, dans l'objectif d'offrir une meilleure qualité de jeu.
 
 ## Introduction
