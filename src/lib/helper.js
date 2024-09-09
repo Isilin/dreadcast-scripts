@@ -2,9 +2,9 @@
 // @name        Dreadcast Development Kit
 // @namespace   Violentmonkey Scripts
 // @match       https://www.dreadcast.net/Main
-// @version     1.0.11
+// @version     1.0.12
 // @author      Pelagia/Isilin
-// @description 13/11/2023 02:55:01
+// @description Development kit to ease Dreadcast scripts integration.
 // @license     http://creativecommons.org/licenses/by-nc-nd/4.0/
 // @connect     docs.google.com
 // @connect     googleusercontent.com
@@ -16,7 +16,6 @@
 // @updateURL   https://update.greasyfork.org/scripts/507382/Dreadcast%20Development%20Kit.meta.js
 // ==/UserScript==
 
-// TODO add guards in each function to check Game/EDC/Forum
 // TODO add function to add deck command
 console.log('DDK - Loading ...');
 
@@ -101,6 +100,98 @@ const Util = {
     }
   },
 
+  isJQuery: (o, optional = false) =>
+    (optional && ($.type(o) === 'undefined' || $.type(o) === 'null')) ||
+    o instanceof $,
+
+  guardArray: (context, name, parameter, optional = false) =>
+    Util.guard(
+      Util.isArray(parameter, optional),
+      `${context}: '${name}' ${
+        optional ? 'optional ' : ''
+      }parameter should be an array.`,
+    ),
+
+  guardString: (context, name, parameter, optional = false) =>
+    Util.guard(
+      Util.isString(parameter, optional),
+      `${context}: '${name}' ${
+        optional ? 'optional ' : ''
+      }parameter should be a string.`,
+    ),
+
+  guardBoolean: (context, name, parameter, optional = false) =>
+    Util.guard(
+      Util.isBoolean(parameter, optional),
+      `${context}: '${name}' ${
+        optional ? 'optional ' : ''
+      }parameter should be a boolean.`,
+    ),
+
+  guardNumber: (context, name, parameter, optional = false) =>
+    Util.guard(
+      Util.isNumber(parameter, optional),
+      `${context}: '${name}' ${
+        optional ? 'optional ' : ''
+      }parameter should be a number.`,
+    ),
+
+  guardFunction: (context, name, parameter, optional = false) =>
+    Util.guard(
+      Util.isFunction(parameter, optional),
+      `${context}: '${name}' ${
+        optional ? 'optional ' : ''
+      }parameter should be a a function.`,
+    ),
+
+  guardDate: (context, name, parameter, optional = false) =>
+    Util.guard(
+      Util.isDate(parameter, optional),
+      `${context}: '${name}' ${
+        optional ? 'optional ' : ''
+      }parameter should be a date.`,
+    ),
+
+  guardError: (context, name, parameter, optional = false) =>
+    Util.guard(
+      Util.isError(parameter, optional),
+      `${context}: '${name}' ${
+        optional ? 'optional ' : ''
+      }parameter should be an error.`,
+    ),
+
+  guardRegex: (context, name, parameter, optional = false) =>
+    Util.guard(
+      Util.isRegex(parameter, optional),
+      `${context}: '${name}' ${
+        optional ? 'optional ' : ''
+      }parameter should be a regex.`,
+    ),
+
+  guardObject: (context, name, parameter, optional = false) =>
+    Util.guard(
+      Util.isObject(parameter, optional),
+      `${context}: '${name}' ${
+        optional ? 'optional ' : ''
+      }parameter should be an object.`,
+    ),
+
+  guardColor: (context, name, parameter, optional = false) =>
+    Util.guard(
+      Util.isColor(parameter, optional),
+      `${context}: '${name}' ${
+        optional ? 'optional ' : ''
+      }parameter should be a color.`,
+    ),
+
+  guardJQuery: (context, name, parameter, optional = false) =>
+    Util.guard(
+      Util.isJQuery(parameter, optional),
+      `${context}: '${name}' ${
+        optional ? 'optional ' : ''
+      }parameter should be a jQuery element.`,
+    ),
+
   isGame: () => window.location.href.includes('https://www.dreadcast.net/Main'),
 
   isForum: () =>
@@ -143,9 +234,17 @@ if (Util.isGame() && MenuChat.prototype.originalSend === undefined) {
     this.afterSendCallbacks.every((callback) => callback($message));
   };
   MenuChat.prototype.onSend = (callback) => {
+    Util.guard(
+      Util.isGame(),
+      'MenuChat.prototype.onSend: this function should be called in Game only.',
+    );
     MenuChat.prototype.sendCallbacks.push(callback);
   };
   MenuChat.prototype.onAfterSend = (callback) => {
+    Util.guard(
+      Util.isGame(),
+      'MenuChat.prototype.onSend: this function should be called in Game only.',
+    );
     MenuChat.prototype.afterSendCallbacks.push(callback);
   };
 }
@@ -176,10 +275,7 @@ DC.LocalMemory = {
 
 DC.Style = {
   apply: (css) => {
-    Util.guard(
-      Util.isString(css, true),
-      "DC.Style.apply: 'css' parameter should be a string.",
-    );
+    Util.guardString('DC.Style.apply', 'css', css);
 
     if (typeof GM_addStyle !== 'undefined') {
       GM_addStyle(css);
@@ -195,14 +291,20 @@ DC.Style = {
 
 DC.TopMenu = {
   get: () => {
+    Util.guard(
+      Util.isGame(),
+      'MenuChat.prototype.onSend: this function should be called in Game only.',
+    );
     return $('.menus');
   },
 
   add: (element, index = 0) => {
     Util.guard(
-      Util.isNumber(index),
-      "DC.TopMenu.add: 'index' parameter should be a number.",
+      Util.isGame(),
+      'MenuChat.prototype.onSend: this function should be called in Game only.',
     );
+    Util.guardJQuery('DC.TopMenu.add', 'element', element);
+    Util.guardNumber('DC.TopMenu.add', 'index', index);
 
     const $dom = DC.TopMenu.get();
     if (index === 0) {
@@ -217,14 +319,8 @@ DC.UI = {
   Separator: () => $('<li class="separator" />'),
 
   Menu: (label, fn) => {
-    Util.guard(
-      Util.isString(label),
-      "DC.UI.Menu: 'label' parameter should be a string.",
-    );
-    Util.guard(
-      Util.isFunction(fn),
-      "DC.UI.Menu: 'fn' parameter should be a function.",
-    );
+    Util.guardString('DC.UI.Menu', 'label', label);
+    Util.guardFunction('DC.UI.Menu', 'fn', fn);
 
     return $(`<li id="${label}" class="couleur5">${label}</li>`).bind(
       'click',
@@ -233,18 +329,9 @@ DC.UI = {
   },
 
   SubMenu: (label, fn, separatorBefore = false) => {
-    Util.guard(
-      Util.isString(label),
-      "DC.UI.SubMenu: 'label' parameter should be a string.",
-    );
-    Util.guard(
-      Util.isFunction(fn),
-      "DC.UI.SubMenu: 'fn' parameter should be a function.",
-    );
-    Util.guard(
-      Util.isBoolean(separatorBefore),
-      "DC.UI.SubMenu: 'separatorBefore' parameter should be a boolean.",
-    );
+    Util.guardString('DC.UI.SubMenu', 'label', label);
+    Util.guardFunction('DC.UI.SubMenu', 'fn', fn);
+    Util.guardBoolean('DC.UI.SubMenu', 'separatorBefore', separatorBefore);
 
     return $(
       `<li class="link couleur2 ${
@@ -254,17 +341,12 @@ DC.UI = {
   },
 
   DropMenu: (label, submenu) => {
-    Util.guard(
-      Util.isString(label),
-      "DC.UI.DropMenu: 'label' parameter should be a string.",
-    );
+    Util.guardString('DC.UI.DropMenu', 'label', label);
+    Util.guardArray('DC.UI.DropMenu', 'submenu', submenu);
 
     const $label = label + '▾';
 
     const $list = $('<ul></ul>');
-    if (!Array.isArray(submenu)) {
-      throw new Error("'submenu' should be an array in DC.UI.DropMenu !");
-    }
     submenu.forEach(($submenu) => {
       $($list).append($submenu);
     });
@@ -276,13 +358,12 @@ DC.UI = {
 
   addSubMenuTo: (name, element, index = 0) => {
     Util.guard(
-      Util.isString(name),
-      "DC.UI.addSubMenuTo: 'name' parameter should be a string.",
+      Util.isGame(),
+      'MenuChat.prototype.onSend: this function should be called in Game only.',
     );
-    Util.guard(
-      Util.isNumber(index),
-      "DC.UI.addSubMenuTo: 'index' parameter should be a string.",
-    );
+    Util.guardString('DC.UI.addSubMenuTo', 'name', name);
+    Util.guardJQuery('DC.UI.addSubMenuTo', 'element', element);
+    Util.guardNumber('DC.UI.addSubMenuTo', 'index', index);
 
     const $menu = $(`.menus li:contains("${name}") ul`);
 
@@ -294,35 +375,17 @@ DC.UI = {
   },
 
   TextButton: (id, label, fn) => {
-    Util.guard(
-      Util.isString(id),
-      "DC.UI.TextButton: 'id' parameter should be a string.",
-    );
-    Util.guard(
-      Util.isString(label),
-      "DC.UI.TextButton: 'label' parameter should be a string.",
-    );
-    Util.guard(
-      Util.isFunction(fn),
-      "DC.UI.TextButton: 'fn' parameter should be a function.",
-    );
+    Util.guardString('DC.UI.TextButton', 'id', id);
+    Util.guardString('DC.UI.TextButton', 'label', label);
+    Util.guardFunction('DC.UI.TextButton', 'fn', fn);
 
     return $(`<div id="${id}" class="btnTxt">${label}</div>`).bind('click', fn);
   },
 
   Button: (id, label, fn) => {
-    Util.guard(
-      Util.isString(id),
-      "DC.UI.Button: 'id' parameter should be a string.",
-    );
-    Util.guard(
-      Util.isString(label),
-      "DC.UI.Button: 'label' parameter should be a string.",
-    );
-    Util.guard(
-      Util.isFunction(fn),
-      "DC.UI.Button: 'fn' parameter should be a function.",
-    );
+    Util.guardString('DC.UI.Button', 'id', id);
+    Util.guardString('DC.UI.Button', 'label', label);
+    Util.guardFunction('DC.UI.Button', 'fn', fn);
 
     return $(
       `<div id="${id}" class="btn add link infoAide"><div class="gridCenter">${label}</div></div>`,
@@ -330,6 +393,9 @@ DC.UI = {
   },
 
   Tooltip: (text, content) => {
+    Util.guardString('DC.UI.Tooltip', 'text', text);
+    Util.guardJQuery('DC.UI.Tooltip', 'content', content);
+
     DC.Style.apply(`
         .tooltip {
           position: relative;
@@ -356,19 +422,10 @@ DC.UI = {
         </div>`).prepend(content);
   },
 
-  Checkbox: (id, defaultEnable = true, onAfterClick) => {
-    Util.guard(
-      Util.isString(id),
-      "DC.UI.Checkbox: 'id' parameter should be a string.",
-    );
-    Util.guard(
-      Util.isBoolean(defaultEnable),
-      "DC.UI.Checkbox: 'defaultEnable' parameter should be a boolean.",
-    );
-    Util.guard(
-      Util.isFunction(onAfterClick, true),
-      "DC.UI.Checkbox: 'onAfterClick' optional parameter should be a function.",
-    );
+  Checkbox: (id, defaultEnable, onAfterClick) => {
+    Util.guardString('DC.UI.Checkbox', 'id', id);
+    Util.guardBoolean('DC.UI.Checkbox', 'defaultEnable', defaultEnable);
+    Util.guardFunction('DC.UI.Checkbox', 'onAfterClick', onAfterClick);
 
     DC.Style.apply(`
         .dc_ui_checkbox {
@@ -395,13 +452,12 @@ DC.UI = {
 
   PopUp: (id, title, content) => {
     Util.guard(
-      Util.isString(id),
-      "DC.UI.PopUp: 'id' parameter should be a string.",
+      Util.isGame(),
+      'MenuChat.prototype.onSend: this function should be called in Game only.',
     );
-    Util.guard(
-      Util.isString(title),
-      "DC.UI.PopUp: 'title' parameter should be a string.",
-    );
+    Util.guardString('DC.UI.PopUp', 'id', id);
+    Util.guardString('DC.UI.PopUp', 'title', title);
+    Util.guardJQuery('DC.UI.PopUp', 'content', content);
 
     $('#loader').fadeIn('fast');
 
@@ -430,54 +486,46 @@ DC.UI = {
   },
 
   SideMenu: (id, label, content) => {
-    Util.guard(
-      Util.isString(id),
-      "DC.UI.SideMenu: 'id' parameter should be a string.",
-    );
-    Util.guard(
-      Util.isString(label),
-      "DC.UI.SideMenu: 'label' parameter should be a string.",
-    );
-    Util.guard(
-      Util.isString(content),
-      "DC.UI.SideMenu: 'content' parameter should be a string.",
-    );
+    Util.guardString('DC.UI.SideMenu', 'id', id);
+    Util.guardString('DC.UI.SideMenu', 'label', label);
+    Util.guardJQuery('DC.UI.SideMenu', 'content', content);
 
-    const idContainer = id + '_container';
-    const idButton = id + '_button';
-    const idContent = id + '_content';
+    const $idContainer = id + '_container';
+    const $idButton = id + '_button';
+    const $idContent = id + '_content';
 
     if ($('div#zone_sidemenu').length === 0) {
       $('body').append('<div id="zone_sidemenu"></div>');
     }
     $('#zone_sidemenu').append(
-      `<div id="${idContainer}" class="sidemenu_container"></div>`,
+      `<div id="${$idContainer}" class="sidemenu_container"></div>`,
     );
 
-    $(`#${idContainer}`).append(
+    $(`#${$idContainer}`).append(
       DC.UI.TextButton(
-        idButton,
+        $idButton,
         '<i class="fas fa-chevron-left"></i>' + label,
         () => {
-          const isOpen = $(`#${idButton}`).html().includes('fa-chevron-right');
+          const isOpen = $(`#${$idButton}`).html().includes('fa-chevron-right');
           if (isOpen) {
-            $(`#${idButton}`)
+            $(`#${$idButton}`)
               .empty()
               .append('<i class="fas fa-chevron-left"></i>' + label);
-            $(`#${idContainer}`).css('right', '-220px');
+            $(`#${$idContainer}`).css('right', '-220px');
           } else {
-            $(`#${idButton}`)
+            $(`#${$idButton}`)
               .empty()
               .append('<i class="fas fa-chevron-right"></i>' + label);
-            $(`#${idContainer}`).css('right', '0px');
+            $(`#${$idContainer}`).css('right', '0px');
           }
         },
       ),
     );
 
-    $(`#${idContainer}`).append(
-      `<div id="${idContent}" class="sidemenu_content">${content}</div>`,
+    $(`#${$idContainer}`).append(
+      `<div id="${$idContent}" class="sidemenu_content"></div>`,
     );
+    $(`#${idContent}`).append(content);
 
     DC.Style.apply(`
         #zone_sidemenu {
@@ -528,6 +576,8 @@ DC.UI = {
 
 DC.Network = {
   fetch: (args) => {
+    Util.guardObject('DC.Network.fetch', 'args', args);
+
     return new Promise((resolve, reject) => {
       GM_xmlhttpRequest(
         Object.assign({}, args, {
@@ -540,26 +590,11 @@ DC.Network = {
   },
 
   loadSpreadsheet: async (sheetId, tabName, range, apiKey, onLoad) => {
-    Util.guard(
-      Util.isString(sheetId),
-      "DC.Network.loadSpreadsheet: 'sheetId' parameter should be a string.",
-    );
-    Util.guard(
-      Util.isString(tabName),
-      "DC.Network.loadSpreadsheet: 'tabName' parameter should be a string.",
-    );
-    Util.guard(
-      Util.isString(range),
-      "DC.Network.loadSpreadsheet: 'range' parameter should be a string.",
-    );
-    Util.guard(
-      Util.isString(apiKey),
-      "DC.Network.loadSpreadsheet: 'apiKey' parameter should be a string.",
-    );
-    Util.guard(
-      Util.isFunction(onLoad),
-      "DC.Network.loadSpreadsheet: 'onLoad' parameter should be a function.",
-    );
+    Util.guardString('DC.Network.loadSpreadsheet', 'sheetId', sheetId);
+    Util.guardString('DC.Network.loadSpreadsheet', 'tabName', tabName);
+    Util.guardString('DC.Network.loadSpreadsheet', 'range', range);
+    Util.guardString('DC.Network.loadSpreadsheet', 'apiKey', apiKey);
+    Util.guardFunction('DC.Network.loadSpreadsheet', 'onLoad', onLoad);
 
     const urlGoogleSheetDatabase = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${tabName}!${range}?key=${apiKey}`;
     const result = await DC.Network.fetch({
@@ -574,13 +609,12 @@ DC.Network = {
   },
 
   loadScript: async (url, onAfterLoad) => {
-    Util.guard(
-      Util.isString(url),
-      "DC.Network.loadScript: 'url' parameter should be a string.",
-    );
-    Util.guard(
-      Util.isFunction(onAfterLoad, true),
-      "DC.Network.loadScript: 'onAfterLoad' optional parameter should be a function.",
+    Util.guardString('DC.Network.loadScript', 'url', url);
+    Util.guardFunction(
+      'DC.Network.loadScript',
+      'onAfterLoad',
+      onAfterLoad,
+      true,
     );
 
     // TODO we should check that url is from a valid and secure source.
@@ -598,10 +632,7 @@ DC.Network = {
   },
 
   loadJson: async (url) => {
-    Util.guard(
-      Util.isString(url),
-      "DC.Network.loadJson: 'url' parameter should be a string.",
-    );
+    Util.guardString('DC.Network.loadJson', 'url', url);
 
     const result = await DC.Network.fetch({
       method: 'GET',
@@ -618,31 +649,26 @@ DC.Network = {
 DC.Chat = {
   sendMessage: (message) => {
     Util.guard(
-      Util.isString(message),
-      "DC.Chat.sendMessage: 'message' parameter should be a string.",
+      Util.isGame(),
+      'MenuChat.prototype.onSend: this function should be called in Game only.',
     );
+    Util.guardString('DC.Chat.sendMessage', 'message', message);
 
     $('#chatForm .text_chat').val(message);
     $('#chatForm .text_valider').click();
   },
 
   t: (message, decoration) => {
-    Util.guard(
-      Util.isString(message, true),
-      "DC.Chat.t: 'message' parameter should be a string.",
+    Util.guardString('DC.Chat.t', 'message', message);
+    Util.guardObject('DC.Chat.t', 'decoration', decoration);
+    Util.guardBoolean('DC.Chat.t', 'decoration.bold', decoration.bold, true);
+    Util.guardBoolean(
+      'DC.Chat.t',
+      'decoration.italic',
+      decoration.italic,
+      true,
     );
-    Util.guard(
-      Util.isBoolean(decoration.bold, true),
-      "DC.Chat.t: 'bold' optional parameter should be a boolean.",
-    );
-    Util.guard(
-      Util.isBoolean(decoration.italic, true),
-      "DC.Chat.t: 'italic' optional parameter should be a boolean.",
-    );
-    Util.guard(
-      Util.isColor(decoration.color, true),
-      "DC.Chat.t: 'color' optional parameter should be a color string.",
-    );
+    Util.guardColor('DC.Chat.t', 'decoration.color', decoration.color, true);
 
     var prefix = '';
     var suffix = '';
@@ -667,13 +693,11 @@ DC.Chat = {
 
   addCommand: (label, fn) => {
     Util.guard(
-      Util.isString(label),
-      "DC.Chat.addCommand: 'label' parameter should be a string.",
+      Util.isGame(),
+      'MenuChat.prototype.onSend: this function should be called in Game only.',
     );
-    Util.guard(
-      Util.isFunction(fn),
-      "DC.Chat.addCommand: 'fn' parameter should be a function.",
-    );
+    Util.guardString('DC.Chat.addCommand', 'label', label);
+    Util.guardFunction('DC.Chat.addCommand', 'fn', fn);
 
     nav.getChat().onSend((message, next, abort) => {
       const forbiden = ['me', 'y', 'ye', 'yme', 'w', 'we', 'wme', 'roll', ''];

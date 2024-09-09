@@ -5,13 +5,13 @@
 // @version     1.3.1
 // @author      Pelagia/IsilinBN
 // @description 13/11/2023 02:55:01
-// @license      http://creativecommons.org/licenses/by-nc-nd/4.0/
-// @connect docs.google.com
-// @connect googleusercontent.com
-// @connect sheets.googleapis.com
-// @grant GM_xmlhttpRequest
+// @license     http://creativecommons.org/licenses/by-nc-nd/4.0/
+// @connect     docs.google.com
+// @connect     googleusercontent.com
+// @connect     sheets.googleapis.com
+// @grant       GM_xmlhttpRequest
 // @downloadURL https://update.greasyfork.org/scripts/481981/Visio%203D.user.js
-// @updateURL https://update.greasyfork.org/scripts/481981/Visio%203D.meta.js
+// @updateURL   https://update.greasyfork.org/scripts/481981/Visio%203D.meta.js
 // ==/UserScript==
 
 // HACK ME IF YOU CAN

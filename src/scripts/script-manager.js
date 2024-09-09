@@ -6,9 +6,9 @@
 // @match       https://www.dreadcast.net/Forum/*
 // @match       https://www.dreadcast.net/EDC
 // @match       https://www.dreadcast.net/EDC/*
-// @version     1.0.1
+// @version     1.0.2
 // @author      Pelagia/Isilin
-// @description 13/11/2023 02:55:01
+// @description Centralize all dreadcast scripts in one single source, integrated to the game.
 // @license     http://creativecommons.org/licenses/by-nc-nd/4.0/
 // @require     https://update.greasyfork.org/scripts/507382/Dreadcast%20Development%20Kit.user.js
 // @grant       GM_setValue
@@ -28,6 +28,9 @@
 // TODO ajouter dans la liste tous les scripts (en utilisant le lien greasemonkey) et remplacer petit à petit par les versions locales nettoyées.
 // TODO add function to export, import settings, and to reset all settings.
 // TODO add text to say that disabling a script does not remove settings.
+
+// To check if a script is used in a DSM context.
+Util.isDSM = () => true;
 
 const LIST_TAG = 'dcm_list';
 const ALL_DISABLED_TAG = 'dcm_all_disabled';

@@ -16,3 +16,5 @@ et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Changelog
 - Helpers functionalities
 - Existing scripts
+- DreadCast Development Kit
+- DreadCast Script Manager
