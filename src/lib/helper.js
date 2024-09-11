@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name        Dreadcast Development Kit
-// @namespace   Violentmonkey Scripts
+// @namespace   Dreadcast
 // @match       https://www.dreadcast.net/Main
-// @version     1.0.12
+// @version     1.0.13
 // @author      Pelagia/Isilin
 // @description Development kit to ease Dreadcast scripts integration.
-// @license     http://creativecommons.org/licenses/by-nc-nd/4.0/
+// @license     https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
 // @connect     docs.google.com
 // @connect     googleusercontent.com
 // @connect     sheets.googleapis.com
@@ -390,6 +390,16 @@ DC.UI = {
     return $(
       `<div id="${id}" class="btn add link infoAide"><div class="gridCenter">${label}</div></div>`,
     ).bind('click', fn);
+  },
+
+  ColorPicker: (id, value, fn) => {
+    Util.guardString('DC.UI.ColorPicker', 'id', id);
+    Util.guardString('DC.UI.ColorPicker', 'value', value);
+    Util.guardFunction('DC.UI.ColorPicker', 'fn', fn);
+
+    return $(`<input id="${id}" value="${value}"`).bind('click', (e) =>
+      fn(e.target.value),
+    );
   },
 
   Tooltip: (text, content) => {
