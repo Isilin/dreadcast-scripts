@@ -196,20 +196,6 @@
     "category": ["ui"]
   },
   {
-    "id": "stopmultiplemessageforumonly",
-    "name": "StopMultipleMessageForumOnly",
-    "description": "Empêche les messages doublons accidentels sur le forum.",
-    "authors": "Kmaschta, Valion",
-    "icon": "",
-    "url": "https://update.greasyfork.org/scripts/30691/StopMultipleMessageForumOnly.user.js",
-    "doc": "",
-    "rp": "",
-    "contact": "",
-    "settings": false,
-    "section": ["forum"],
-    "category": ["fix"]
-  },
-  {
     "id": "breakinglinecode",
     "name": "BreakingLineCode",
     "description": "Ajoute un retour à la ligne automatique pour la balise code.",
