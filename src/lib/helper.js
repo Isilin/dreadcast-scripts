@@ -2,22 +2,23 @@
 // @name        Dreadcast Development Kit
 // @namespace   Dreadcast
 // @match       https://www.dreadcast.net/Main
-// @version     1.0.13
+// @version     1.0.14
 // @author      Pelagia/Isilin
 // @description Development kit to ease Dreadcast scripts integration.
 // @license     https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
+// @grant       GM_xmlhttpRequest
+// @grant       GM_addStyle
+// @grant       GM_setValue
+// @grant       GM_getValue
+// @grant       GM_deleteValue
+// @grant       GM_listValues
 // @connect     docs.google.com
 // @connect     googleusercontent.com
 // @connect     sheets.googleapis.com
 // @connect     raw.githubusercontent.com
-// @grant       GM_xmlhttpRequest
-// @grant       GM_addStyle
 // @downloadURL https://update.greasyfork.org/scripts/507382/Dreadcast%20Development%20Kit.user.js
 // @updateURL   https://update.greasyfork.org/scripts/507382/Dreadcast%20Development%20Kit.meta.js
 // ==/UserScript==
-
-// TODO add function to add deck command
-console.log('DDK - Loading ...');
 
 // ===== JQuery utilities =====
 
@@ -195,7 +196,8 @@ const Util = {
   isGame: () => window.location.href.includes('https://www.dreadcast.net/Main'),
 
   isForum: () =>
-    window.location.href.includes('https://www.dreadcast.net/Forum'),
+    window.location.href.includes('https://www.dreadcast.net/Forum') ||
+    window.location.href.includes('https://www.dreadcast.net/FAQ'),
 
   isEDC: () => window.location.href.includes('https://www.dreadcast.net/EDC'),
 
