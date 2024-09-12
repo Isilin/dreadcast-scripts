@@ -3,7 +3,7 @@
 // @namespace   Forum
 // @match       https://www.dreadcast.net/Forum*
 // @match       https://www.dreadcast.net/FAQ*
-// @version     1.3.1
+// @version     1.3.2
 // @author      Kmaschta, MockingJay, Pelagia
 // @description Block spam on over-clicking
 // @license     https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
@@ -28,7 +28,7 @@
   };
 
   const lock = (elem) => {
-    console.log('LOCK:' + elem);
+    console.log(elem);
 
     // Save event action
     var onclick = elem.attr('onclick');
@@ -61,8 +61,7 @@
 
   $(document).ready(() => {
     // Forum "Poster" button
-    $('#zone_reponse .bouton.poster')
-      .not('.locked')
-      .click(() => lock($(this)));
+    const button = $('#zone_reponse .bouton.poster').not('.locked');
+    button.click(() => lock(button));
   });
 })();
