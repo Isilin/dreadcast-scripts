@@ -1,73 +1,67 @@
 // ==UserScript==
-// @name    StopMultipleMessageForumOnly
-// @namespace Forum
-// @author    Kmaschta, MockingJay
-// @date    19/09/2015
-// @version   1.2.1
+// @name        StopMultipleMessageForumOnly
+// @namespace   Forum
+// @match       https://www.dreadcast.net/Forum*
+// @match       https://www.dreadcast.net/FAQ*
+// @version     1.3.0
+// @author      Kmaschta, MockingJay, Pelagia
 // @description Block spam on over-clicking
-// @match   https://www.dreadcast.net/Forum*
-// @match   https://www.dreadcast.net/FAQ*
-// @require   http://code.jquery.com/jquery-latest.min.js
-// @grant   none
+// @license     https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
+// @require     https://update.greasyfork.org/scripts/507382/Dreadcast%20Development%20Kit.user.js
+// @grant       none
+// @downloadURL https://update.greasyfork.org/scripts/508039/StopMultipleMessageForumOnly.user.js
+// @updateURL https://update.greasyfork.org/scripts/508039/StopMultipleMessageForumOnly.meta.js
 // ==/UserScript==
 
-// CHANGELOG
-// 1.1: Set cursor to 'wait' when locked
+(() => {
+  DC.Style.apply(`#zone_reponse .bouton.poster.locked {
+    background: #444;
+    color: #e9e9e9; 
+  }`);
 
-jQuery.noConflict();
+  const unlock = (elem, onclick, content) => {
+    elem.attr('onclick', onclick);
+    elem.removeAttr('style');
+    elem.html(content);
+    elem.removeClass('locked');
+  };
 
-function unlock_button(elem, onclick, content) {
-  elem.attr('onclick', onclick);
-  elem.removeAttr('style');
-  elem.html(content);
-  elem.removeClass('locked');
-}
+  const lock = (elem) => {
+    // Save event action
+    var onclick = elem.attr('onclick');
+    var content = elem.html();
 
-function lock_button(elem) {
-  // Save event action
-  var onclick = elem.attr('onclick');
-  var content = elem.html();
+    // Lock button
+    elem.removeAttr('onclick');
+    elem.unbind('click');
+    elem.html('Verrouillé');
+    elem.addClass('locked');
 
-  // Lock button
-  elem.removeAttr('onclick');
-  elem.unbind('click');
-  elem.html('Verrouillé');
-  elem.attr('style', 'cursor: wait;');
-  elem.addClass('locked');
+    // Still unlock after 5s
+    var tid = setTimeout(() => {
+      if (elem.hasClass('locked')) {
+        unlock(elem, onclick, content);
+        elem.unbind('dblclick');
+      }
+    }, 5000);
 
-  // Still unlock after 5s
-  var tid = setTimeout(function () {
-    if (elem.hasClass('locked')) {
-      unlock_button(elem, onclick, content);
-      elem.unbind('dblclick');
-    }
-  }, 5000);
-
-  // Unlock button on dbl click
-  elem.dblclick(function () {
-    clearTimeout(tid);
-    unlock_button(elem, onclick, content);
-    // Rebind lock on click
-    elem.click(function () {
-      lock_button(elem);
+    // Unlock button on dbl click
+    elem.dblclick(() => {
+      clearTimeout(tid);
+      unlock(elem, onclick, content);
+      // Rebind lock on click
+      elem.click(function () {
+        lock(elem);
+      });
     });
+  };
+
+  $(document).ready(() => {
+    // Forum "Poster" button
+    $('#zone_reponse .bouton.poster')
+      .not('.locked')
+      .click(() => {
+        lock($(this));
+      });
   });
-}
-
-$(document).ready(function () {
-  // Forum "Poster" button
-  $('#zone_reponse .bouton.poster')
-    .not('.locked')
-    .click(function () {
-      lock_button($(this));
-    });
-
-  // IG "Envoyer" response message
-  /*$(document).ajaxComplete(function() {
-            $('.zone_reponse .btnTxt').not('.locked').unbind('click').click(function() {
-                lock_button($(this));
-            });
-        });*/
-
-  console.log('StopMultipleMessage on');
-});
+})();
