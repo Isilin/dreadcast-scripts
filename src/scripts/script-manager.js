@@ -6,7 +6,7 @@
 // @match       https://www.dreadcast.net/Forum/*
 // @match       https://www.dreadcast.net/EDC
 // @match       https://www.dreadcast.net/EDC/*
-// @version     1.0.4
+// @version     1.0.5
 // @author      Pelagia/Isilin
 // @description Centralize all dreadcast scripts in one single source, integrated to the game.
 // @license     https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
@@ -30,22 +30,6 @@
 // TODO add function to export, import settings, and to reset all settings.
 // TODO add text to say that disabling a script does not remove settings.
 // TODO use a recent jquery with noConflict
-
-// TODO re-add this script :
-// {
-//   "id": "stopmultiplemessageforumonly",
-//   "name": "StopMultipleMessageForumOnly",
-//   "description": "Empêche les messages doublons accidentels sur le forum.",
-//   "authors": "Kmaschta, Valion",
-//   "icon": "",
-//   "url": "https://update.greasyfork.org/scripts/30691/StopMultipleMessageForumOnly.user.js",
-//   "doc": "",
-//   "rp": "",
-//   "contact": "",
-//   "settings": false,
-//   "section": ["forum"],
-//   "category": ["fix"]
-// },
 
 $(() => {
   // To check if a script is used in a DSM context.

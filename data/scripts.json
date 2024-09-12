@@ -182,6 +182,20 @@
     "category": ["silhouette"]
   },
   {
+    "id": "stopmultiplemessageforumonly",
+    "name": "StopMultipleMessageForumOnly",
+    "description": "Empêche les messages doublons accidentels sur le forum.",
+    "authors": "Kmaschta, Valion, Pelagia",
+    "icon": "",
+    "url": "https://update.greasyfork.org/scripts/508039/StopMultipleMessageForumOnly.user.js",
+    "doc": "",
+    "rp": "",
+    "contact": "Pelagia",
+    "settings": false,
+    "section": ["forum"],
+    "category": ["fix"]
+  },
+  {
     "id": "séparationsujets",
     "name": "Séparation sujets",
     "description": "Separe le RP du HRP dans la section 'Derniers Sujets",
