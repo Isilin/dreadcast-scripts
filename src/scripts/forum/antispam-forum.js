@@ -3,7 +3,7 @@
 // @namespace   Forum
 // @match       https://www.dreadcast.net/Forum*
 // @match       https://www.dreadcast.net/FAQ*
-// @version     1.3.2
+// @version     1.3.3
 // @author      Kmaschta, MockingJay, Pelagia
 // @description Block spam on over-clicking
 // @license     https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
@@ -22,6 +22,7 @@
   const unlock = (elem, onclick, content) => {
     console.log('UNLOCK:' + elem);
     elem.attr('onclick', onclick);
+    elem.click(() => lock(button));
     elem.removeAttr('style');
     elem.html(content);
     elem.removeClass('locked');
@@ -52,10 +53,6 @@
     elem.dblclick(() => {
       clearTimeout(tid);
       unlock(elem, onclick, content);
-      // Rebind lock on click
-      elem.click(function () {
-        lock(elem);
-      });
     });
   };
 
