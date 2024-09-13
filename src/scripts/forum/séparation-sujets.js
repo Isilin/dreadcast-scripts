@@ -7,7 +7,7 @@
 // @match       https://www.dreadcast.net/FAQ#
 // @match       https://www.dreadcast.net/Forum/*
 // @match       https://www.dreadcast.net/FAQ/*
-// @version     2.2.2
+// @version     2.2.3
 // @author      Aversiste, MockingJay, Odul, Pelagia
 // @description Separe le RP du HRP dans la section 'Derniers Sujets'.
 // @license     http://creativecommons.org/licenses/by-nc-nd/4.0/
@@ -25,16 +25,13 @@
   const initPersistence = () => {
     // Init persistent memory if needed.
     DC.LocalMemory.init(DATA_TAG, {
-      blacklist: [],
-      categories: {
-        hrp: 'on',
-        rp: 'on',
-        ecoreb: 'on',
-        polreb: 'on',
-        ecoimp: 'on',
-        polimp: 'on',
-        annonces: 'on',
-      },
+      hrp: 'on',
+      rp: 'on',
+      ecoreb: 'on',
+      polreb: 'on',
+      ecoimp: 'on',
+      polimp: 'on',
+      annonces: 'on',
     });
 
     // Load the current settings.
@@ -46,7 +43,7 @@
   };
 
   const isOnOrOff = (node, id) => {
-    if (data.categories[id] === 'on') {
+    if (data[id] === 'on') {
       $('span.symbol:first', node).css('display', 'inline');
       $('span.symbol:last', node).css('display', 'none');
       $('ul', node).css('display', 'block');
@@ -59,7 +56,7 @@
 
   const addClickEvent = (node, id) => {
     $('h3', node).bind('click', () => {
-      data.categories[id] =
+      data[id] =
         $('.symbol:first', node).css('display') === 'none' ? 'off' : 'on';
       DC.LocalMemory.set(DATA_TAG, data);
     });
