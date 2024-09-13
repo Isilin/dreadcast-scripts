@@ -7,7 +7,7 @@
 // @match       https://www.dreadcast.net/FAQ#
 // @match       https://www.dreadcast.net/Forum/*
 // @match       https://www.dreadcast.net/FAQ/*
-// @version     2.2.3
+// @version     2.2.4
 // @author      Aversiste, MockingJay, Odul, Pelagia
 // @description Separe le RP du HRP dans la section 'Derniers Sujets'.
 // @license     http://creativecommons.org/licenses/by-nc-nd/4.0/
@@ -69,7 +69,7 @@
         10,
       ); //En déduit la catégorie forum
       var id = getId($('a', el).attr('href'));
-      if (!filter.includes(category) || data.blacklist.includes(id)) {
+      if (!filter.includes(category)) {
         el.remove();
       }
     });
@@ -87,21 +87,6 @@
     addClickEvent($node, id);
   };
 
-  const blacklist = (node) => {
-    $('li', node).each((i, el) => {
-      const elName = $(el)
-        .find('a')
-        .attr('href')
-        .substring(32, $(el).find('a').attr('href').indexOf('-', 33));
-      var off = localStorage.getItem(elName); //Récupère le texte de l'élément (lien)
-      if (off !== null && off == 'off') {
-        //Vérifie si à blacklister
-        node.children[1].removeChild(node.children[1].children[i]);
-        --i;
-      }
-    });
-  };
-
   //****************
   //***DEBUT MAIN***
   //****************
@@ -109,7 +94,6 @@
     initPersistence();
 
     var origList = $('#list_derniers_sujets'); // Récupération du div des derniers sujets
-    blacklist(origList); //Masquage de tous les topics qui doivent l'être, avant clonage et tri des catégories
 
     const sections = [
       {
