@@ -7,13 +7,15 @@
 // @match       https://www.dreadcast.net/FAQ#
 // @match       https://www.dreadcast.net/Forum/*
 // @match       https://www.dreadcast.net/FAQ/*
-// @version     2.2.0
+// @version     2.2.1
 // @author      Aversiste, MockingJay, Odul, Pelagia
 // @description Separe le RP du HRP dans la section 'Derniers Sujets'.
 // @license     http://creativecommons.org/licenses/by-nc-nd/4.0/
 // @require     https://update.greasyfork.org/scripts/507382/Dreadcast%20Development%20Kit.user.js
 // @grant       GM_setValue
 // @grant       GM_getValue
+// @downloadURL https://update.greasyfork.org/scripts/508226/S%C3%A9paration%20sujets.user.js
+// @updateURL   https://update.greasyfork.org/scripts/508226/S%C3%A9paration%20sujets.meta.js
 // ==/UserScript==
 
 (() => {
