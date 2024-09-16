@@ -6,7 +6,7 @@
 // @match       https://www.dreadcast.net/Forum/*
 // @match       https://www.dreadcast.net/EDC
 // @match       https://www.dreadcast.net/EDC/*
-// @version     1.0.5
+// @version     1.1.0
 // @author      Pelagia/Isilin
 // @description Centralize all dreadcast scripts in one single source, integrated to the game.
 // @license     https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
@@ -23,7 +23,7 @@
 // @connect     sheets.googleapis.com
 // @connect     raw.githubusercontent.com
 // @downloadURL https://update.greasyfork.org/scripts/507383/Dreadcast%20Script%20Manager.user.js
-// @updateURL   https://update.greasyfork.org/scripts/507383/Dreadcast%20Script%20Manager.meta.js
+// @updateURL https://update.greasyfork.org/scripts/507383/Dreadcast%20Script%20Manager.meta.js
 // ==/UserScript==
 
 // TODO remplacer petit à petit les scripts par les versions locales nettoyées.
@@ -35,10 +35,11 @@ $(() => {
   // To check if a script is used in a DSM context.
   Util.isDSM = () => true;
 
-  const LIST_TAG = 'dcm_list';
-  const ALL_DISABLED_TAG = 'dcm_all_disabled';
+  const LIST_TAG = 'dcsm_list';
+  const ALL_DISABLED_TAG = 'dcsm_all_disabled';
+  const INTRO_TAG = 'dcsm_intro_disabled';
 
-  let settings, allDisabled;
+  let settings, allDisabled, introDisabled;
   let newSettings, newAllDisabled;
 
   // ===== CORE =====
@@ -47,10 +48,25 @@ $(() => {
     // Init persistent memory if needed.
     DC.LocalMemory.init(LIST_TAG, {});
     DC.LocalMemory.init(ALL_DISABLED_TAG, false);
+    DC.LocalMemory.init(INTRO_TAG, false);
+
+    // TODO to delete at next major version.
+    if (DC.LocalMemory.get('dcm_list') !== undefined) {
+      DC.LocalMemory.set(LIST_TAG, DC.LocalMemory.get('dcm_list'));
+      DC.LocalMemory.delete('dcm_list');
+    }
+    if (DC.LocalMemory.get('dcm_all_disabled') !== undefined) {
+      DC.LocalMemory.set(
+        ALL_DISABLED_TAG,
+        DC.LocalMemory.get('dcm_all_disabled'),
+      );
+      DC.LocalMemory.delete('dcm_all_disabled');
+    }
 
     // Load the current settings.
     settings = DC.LocalMemory.get(LIST_TAG);
     allDisabled = DC.LocalMemory.get(ALL_DISABLED_TAG);
+    introDisabled = DC.LocalMemory.get(INTRO_TAG);
   };
 
   const synchronizeSettings = (settings, scripts) => {
@@ -161,6 +177,26 @@ $(() => {
     }
 
     return line;
+  };
+
+  const createIntro = () => {
+    if (Util.isGame() && !introDisabled) {
+      introDisabled = true;
+      DC.LocalMemory.set(INTRO_TAG, introDisabled);
+      DC.UI.PopUp(
+        'dcsm_intro',
+        'Bienvenue sur le Dreadcast Script Manager !',
+        $(`
+          <div style="color: white;">
+            <h3>Merci d'avoir installé le DreaCast Script Manager (DCSM).</h3><br />
+            <p>Cet utilitaire va vous permettre de gérer vos scripts directement en jeu. Pensez à désactiver/désinstaller dans votre GreaseMonkey/TamperMonkey (ou équivalent), les scripts que vous activerez dans le DCSM, pour éviter des doublons.</p><br />
+            <p>La suite se passe dans Paramètres > Scripts & Skins.</p><br />
+            <p>Vous pourrez obtenir des réponses à vos questions sur le <a href="https://github.com/Isilin/dreadcast-scripts/wiki">wiki</a>, sur le forum, ou en me contactant directement par Com' HRP : (<em>JD Pelagia</em>).</p><br />
+            <p>Bon jeu ! (Vous ne verrez plus cette fenêtre d'information par la suite).</p>
+          </div>
+        `),
+      );
+    }
   };
 
   const createUI = (scripts, settings) => {
@@ -333,6 +369,7 @@ $(() => {
   // ===============
   $(document).ready(() => {
     initPersistence();
+    createIntro();
 
     // Load list of scripts
     DC.Network.loadJson(

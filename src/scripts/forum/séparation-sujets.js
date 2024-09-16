@@ -7,7 +7,7 @@
 // @match       https://www.dreadcast.net/FAQ#
 // @match       https://www.dreadcast.net/Forum/*
 // @match       https://www.dreadcast.net/FAQ/*
-// @version     2.2.4
+// @version     2.2.5
 // @author      Aversiste, MockingJay, Odul, Pelagia
 // @description Separe le RP du HRP dans la section 'Derniers Sujets'.
 // @license     http://creativecommons.org/licenses/by-nc-nd/4.0/
@@ -38,10 +38,6 @@
     data = DC.LocalMemory.get(DATA_TAG);
   };
 
-  const getId = (url) => {
-    return url.substring(34, url.indexOf('-', 35));
-  };
-
   const isOnOrOff = (node, id) => {
     if (data[id] === 'on') {
       $('span.symbol:first', node).css('display', 'inline');
@@ -68,7 +64,6 @@
         $('a', el).attr('class').split(' ')[0].substring(2),
         10,
       ); //En déduit la catégorie forum
-      var id = getId($('a', el).attr('href'));
       if (!filter.includes(category)) {
         el.remove();
       }
