@@ -70,20 +70,6 @@
     "category": ["mailing"]
   },
   {
-    "id": "sauvegardemessagerie",
-    "name": "Sauvegarde Messagerie",
-    "description": "Parcourt tous vos messages de tous vos dossiers et produit une sortie HTML à copier dans un fichier sur votre machine.",
-    "authors": "Odul",
-    "icon": "",
-    "url": "https://update.greasyfork.org/scripts/3308/SauvegardeMessagerie.user.js",
-    "doc": "",
-    "rp": "",
-    "contact": "Odul",
-    "settings": false,
-    "section": ["game"],
-    "category": ["mailing"]
-  },
-  {
     "id": "mailprotect",
     "name": "DC - Mail Protect",
     "description": "Ajoute un mode permettant de demander la confirmation avant de fermer un message en cours de réaction.",
