@@ -210,20 +210,6 @@
     "category": ["fix"]
   },
   {
-    "id": "loader",
-    "name": "DC - Loader",
-    "description": "Modification du loader de Dreadcast avec une image personnalisable.",
-    "authors": "Kmaschta",
-    "icon": "",
-    "url": "https://update.greasyfork.org/scripts/1583/DC%20-%20Loader.user.js",
-    "doc": "",
-    "rp": "",
-    "contact": "",
-    "settings": false,
-    "section": ["game"],
-    "category": ["ui"]
-  },
-  {
     "id": "mapoverlay",
     "name": "DC Map Overlay",
     "description": "Modification de la carte initiale dans DC, par remplacement et/ou ajout d'une surcouche.",
@@ -264,20 +250,6 @@
     "settings": false,
     "section": ["game"],
     "category": ["ui", "mech"]
-  },
-  {
-    "id": "draggable",
-    "name": "Draggable DC",
-    "description": "Un éditeur pour déplacer les éléments de l'interface qui ne peuvent l'être de base",
-    "authors": "Ladoria",
-    "icon": "",
-    "url": "https://update.greasyfork.org/scripts/2035/draggable_DC.user.js",
-    "doc": "",
-    "rp": "",
-    "contact": "",
-    "settings": false,
-    "section": ["game"],
-    "category": ["ui"]
   },
   {
     "id": "compteursac",
