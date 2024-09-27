@@ -23,7 +23,7 @@
 // @connect     sheets.googleapis.com
 // @connect     raw.githubusercontent.com
 // @downloadURL https://update.greasyfork.org/scripts/507383/Dreadcast%20Script%20Manager.user.js
-// @updateURL https://update.greasyfork.org/scripts/507383/Dreadcast%20Script%20Manager.meta.js
+// @updateURL   https://update.greasyfork.org/scripts/507383/Dreadcast%20Script%20Manager.meta.js
 // ==/UserScript==
 
 // TODO remplacer petit à petit les scripts par les versions locales nettoyées.
