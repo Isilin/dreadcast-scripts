@@ -2,7 +2,7 @@
 // @name        Dreadcast Development Kit
 // @namespace   Dreadcast
 // @match       https://www.dreadcast.net/Main
-// @version     1.1.1
+// @version     1.1.2
 // @author      Pelagia/Isilin
 // @description Development kit to ease Dreadcast scripts integration.
 // @license     https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
@@ -736,12 +736,20 @@ DC.Chat = {
 
 DC.Deck = {
   checkSkill: (info) => {
+    Util.guard(
+      Util.isGame(),
+      'DC.Deck.checkSkill: this function should be called in Game only.',
+    );
     Util.guardNumber('DC.Deck.checkSkill', 'info', info);
 
     return info <= $('.stat_6_entier').first().html();
   },
 
   write: (node) => {
+    Util.guard(
+      Util.isGame(),
+      'DC.Deck.write: this function should be called in Game only.',
+    );
     Util.guardJQuery('DC.Deck.write', 'node', node);
 
     const deckId = 'db_deck_' + settings.data.match(/[0-9]*$/)[0];
@@ -760,6 +768,10 @@ DC.Deck = {
   },
 
   createCommand: (info, command, fn, helpFn, help) => {
+    Util.guard(
+      Util.isGame(),
+      'DC.Deck.createCommand: this function should be called in Game only.',
+    );
     Util.guardNumber('DC.Deck.createCommand', 'info', info);
     Util.guardString('DC.Deck.createCommand', 'command', command);
     Util.guardFunction('DC.Deck.createCommand', 'fn', fn);
