@@ -2,7 +2,7 @@
 // @name        Dreadcast Development Kit
 // @namespace   Dreadcast
 // @match       https://www.dreadcast.net/Main
-// @version     1.1.3
+// @version     1.1.4
 // @author      Pelagia/Isilin
 // @description Development kit to ease Dreadcast scripts integration.
 // @license     https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
@@ -758,7 +758,7 @@ DC.Deck = {
       'ligne_resultat_fixed';
 
     if (mode) {
-      $(`#${deckId} .ligne_resultat_fixed`).last().append(node);
+      $(`#${deckId} .zone_ecrit>.ligne_resultat_fixed:last-child`).append(node);
     } else {
       $('<div class="ligne_resultat_fixed" />')
         .append(node)
