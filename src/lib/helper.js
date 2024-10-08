@@ -2,7 +2,7 @@
 // @name        Dreadcast Development Kit
 // @namespace   Dreadcast
 // @match       https://www.dreadcast.net/Main
-// @version     1.0.14
+// @version     1.1.0
 // @author      Pelagia/Isilin
 // @description Development kit to ease Dreadcast scripts integration.
 // @license     https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
@@ -729,6 +729,79 @@ DC.Chat = {
         return next();
       } else {
         return abort();
+      }
+    });
+  },
+};
+
+DC.Deck = {
+  checkSkill: (info) => {
+    Util.guardNumber('DC.Deck.checkSkill', 'info', info);
+
+    return info <= $('.stat_6_entier').first().html();
+  },
+
+  getId: () => {
+    return 'db_deck_' + settings.data.match(/[0-9]*$/)[0];
+  },
+
+  getLastCommand: () => {
+    var deckId = DC.Deck.getId();
+    return $(`#${deckId} .ligne_ecrite_fixed input`).last().val();
+  },
+
+  write: (node) => {
+    Util.guardJQuery('DC.Deck.write', 'node', node);
+
+    const deckId = 'db_deck_' + settings.data.match(/[0-9]*$/)[0];
+
+    const mode =
+      $(`#${deckId} .zone_ecrit div:last-child`).attr('class') ===
+      'ligne_resultat_fixed';
+
+    if (mode) {
+      $(`#${deckId} .ligne_resultat_fixed`).last().append(node);
+    } else {
+      $('<div class="ligne_resultat_fixed" />')
+        .append(node)
+        .appendTo($(`#${deckId} .zone_ecrit`));
+    }
+  },
+
+  createCommand: (info, command, fn, helpFn, help) => {
+    Util.guardNumber('DC.Deck.createCommand', 'info', info);
+    Util.guardString('DC.Deck.createCommand', 'command', command);
+    Util.guardFunction('DC.Deck.createCommand', 'fn', fn);
+    Util.guardFunction('DC.Deck.createCommand', 'helpFn', helpFn);
+    Util.guardString('DC.Deck.createCommand', 'help', help);
+
+    $(document).ajaxComplete(function (event, xhr, settings) {
+      // Handle custom deck command
+      if (/Command/.test(settings.url)) {
+        var deckId = DC.Deck.getId();
+        var lastCommand = DC.Deck.getLastCommand();
+
+        // Handle Date command
+
+        if (new RegExp(`^${command}`, 'gi').test(lastCommand)) {
+          if (DC.Deck.checkSkill(info)) {
+            fn(lastCommand, deckId);
+          } else {
+            DC.Deck.write(
+              $(
+                '<span>Votre niveau en informatique est trop faible pour réussir cette commande</span>',
+              ),
+            );
+          }
+        }
+        // Handle help Date command
+        else if (new RegExp(`^help ${command}`, 'gi').test(lastCommand)) {
+          helpFn(deckId);
+        }
+        // Handle help Date command
+        else if (/^help$/gi.test(lastCommand)) {
+          DC.Deck.write($(`<br />${help}`));
+        }
       }
     });
   },
