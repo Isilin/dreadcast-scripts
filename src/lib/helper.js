@@ -2,7 +2,7 @@
 // @name        Dreadcast Development Kit
 // @namespace   Dreadcast
 // @match       https://www.dreadcast.net/Main
-// @version     1.1.0
+// @version     1.1.1
 // @author      Pelagia/Isilin
 // @description Development kit to ease Dreadcast scripts integration.
 // @license     https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
@@ -741,15 +741,6 @@ DC.Deck = {
     return info <= $('.stat_6_entier').first().html();
   },
 
-  getId: () => {
-    return 'db_deck_' + settings.data.match(/[0-9]*$/)[0];
-  },
-
-  getLastCommand: () => {
-    var deckId = DC.Deck.getId();
-    return $(`#${deckId} .ligne_ecrite_fixed input`).last().val();
-  },
-
   write: (node) => {
     Util.guardJQuery('DC.Deck.write', 'node', node);
 
@@ -778,8 +769,10 @@ DC.Deck = {
     $(document).ajaxComplete(function (event, xhr, settings) {
       // Handle custom deck command
       if (/Command/.test(settings.url)) {
-        var deckId = DC.Deck.getId();
-        var lastCommand = DC.Deck.getLastCommand();
+        var deckId = 'db_deck_' + settings.data.match(/[0-9]*$/)[0];
+        var lastCommand = $(`#${deckId} .ligne_ecrite_fixed input`)
+          .last()
+          .val();
 
         // Handle Date command
 
