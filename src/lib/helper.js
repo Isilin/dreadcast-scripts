@@ -2,7 +2,7 @@
 // @name        Dreadcast Development Kit
 // @namespace   Dreadcast
 // @match       https://www.dreadcast.net/Main
-// @version     1.1.2
+// @version     1.1.3
 // @author      Pelagia/Isilin
 // @description Development kit to ease Dreadcast scripts integration.
 // @license     https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
@@ -745,14 +745,13 @@ DC.Deck = {
     return info <= $('.stat_6_entier').first().html();
   },
 
-  write: (node) => {
+  write: (node, deckId) => {
     Util.guard(
       Util.isGame(),
       'DC.Deck.write: this function should be called in Game only.',
     );
     Util.guardJQuery('DC.Deck.write', 'node', node);
-
-    const deckId = 'db_deck_' + settings.data.match(/[0-9]*$/)[0];
+    Util.guardString('DC.Deck.write', 'deckId', deckId);
 
     const mode =
       $(`#${deckId} .zone_ecrit div:last-child`).attr('class') ===
@@ -795,6 +794,7 @@ DC.Deck = {
             DC.Deck.write(
               $(
                 '<span>Votre niveau en informatique est trop faible pour réussir cette commande</span>',
+                deckId,
               ),
             );
           }
@@ -805,7 +805,7 @@ DC.Deck = {
         }
         // Handle help Date command
         else if (/^help$/gi.test(lastCommand)) {
-          DC.Deck.write($(`<br />${help}`));
+          DC.Deck.write($(`<br />${help}`), deckId);
         }
       }
     });
