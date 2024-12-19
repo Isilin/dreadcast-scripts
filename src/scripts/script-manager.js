@@ -27,7 +27,6 @@
 // ==/UserScript==
 
 // TODO remplacer petit à petit les scripts par les versions locales nettoyées.
-// TODO add function to reset all settings.
 // TODO add text to say that disabling a script does not remove settings.
 // TODO use a recent jquery with noConflict
 
@@ -344,6 +343,13 @@ $(() => {
             ),
           );
 
+          const resetConfig = () => {
+            const list = DC.LocalMemory.list();
+            list.forEach((key) => {
+              DC.LocalMemory.delete(key);
+            });
+          };
+
           // Import/Export
           content.append(
             $(
@@ -352,14 +358,20 @@ $(() => {
           );
           $('#config_buttons', content).append(
             DC.UI.TextButton(
+              'config_reset',
+              '<i class="fas fa-undo"></i> Réinitialiser',
+              () => {
+                resetConfig();
+                location.replace('https://www.dreadcast.net/Main');
+              },
+            ),
+          );
+          $('#config_buttons', content).append(
+            DC.UI.TextButton(
               'config_import',
               '<i class="fas fa-upload"></i> Importer la configuration',
               () => {
-                // reset config
-                const list = DC.LocalMemory.list();
-                list.forEach((key) => {
-                  DC.LocalMemory.delete(key);
-                });
+                resetConfig();
 
                 const anchor = document.createElement('input');
                 anchor.style.display = 'none';
