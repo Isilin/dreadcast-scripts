@@ -28,6 +28,7 @@
 
 // TODO remplacer petit à petit les scripts par les versions locales nettoyées.
 // TODO use a recent jquery with noConflict
+// TODO Reset button in Com'Back reset all the settings from DCSM (including scripts then).
 
 $(() => {
   // To check if a script is used in a DSM context.
@@ -36,9 +37,10 @@ $(() => {
   const LIST_TAG = 'dcsm_list';
   const ALL_DISABLED_TAG = 'dcsm_all_disabled';
   const INTRO_TAG = 'dcsm_intro_disabled';
+  const DEV_MODE_TAG = 'dcsm_dev_mode';
 
-  let settings, allDisabled, introDisabled;
-  let newSettings, newAllDisabled;
+  let settings, allDisabled, introDisabled, devMode;
+  let newSettings, newAllDisabled, newDevMode;
 
   // ===== CORE =====
 
@@ -47,6 +49,7 @@ $(() => {
     DC.LocalMemory.init(LIST_TAG, {});
     DC.LocalMemory.init(ALL_DISABLED_TAG, false);
     DC.LocalMemory.init(INTRO_TAG, false);
+    DC.LocalMemory.init(DEV_MODE_TAG, false);
 
     // TODO to delete at next major version.
     if (DC.LocalMemory.get('dcm_list') !== undefined) {
@@ -65,6 +68,7 @@ $(() => {
     settings = DC.LocalMemory.get(LIST_TAG);
     allDisabled = DC.LocalMemory.get(ALL_DISABLED_TAG);
     introDisabled = DC.LocalMemory.get(INTRO_TAG);
+    devMode = DC.LocalMemory.get(DEV_MODE_TAG);
   };
 
   const synchronizeSettings = (settings, scripts) => {
@@ -103,8 +107,8 @@ $(() => {
             : '<td class="short" style="width: 58px;" rowspan="2" />'
         }
         <td style="padding: 5px 0; min-width: 120px; text-align: left;">${
-          script.name || ''
-        }</td>
+          script.experimental ? '<span style="color: red;">[DEV]</span>' : ''
+        } ${script.name || ''}</td>
         <td style="padding: 5px 0; min-width: 120px; text-align: left;"><small>${
           script.authors || ''
         }</small></td>
@@ -209,6 +213,7 @@ $(() => {
           // On récupère une config temporaire qu'on appliquera uniquement si sauvegardée.
           newSettings = settings;
           newAllDisabled = allDisabled;
+          newDevMode = devMode;
 
           const sections = [
             { id: 'all', label: 'Tous' },
@@ -229,12 +234,15 @@ $(() => {
           ];
 
           const content = $(`<div style="color: white;">
+          <div id="developper_mode_switch" style="display: flex; justify-content: flex-begin;gap: 1rem;margin-bottom: 1rem;">
+            <p>Mode développeur</p>
+          </div>
           <div style="display: flex; justify-content: space-between">
             <div id="scripts_all_switch" style="display: flex;gap: 1rem;margin-bottom: 1rem;">
               <p>Tout désactiver</p>
             </div>
             <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                <label for="search_script">Recherche :</label>
+                <label for="search_script">Recherche</label>
                 <input id="search_script" name="search_script" type="text" size="50" style="color: white;" />
             </div>
           </div>
@@ -367,8 +375,10 @@ $(() => {
             DC.UI.TextButton('scripts_refresh', 'Sauvegarder', () => {
               settings = newSettings;
               allDisabled = newAllDisabled;
+              devMode = newDevMode;
               DC.LocalMemory.set(LIST_TAG, settings);
               DC.LocalMemory.set(ALL_DISABLED_TAG, allDisabled);
+              DC.LocalMemory.set(DEV_MODE_TAG, devMode);
               location.replace('https://www.dreadcast.net/Main'); // Better than reload() with Chrome.
             }),
           );
@@ -465,10 +475,24 @@ $(() => {
             ),
           );
 
-          scripts.forEach((script, index) => {
-            const line = createScriptLine(script, index);
-            $('tbody', content).append(line);
-          });
+          // Switch button pour le développeur mode.
+          $('#developper_mode_switch', content).append(
+            DC.UI.Tooltip(
+              'Attention, ces scripts sont encore en développement !',
+              DC.UI.Checkbox(
+                'developper_mode_check',
+                newDevMode,
+                () => (newDevMode = !newDevMode),
+              ),
+            ),
+          );
+
+          scripts
+            .filter((script) => devMode || !script.experimental)
+            .forEach((script, index) => {
+              const line = createScriptLine(script, index);
+              $('tbody', content).append(line);
+            });
 
           return DC.UI.PopUp('scripts_modal', 'Scripts & Skins', content);
         },
@@ -501,6 +525,7 @@ $(() => {
 
           scripts
             .filter((script) => script.section.includes(context))
+            .filter((script) => devMode || !script.experimental)
             .forEach((script) => {
               if (settings[script.id]) {
                 DC.Network.loadScript(script.url)
