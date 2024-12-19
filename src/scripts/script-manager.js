@@ -6,7 +6,7 @@
 // @match       https://www.dreadcast.net/Forum/*
 // @match       https://www.dreadcast.net/EDC
 // @match       https://www.dreadcast.net/EDC/*
-// @version     1.1.0
+// @version     1.2.0
 // @author      Pelagia/Isilin
 // @description Centralize all dreadcast scripts in one single source, integrated to the game.
 // @license     https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
@@ -27,7 +27,7 @@
 // ==/UserScript==
 
 // TODO remplacer petit à petit les scripts par les versions locales nettoyées.
-// TODO add function to export, import settings, and to reset all settings.
+// TODO add function to reset all settings.
 // TODO add text to say that disabling a script does not remove settings.
 // TODO use a recent jquery with noConflict
 
@@ -341,6 +341,70 @@ $(() => {
             $(
               `<p><em class="couleur5">⚠ Sauvegarder votre configuration va raffraichir la page.<br />
          Pensez à sauvegarder votre travail en cours avant.</em></p>`,
+            ),
+          );
+
+          // Import/Export
+          content.append(
+            $(
+              '<div id="config_buttons" style="display: flex; justify-content: end; gap: 1rem; margin-bottom: 1rem;"></div>',
+            ),
+          );
+          $('#config_buttons', content).append(
+            DC.UI.TextButton(
+              'config_import',
+              '<i class="fas fa-upload"></i> Importer la configuration',
+              () => {
+                // reset config
+                const list = DC.LocalMemory.list();
+                list.forEach((key) => {
+                  DC.LocalMemory.delete(key);
+                });
+
+                const anchor = document.createElement('input');
+                anchor.style.display = 'none';
+                anchor.type = 'file';
+                anchor.accept = 'application.json';
+                anchor.onchange = (e) => {
+                  var reader = new FileReader();
+                  reader.onload = (e) => {
+                    const data = JSON.parse(e.target.result);
+                    Object.keys(data).forEach((key) => {
+                      DC.LocalMemory.set(key, data[key]);
+                    });
+                  };
+                  reader.readAsText(e.target.files[0]);
+                  document.body.removeChild(anchor);
+                  location.replace('https://www.dreadcast.net/Main');
+                };
+                document.body.appendChild(anchor);
+                anchor.click();
+              },
+            ),
+          );
+          $('#config_buttons', content).append(
+            DC.UI.TextButton(
+              'config_export',
+              '<i class="fas fa-download"></i> Exporter la configuration',
+              function () {
+                const list = DC.LocalMemory.list();
+                let data = {};
+                list.forEach((key) => {
+                  data[key] = DC.LocalMemory.get(key);
+                });
+
+                const anchor = document.createElement('a');
+                anchor.style.display = 'none';
+                anchor.href = URL.createObjectURL(
+                  new Blob([JSON.stringify(data)], {
+                    type: 'application/json',
+                  }),
+                );
+                anchor.download = 'dcsm_config.json';
+                document.body.appendChild(anchor);
+                anchor.click();
+                document.body.removeChild(anchor);
+              },
             ),
           );
 
