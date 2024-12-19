@@ -27,7 +27,6 @@
 // ==/UserScript==
 
 // TODO remplacer petit à petit les scripts par les versions locales nettoyées.
-// TODO add text to say that disabling a script does not remove settings.
 // TODO use a recent jquery with noConflict
 
 $(() => {
@@ -122,10 +121,13 @@ $(() => {
       </tr>
     `);
     $('.enabled_cell', line).append(
-      DC.UI.Checkbox(
-        `${script.id}_check`,
-        newSettings[script.id],
-        () => (newSettings[script.id] = !newSettings[script.id]),
+      DC.UI.Tooltip(
+        'Activer/Désactiver le script ne perdra pas sa configuration.',
+        DC.UI.Checkbox(
+          `${script.id}_check`,
+          newSettings[script.id],
+          () => (newSettings[script.id] = !newSettings[script.id]),
+        ),
       ),
     );
     if (script.settings) {
