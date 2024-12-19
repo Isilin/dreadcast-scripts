@@ -227,8 +227,14 @@ $(() => {
           ];
 
           const content = $(`<div style="color: white;">
-          <div id="scripts_all_switch" style="display: flex;gap: 1rem;margin-bottom: 1rem;">
-            <p>Tout désactiver</p>
+          <div style="display: flex; justify-content: space-between">
+            <div id="scripts_all_switch" style="display: flex;gap: 1rem;margin-bottom: 1rem;">
+              <p>Tout désactiver</p>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <label for="search_script">Recherche :</label>
+                <input id="search_script" name="search_script" type="text" size="50" style="color: white;" />
+            </div>
           </div>
           <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
             <legend style="margin-right: 1rem; min-width: 60px;">Filtrer :</legend>
@@ -291,6 +297,7 @@ $(() => {
           $(document).on('change', "input[name='category']", (e) => {
             const category = e.target.value;
             const section = $("input[name='section']:checked").val();
+            const search = $("input[name='search_script']").val().toLowerCase();
 
             // Empty the table
             $('tbody', content).empty();
@@ -299,7 +306,9 @@ $(() => {
               .filter(
                 (script) =>
                   (script.section.includes(section) || section === 'all') &&
-                  (script.category.includes(category) || category === 'all'),
+                  (script.category.includes(category) || category === 'all') &&
+                  (script.name.toLowerCase().includes(search) ||
+                    script.description.toLowerCase().includes(search)),
               )
               .forEach((script, index) => {
                 const line = createScriptLine(script, index);
@@ -310,6 +319,7 @@ $(() => {
           $(document).on('change', "input[name='section']", (e) => {
             const section = e.target.value;
             const category = $("input[name='category']:checked").val();
+            const search = $("input[name='search_script']").val().toLowerCase();
 
             // Empty the table
             $('tbody', content).empty();
@@ -318,7 +328,31 @@ $(() => {
               .filter(
                 (script) =>
                   (script.section.includes(section) || section === 'all') &&
-                  (script.category.includes(category) || category === 'all'),
+                  (script.category.includes(category) || category === 'all') &&
+                  (script.name.toLowerCase().includes(search) ||
+                    script.description.toLowerCase().includes(search)),
+              )
+              .forEach((script, index) => {
+                const line = createScriptLine(script, index);
+                $('tbody', content).append(line);
+              });
+          });
+
+          $(document).on('input', "input[name='search_script']", (e) => {
+            const search = e.target.value.toLowerCase();
+            const category = $("input[name='category']:checked").val();
+            const section = $("input[name='section']:checked").val();
+
+            // Empty the table
+            $('tbody', content).empty();
+            // Add filtered lines
+            scripts
+              .filter(
+                (script) =>
+                  (script.section.includes(section) || section === 'all') &&
+                  (script.category.includes(category) || category === 'all') &&
+                  (script.name.toLowerCase().includes(search) ||
+                    script.description.toLowerCase().includes(search)),
               )
               .forEach((script, index) => {
                 const line = createScriptLine(script, index);
