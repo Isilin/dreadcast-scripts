@@ -26,6 +26,7 @@
 // @updateURL   https://update.greasyfork.org/scripts/507383/Dreadcast%20Script%20Manager.meta.js
 // ==/UserScript==
 
+// TODO rebasculer sur la main branch pour les scripts
 // TODO remplacer petit à petit les scripts par les versions locales nettoyées.
 // TODO use a recent jquery with noConflict
 // TODO Reset button in Com'Back reset all the settings from DCSM (including scripts then).
@@ -509,7 +510,7 @@ $(() => {
 
     // Load list of scripts
     DC.Network.loadJson(
-      'https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/data/scripts.json',
+      'https://raw.githubusercontent.com/Isilin/dreadcast-scripts/DCSMv1.2.0/data/scripts.json',
     )
       .then((scripts) => {
         settings = synchronizeSettings(settings, scripts);
