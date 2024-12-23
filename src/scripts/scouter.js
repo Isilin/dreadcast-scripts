@@ -88,7 +88,7 @@ $(() => {
       '1VgeD1CghIxgP-5AfkKV7woLm4CXqVLQ53XSHH7vHZZk',
     );
     DC.LocalMemory.init(SHEED_NAME_TAG, 'Data');
-    DC.LocalMemory.init(SHEET_RANGE_TAG, 'A:T');
+    DC.LocalMemory.init(SHEET_RANGE_TAG, 'A:V');
 
     syncParams();
   };
@@ -176,11 +176,11 @@ $(() => {
                       <div><span class="couleur0">Méta-race :</span> <span class="couleur5">${charData[3]}</span></div>
                       <div><span class="couleur0">Genre :</span> <span class="couleur5">${charData[4]}</span></div>
                       <div><span class="couleur0">Âge :</span> <span class="couleur5">${charData[5]} ans</span></div>
-                      <div><span class="couleur0">Taille:</span> <span class="couleur5">${charData[6]}cm</span></div>
+                      <div><span class="couleur0">Taille :</span> <span class="couleur5">${charData[6]}cm</span></div>
                       <div><span class="couleur0">Poids :</span> <span class="couleur5">${charData[7]}kg</span></div>
                       <br />
-                      <div><span class="couleur0">Statut :</span> <span class="couleur5">${charData[20]}</span></div>
-                      <div><span class="couleur0">Emploi :</span> <span class="couleur5">${charData[21]}</span></div>
+                      <div><span class="couleur0">Emploi :</span> <span class="couleur5">${charData[20]}</span></div>
+                      <div><span class="couleur0">Statut :</span> <span class="couleur5">${charData[21]}</span></div>
                       <br />
                       <div><span class="couleur0">Notes :</span> <span class="couleur5">${charData[8]}</span></div>
                     </div>
@@ -260,7 +260,7 @@ $(() => {
     loadData();
 
     if (Util.isDSM?.()) {
-      $('#scouter_setting').bind('click', openSettings);
+      $(document).on('click', '#scouter_setting', openSettings);
     } else {
       DC.UI.addSubMenuTo(
         'Paramètres ▾',

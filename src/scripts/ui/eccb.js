@@ -1,13 +1,17 @@
 // ==UserScript==
 // @name        ECCB
-// @namespace   InGame
+// @namespace   Dreadcast
 // @match       https://www.dreadcast.net/Main
-// @grant GM_addStyle
-// @version     1.2
-// @author      Isilin/Pelagia
-// @date        26/02/2024
+// @version     1.2.0
+// @author      Pelagia/Isilin
 // @description Editeur de Commentaires de Conteneurs en Banque
-// @license      http://creativecommons.org/licenses/by-nc-nd/4.0/
+// @license     https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
+// @require     https://update.greasyfork.org/scripts/507382/Dreadcast%20Development%20Kit.user.js
+// @grant       GM_addStyle
+// @grant       GM_setValue
+// @grant       GM_getValue
+// @downloadURL https://update.greasyfork.org/scripts/488837/ECCB.user.js
+// @updateURL   https://update.greasyfork.org/scripts/488837/ECCB.meta.js
 // ==/UserScript==
 
 GM_addStyle(`
@@ -31,15 +35,6 @@ GM_addStyle(`
         max-height: 30px;
       }
    
-      .nm_description_item_named_bank .btnTxt {
-        min-width: 50px;
-        max-width: 50px;
-        left: unset !important;
-        top: unset !important;
-        margin-left: 0 !important;
-        margin-top: 0 !important;
-      }
-   
       .nm_description_box {
         left: 97px;
         top: 20px;
@@ -51,60 +46,62 @@ GM_addStyle(`
 
 // ===== Core =====
 
-function getDescription(index) {
-  let jsonData = {};
-  const data = localStorage.getItem('descriptionBankBags');
-  if (data != null) {
-    jsonData = JSON.parse(data);
-  }
-  return jsonData[index] || '';
-}
+const DATA_TAG = 'eccb_data';
 
-function setDescription(index, description) {
-  console.log(index);
-  if (description != null && description.length > 0) {
-    let jsonData = {};
-    const data = localStorage.getItem('descriptionBankBags');
-    if (data != null) {
-      jsonData = JSON.parse(data);
-    }
-    jsonData[index] = description;
-    console.log(JSON.stringify(jsonData));
-    localStorage.setItem('descriptionBankBags', JSON.stringify(jsonData));
-  }
-}
+const initPersistence = () => {
+  DC.LocalMemory.init(DATA_TAG, []);
+
+  return DC.LocalMemory.get(DATA_TAG);
+};
+
+let data = [];
 
 // ===== Logic =====
 
-function customDescription(index) {
+const customDescription = (index) => {
+  Util.guardNumber('ECCB:customDescription', 'index', index);
+
   var input = prompt(
     'Saisissez la description de votre coffre :',
-    getDescription(index),
+    data[index].description,
   );
-  if (input != null) {
-    setDescription(index, input);
+  if (input !== null) {
+    data[index].description = input;
+    DC.LocalMemory.set(DATA_TAG, data);
     $(`#nm_description_text_${index}`).text(input);
   }
-}
+};
+
+const customColor = (value, index) => {
+  Util.guardString('ECCB:customColor', 'value', value);
+  Util.guardNumber('ECCB:customColor', 'index', index);
+
+  data[index].color = value;
+  DC.LocalMemory.set(DATA_TAG, data);
+};
 
 // ===== UI =====
 $(document).ready(function () {
+  data = initPersistence();
+
   $(document).ajaxSuccess(function (e, xhr, opt) {
     if (opt.url.includes('Company/Account/View')) {
       for (var i = 1; i <= 10; ++i) {
         $(`.stock${i}`).append(
-          `<div class="nm_description_item_named_bank" id="nm_edit_description_block_${i}"></div>`,
+          `<div class="eccb_description_item_named_bank" id="eccb_edit_description_block_${i}"></div>`,
         );
         $(`.stock${i}`).append(
-          `<div class="nm_description_box" id="nm_description_text_${i}">${getDescription(
-            i,
-          )}</div>`,
+          `<div class="eccb_description_box" id="eccb_description_text_${i}">${data[i].description}</div>`,
         );
-        $(`#nm_edit_description_block_${i}`).append(
-          `<div class="btnTxt" style="top:19px;left:50%;margin-left:-48px;margin-top:-20px;" id="nm_edit_description_${i}">Editer</div>`,
+        $(`#eccb_edit_description_block_${i}`).append(
+          DC.UI.TextButton(`eccb_edit_description_${i}`, 'Éditer', () =>
+            customDescription(i),
+          ),
         );
-        $(`#nm_edit_description_${i}`).click({ index: i }, (event) =>
-          customDescription(event.data.index),
+        $(`#eccb_edit_description_block_${i}`).append(
+          DC.UI.ColorPicker(`eccb_color_${i}`, data[i].color, (e) =>
+            customColor(e, i),
+          ),
         );
       }
     }
