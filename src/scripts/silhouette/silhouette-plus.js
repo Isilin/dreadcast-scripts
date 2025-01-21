@@ -2,7 +2,7 @@
 // @name        Silhouette+
 // @namespace   Dreadcast
 // @match       https://www.dreadcast.net/Main
-// @version     0.1.0
+// @version     1.0.0
 // @author      Pelagia/Isilin
 // @description To fully customize RP sheets with silhouettes and more. Combine SkinSilhouette & ShowSilhouette.
 // @license     https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file

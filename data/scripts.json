@@ -470,13 +470,13 @@
     "description": "Pour personnaliser entièrement sa feuille RP avec silhouette et plus. Réunit les scripts SkinSilhouette et ShowSilhouette.",
     "authors": "Isilin/Pelagia",
     "icon": "",
-    "url": "https://raw.githubusercontent.com/Isilin/dreadcast-scripts/DCSMv1.2.0/src/scripts/silhouette/silhouette-plus.js",
+    "url": "https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/src/scripts/silhouette/silhouette-plus.js",
     "doc": "",
     "rp": "",
     "contact": "Pelagia",
     "settings": true,
     "section": ["game"],
     "category": ["silhouette"],
-    "experimental": true
+    "experimental": false
   }
 ]

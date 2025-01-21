@@ -6,7 +6,7 @@
 // @match       https://www.dreadcast.net/Forum/*
 // @match       https://www.dreadcast.net/EDC
 // @match       https://www.dreadcast.net/EDC/*
-// @version     1.2.0
+// @version     1.3.0
 // @author      Pelagia/Isilin
 // @description Centralize all dreadcast scripts in one single source, integrated to the game.
 // @license     https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
@@ -26,7 +26,6 @@
 // @updateURL   https://update.greasyfork.org/scripts/507383/Dreadcast%20Script%20Manager.meta.js
 // ==/UserScript==
 
-// TODO rebasculer sur la main branch pour les scripts
 // TODO remplacer petit à petit les scripts par les versions locales nettoyées.
 // TODO use a recent jquery with noConflict
 // TODO Reset button in Com'Back reset all the settings from DCSM (including scripts then).
