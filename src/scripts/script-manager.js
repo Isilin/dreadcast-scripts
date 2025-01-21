@@ -6,7 +6,7 @@
 // @match       https://www.dreadcast.net/Forum/*
 // @match       https://www.dreadcast.net/EDC
 // @match       https://www.dreadcast.net/EDC/*
-// @version     1.3.0
+// @version     1.3.1
 // @author      Pelagia/Isilin
 // @description Centralize all dreadcast scripts in one single source, integrated to the game.
 // @license     https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
@@ -509,7 +509,7 @@ $(() => {
 
     // Load list of scripts
     DC.Network.loadJson(
-      'https://raw.githubusercontent.com/Isilin/dreadcast-scripts/DCSMv1.2.0/data/scripts.json',
+      'https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/data/scripts.json',
     )
       .then((scripts) => {
         settings = synchronizeSettings(settings, scripts);
