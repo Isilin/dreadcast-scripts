@@ -6,7 +6,7 @@
 // @match       https://www.dreadcast.net/Forum/*
 // @match       https://www.dreadcast.net/EDC
 // @match       https://www.dreadcast.net/EDC/*
-// @version     1.1.0
+// @version     1.3.0
 // @author      Pelagia/Isilin
 // @description Centralize all dreadcast scripts in one single source, integrated to the game.
 // @license     https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
@@ -27,9 +27,8 @@
 // ==/UserScript==
 
 // TODO remplacer petit à petit les scripts par les versions locales nettoyées.
-// TODO add function to export, import settings, and to reset all settings.
-// TODO add text to say that disabling a script does not remove settings.
 // TODO use a recent jquery with noConflict
+// TODO Reset button in Com'Back reset all the settings from DCSM (including scripts then).
 
 $(() => {
   // To check if a script is used in a DSM context.
@@ -38,9 +37,10 @@ $(() => {
   const LIST_TAG = 'dcsm_list';
   const ALL_DISABLED_TAG = 'dcsm_all_disabled';
   const INTRO_TAG = 'dcsm_intro_disabled';
+  const DEV_MODE_TAG = 'dcsm_dev_mode';
 
-  let settings, allDisabled, introDisabled;
-  let newSettings, newAllDisabled;
+  let settings, allDisabled, introDisabled, devMode;
+  let newSettings, newAllDisabled, newDevMode;
 
   // ===== CORE =====
 
@@ -49,6 +49,7 @@ $(() => {
     DC.LocalMemory.init(LIST_TAG, {});
     DC.LocalMemory.init(ALL_DISABLED_TAG, false);
     DC.LocalMemory.init(INTRO_TAG, false);
+    DC.LocalMemory.init(DEV_MODE_TAG, false);
 
     // TODO to delete at next major version.
     if (DC.LocalMemory.get('dcm_list') !== undefined) {
@@ -67,6 +68,7 @@ $(() => {
     settings = DC.LocalMemory.get(LIST_TAG);
     allDisabled = DC.LocalMemory.get(ALL_DISABLED_TAG);
     introDisabled = DC.LocalMemory.get(INTRO_TAG);
+    devMode = DC.LocalMemory.get(DEV_MODE_TAG);
   };
 
   const synchronizeSettings = (settings, scripts) => {
@@ -105,8 +107,8 @@ $(() => {
             : '<td class="short" style="width: 58px;" rowspan="2" />'
         }
         <td style="padding: 5px 0; min-width: 120px; text-align: left;">${
-          script.name || ''
-        }</td>
+          script.experimental ? '<span style="color: red;">[DEV]</span>' : ''
+        } ${script.name || ''}</td>
         <td style="padding: 5px 0; min-width: 120px; text-align: left;"><small>${
           script.authors || ''
         }</small></td>
@@ -123,10 +125,13 @@ $(() => {
       </tr>
     `);
     $('.enabled_cell', line).append(
-      DC.UI.Checkbox(
-        `${script.id}_check`,
-        newSettings[script.id],
-        () => (newSettings[script.id] = !newSettings[script.id]),
+      DC.UI.Tooltip(
+        'Activer/Désactiver le script ne perdra pas sa configuration.',
+        DC.UI.Checkbox(
+          `${script.id}_check`,
+          newSettings[script.id],
+          () => (newSettings[script.id] = !newSettings[script.id]),
+        ),
       ),
     );
     if (script.settings) {
@@ -208,6 +213,7 @@ $(() => {
           // On récupère une config temporaire qu'on appliquera uniquement si sauvegardée.
           newSettings = settings;
           newAllDisabled = allDisabled;
+          newDevMode = devMode;
 
           const sections = [
             { id: 'all', label: 'Tous' },
@@ -228,8 +234,17 @@ $(() => {
           ];
 
           const content = $(`<div style="color: white;">
-          <div id="scripts_all_switch" style="display: flex;gap: 1rem;margin-bottom: 1rem;">
-            <p>Tout désactiver</p>
+          <div id="developper_mode_switch" style="display: flex; justify-content: flex-begin;gap: 1rem;margin-bottom: 1rem;">
+            <p>Mode développeur</p>
+          </div>
+          <div style="display: flex; justify-content: space-between">
+            <div id="scripts_all_switch" style="display: flex;gap: 1rem;margin-bottom: 1rem;">
+              <p>Tout désactiver</p>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <label for="search_script">Recherche</label>
+                <input id="search_script" name="search_script" type="text" size="50" style="color: white;" />
+            </div>
           </div>
           <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
             <legend style="margin-right: 1rem; min-width: 60px;">Filtrer :</legend>
@@ -292,6 +307,7 @@ $(() => {
           $(document).on('change', "input[name='category']", (e) => {
             const category = e.target.value;
             const section = $("input[name='section']:checked").val();
+            const search = $("input[name='search_script']").val().toLowerCase();
 
             // Empty the table
             $('tbody', content).empty();
@@ -300,7 +316,9 @@ $(() => {
               .filter(
                 (script) =>
                   (script.section.includes(section) || section === 'all') &&
-                  (script.category.includes(category) || category === 'all'),
+                  (script.category.includes(category) || category === 'all') &&
+                  (script.name.toLowerCase().includes(search) ||
+                    script.description.toLowerCase().includes(search)),
               )
               .forEach((script, index) => {
                 const line = createScriptLine(script, index);
@@ -311,6 +329,7 @@ $(() => {
           $(document).on('change', "input[name='section']", (e) => {
             const section = e.target.value;
             const category = $("input[name='category']:checked").val();
+            const search = $("input[name='search_script']").val().toLowerCase();
 
             // Empty the table
             $('tbody', content).empty();
@@ -319,7 +338,31 @@ $(() => {
               .filter(
                 (script) =>
                   (script.section.includes(section) || section === 'all') &&
-                  (script.category.includes(category) || category === 'all'),
+                  (script.category.includes(category) || category === 'all') &&
+                  (script.name.toLowerCase().includes(search) ||
+                    script.description.toLowerCase().includes(search)),
+              )
+              .forEach((script, index) => {
+                const line = createScriptLine(script, index);
+                $('tbody', content).append(line);
+              });
+          });
+
+          $(document).on('input', "input[name='search_script']", (e) => {
+            const search = e.target.value.toLowerCase();
+            const category = $("input[name='category']:checked").val();
+            const section = $("input[name='section']:checked").val();
+
+            // Empty the table
+            $('tbody', content).empty();
+            // Add filtered lines
+            scripts
+              .filter(
+                (script) =>
+                  (script.section.includes(section) || section === 'all') &&
+                  (script.category.includes(category) || category === 'all') &&
+                  (script.name.toLowerCase().includes(search) ||
+                    script.description.toLowerCase().includes(search)),
               )
               .forEach((script, index) => {
                 const line = createScriptLine(script, index);
@@ -332,8 +375,10 @@ $(() => {
             DC.UI.TextButton('scripts_refresh', 'Sauvegarder', () => {
               settings = newSettings;
               allDisabled = newAllDisabled;
+              devMode = newDevMode;
               DC.LocalMemory.set(LIST_TAG, settings);
               DC.LocalMemory.set(ALL_DISABLED_TAG, allDisabled);
+              DC.LocalMemory.set(DEV_MODE_TAG, devMode);
               location.replace('https://www.dreadcast.net/Main'); // Better than reload() with Chrome.
             }),
           );
@@ -341,6 +386,83 @@ $(() => {
             $(
               `<p><em class="couleur5">⚠ Sauvegarder votre configuration va raffraichir la page.<br />
          Pensez à sauvegarder votre travail en cours avant.</em></p>`,
+            ),
+          );
+
+          const resetConfig = () => {
+            const list = DC.LocalMemory.list();
+            list.forEach((key) => {
+              DC.LocalMemory.delete(key);
+            });
+          };
+
+          // Import/Export
+          content.append(
+            $(
+              '<div id="config_buttons" style="display: flex; justify-content: end; gap: 1rem; margin-bottom: 1rem;"></div>',
+            ),
+          );
+          $('#config_buttons', content).append(
+            DC.UI.TextButton(
+              'config_reset',
+              '<i class="fas fa-undo"></i> Réinitialiser',
+              () => {
+                resetConfig();
+                location.replace('https://www.dreadcast.net/Main');
+              },
+            ),
+          );
+          $('#config_buttons', content).append(
+            DC.UI.TextButton(
+              'config_import',
+              '<i class="fas fa-upload"></i> Importer la configuration',
+              () => {
+                resetConfig();
+
+                const anchor = document.createElement('input');
+                anchor.style.display = 'none';
+                anchor.type = 'file';
+                anchor.accept = 'application.json';
+                anchor.onchange = (e) => {
+                  var reader = new FileReader();
+                  reader.onload = (e) => {
+                    const data = JSON.parse(e.target.result);
+                    Object.keys(data).forEach((key) => {
+                      DC.LocalMemory.set(key, data[key]);
+                    });
+                  };
+                  reader.readAsText(e.target.files[0]);
+                  document.body.removeChild(anchor);
+                  location.replace('https://www.dreadcast.net/Main');
+                };
+                document.body.appendChild(anchor);
+                anchor.click();
+              },
+            ),
+          );
+          $('#config_buttons', content).append(
+            DC.UI.TextButton(
+              'config_export',
+              '<i class="fas fa-download"></i> Exporter la configuration',
+              function () {
+                const list = DC.LocalMemory.list();
+                let data = {};
+                list.forEach((key) => {
+                  data[key] = DC.LocalMemory.get(key);
+                });
+
+                const anchor = document.createElement('a');
+                anchor.style.display = 'none';
+                anchor.href = URL.createObjectURL(
+                  new Blob([JSON.stringify(data)], {
+                    type: 'application/json',
+                  }),
+                );
+                anchor.download = 'dcsm_config.json';
+                document.body.appendChild(anchor);
+                anchor.click();
+                document.body.removeChild(anchor);
+              },
             ),
           );
 
@@ -353,10 +475,24 @@ $(() => {
             ),
           );
 
-          scripts.forEach((script, index) => {
-            const line = createScriptLine(script, index);
-            $('tbody', content).append(line);
-          });
+          // Switch button pour le développeur mode.
+          $('#developper_mode_switch', content).append(
+            DC.UI.Tooltip(
+              'Attention, ces scripts sont encore en développement !',
+              DC.UI.Checkbox(
+                'developper_mode_check',
+                newDevMode,
+                () => (newDevMode = !newDevMode),
+              ),
+            ),
+          );
+
+          scripts
+            .filter((script) => devMode || !script.experimental)
+            .forEach((script, index) => {
+              const line = createScriptLine(script, index);
+              $('tbody', content).append(line);
+            });
 
           return DC.UI.PopUp('scripts_modal', 'Scripts & Skins', content);
         },
@@ -373,7 +509,7 @@ $(() => {
 
     // Load list of scripts
     DC.Network.loadJson(
-      'https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/data/scripts.json',
+      'https://raw.githubusercontent.com/Isilin/dreadcast-scripts/DCSMv1.2.0/data/scripts.json',
     )
       .then((scripts) => {
         settings = synchronizeSettings(settings, scripts);
@@ -389,6 +525,7 @@ $(() => {
 
           scripts
             .filter((script) => script.section.includes(context))
+            .filter((script) => devMode || !script.experimental)
             .forEach((script) => {
               if (settings[script.id]) {
                 DC.Network.loadScript(script.url)

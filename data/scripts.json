@@ -11,7 +11,8 @@
     "contact": "",
     "settings": false,
     "section": ["game"],
-    "category": ["mailing"]
+    "category": ["mailing"],
+    "experimental": false
   },
   {
     "id": "comcount",
@@ -25,7 +26,8 @@
     "contact": "",
     "settings": false,
     "section": ["game"],
-    "category": ["mailing"]
+    "category": ["mailing"],
+    "experimental": false
   },
   {
     "id": "vousavezunmessage",
@@ -39,7 +41,8 @@
     "contact": "Odul",
     "settings": false,
     "section": ["game"],
-    "category": ["mailing"]
+    "category": ["mailing"],
+    "experimental": false
   },
   {
     "id": "messagerietitreperso",
@@ -53,7 +56,8 @@
     "contact": "Pelagia",
     "settings": false,
     "section": ["game"],
-    "category": ["mailing"]
+    "category": ["mailing"],
+    "experimental": false
   },
   {
     "id": "lockddmail",
@@ -67,7 +71,8 @@
     "contact": "Odul, Pelagia",
     "settings": false,
     "section": ["game"],
-    "category": ["mailing"]
+    "category": ["mailing"],
+    "experimental": false
   },
   {
     "id": "mailprotect",
@@ -81,7 +86,8 @@
     "contact": "Nasty, Odul",
     "settings": false,
     "section": ["game"],
-    "category": ["mailing"]
+    "category": ["mailing"],
+    "experimental": false
   },
   {
     "id": "roll",
@@ -95,7 +101,8 @@
     "contact": "Odul",
     "settings": false,
     "section": ["game"],
-    "category": ["chat"]
+    "category": ["chat"],
+    "experimental": false
   },
   {
     "id": "dcce",
@@ -109,7 +116,8 @@
     "contact": "Odul, Pelagia",
     "settings": false,
     "section": ["game"],
-    "category": ["chat"]
+    "category": ["chat"],
+    "experimental": false
   },
   {
     "id": "chatinputdc",
@@ -123,7 +131,8 @@
     "contact": "Pelagia",
     "settings": false,
     "section": ["game"],
-    "category": ["chat"]
+    "category": ["chat"],
+    "experimental": false
   },
   {
     "id": "skinsilhouette",
@@ -137,7 +146,8 @@
     "contact": "Odul",
     "settings": false,
     "section": ["game"],
-    "category": ["silhouette"]
+    "category": ["silhouette"],
+    "experimental": false
   },
   {
     "id": "showsilhouettebyisilin",
@@ -151,7 +161,8 @@
     "contact": "Pelagia",
     "settings": false,
     "section": ["game"],
-    "category": ["silhouette"]
+    "category": ["silhouette"],
+    "experimental": false
   },
   {
     "id": "showsilhouettevalion",
@@ -165,7 +176,8 @@
     "contact": "",
     "settings": false,
     "section": ["game"],
-    "category": ["silhouette"]
+    "category": ["silhouette"],
+    "experimental": false
   },
   {
     "id": "stopmultiplemessageforumonly",
@@ -179,7 +191,8 @@
     "contact": "Pelagia",
     "settings": false,
     "section": ["forum"],
-    "category": ["fix"]
+    "category": ["fix"],
+    "experimental": false
   },
   {
     "id": "séparationsujets",
@@ -193,7 +206,8 @@
     "contact": "Odul, Pelagia",
     "settings": false,
     "section": ["forum"],
-    "category": ["ui"]
+    "category": ["ui"],
+    "experimental": false
   },
   {
     "id": "breakinglinecode",
@@ -207,7 +221,8 @@
     "contact": "Pelagia",
     "settings": false,
     "section": ["forum"],
-    "category": ["fix"]
+    "category": ["fix"],
+    "experimental": false
   },
   {
     "id": "mapoverlay",
@@ -221,7 +236,8 @@
     "contact": "Radium",
     "settings": false,
     "section": ["game"],
-    "category": ["ui"]
+    "category": ["ui"],
+    "experimental": false
   },
   {
     "id": "nightmode",
@@ -235,7 +251,8 @@
     "contact": "",
     "settings": false,
     "section": ["game"],
-    "category": ["ui"]
+    "category": ["ui"],
+    "experimental": false
   },
   {
     "id": "datefixed",
@@ -249,7 +266,8 @@
     "contact": "",
     "settings": false,
     "section": ["game"],
-    "category": ["ui", "mech"]
+    "category": ["ui", "mech"],
+    "experimental": false
   },
   {
     "id": "compteursac",
@@ -263,7 +281,8 @@
     "contact": "",
     "settings": false,
     "section": ["game"],
-    "category": ["ui"]
+    "category": ["ui"],
+    "experimental": false
   },
   {
     "id": "blockuse",
@@ -277,7 +296,8 @@
     "contact": "Odul",
     "settings": false,
     "section": ["game"],
-    "category": ["ui"]
+    "category": ["ui"],
+    "experimental": false
   },
   {
     "id": "autorefresh",
@@ -291,7 +311,8 @@
     "contact": "",
     "settings": false,
     "section": ["game"],
-    "category": ["ui", "fix"]
+    "category": ["ui", "fix"],
+    "experimental": false
   },
   {
     "id": "bulletsalert",
@@ -305,7 +326,8 @@
     "contact": "",
     "settings": false,
     "section": ["game"],
-    "category": ["mech"]
+    "category": ["mech"],
+    "experimental": false
   },
   {
     "id": "bougetafeuille",
@@ -319,7 +341,8 @@
     "contact": "",
     "settings": false,
     "section": ["game"],
-    "category": ["ui"]
+    "category": ["ui"],
+    "experimental": false
   },
   {
     "id": "copyterminal",
@@ -333,7 +356,8 @@
     "contact": "Redline",
     "settings": false,
     "section": ["game"],
-    "category": ["ui"]
+    "category": ["ui"],
+    "experimental": false
   },
   {
     "id": "neuvopackoverhaul",
@@ -347,7 +371,8 @@
     "contact": "Altaïr",
     "settings": false,
     "section": ["game"],
-    "category": ["ui"]
+    "category": ["ui"],
+    "experimental": false
   },
   {
     "id": "tpoverhaul",
@@ -361,7 +386,8 @@
     "contact": "Altaïr",
     "settings": false,
     "section": ["game"],
-    "category": ["ui"]
+    "category": ["ui"],
+    "experimental": false
   },
   {
     "id": "visio3d",
@@ -375,7 +401,8 @@
     "contact": "Pelagia",
     "settings": false,
     "section": ["game"],
-    "category": ["ui", "mech"]
+    "category": ["ui", "mech"],
+    "experimental": false
   },
   {
     "id": "eccb",
@@ -389,7 +416,8 @@
     "contact": "Pelagia",
     "settings": false,
     "section": ["game"],
-    "category": ["ui", "mech"]
+    "category": ["ui", "mech"],
+    "experimental": false
   },
   {
     "id": "autostock",
@@ -403,7 +431,8 @@
     "contact": "Amane-Mochizuki",
     "settings": false,
     "section": ["game"],
-    "category": ["ui", "mech"]
+    "category": ["ui", "mech"],
+    "experimental": false
   },
   {
     "id": "silmerionwindowfix",
@@ -417,7 +446,8 @@
     "contact": "",
     "settings": false,
     "section": ["game"],
-    "category": ["fix"]
+    "category": ["fix"],
+    "experimental": false
   },
   {
     "id": "skwikker",
@@ -431,6 +461,22 @@
     "contact": "",
     "settings": false,
     "section": ["forum", "edc"],
-    "category": ["mech"]
+    "category": ["mech"],
+    "experimental": false
+  },
+  {
+    "id": "silhouettePlus",
+    "name": "Silhouette+",
+    "description": "Pour personnaliser entièrement sa feuille RP avec silhouette et plus. Réunit les scripts SkinSilhouette et ShowSilhouette.",
+    "authors": "Isilin/Pelagia",
+    "icon": "",
+    "url": "https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/src/scripts/silhouette/silhouette-plus.js",
+    "doc": "",
+    "rp": "",
+    "contact": "Pelagia",
+    "settings": true,
+    "section": ["game"],
+    "category": ["silhouette"],
+    "experimental": false
   }
 ]
