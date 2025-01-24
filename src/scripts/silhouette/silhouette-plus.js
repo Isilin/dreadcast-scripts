@@ -2,7 +2,7 @@
 // @name        Silhouette+
 // @namespace   Dreadcast
 // @match       https://www.dreadcast.net/Main
-// @version     1.0.0
+// @version     1.0.1
 // @author      Pelagia/Isilin
 // @description To fully customize RP sheets with silhouettes and more. Combine SkinSilhouette & ShowSilhouette.
 // @license     https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
@@ -20,6 +20,8 @@
 // @downloadURL
 // @updateURL
 // ==/UserScript==
+
+// TODO le déplacement Y des cases RP doit se faire de 100 en 100
 
 $(() => {
   const API_KEY = 'AIzaSyCSnNrK0PQMz20JVuUmuO9rl9iSWRHrPm4';
@@ -150,10 +152,10 @@ $(() => {
   Engine.prototype.openPersoBox_sp = Engine.prototype.openPersoBox;
   Engine.prototype.openPersoBox = async function (i, n) {
     const result = Engine.prototype.openPersoBox_sp(i, n);
-    $(document).one('ajaxSuccess', (e, xhr, settings) => {
+    $(document).one('ajaxStop', { idPerso: i }, (e, xhr, settings) => {
       if (silhouettesUrl[i]) {
         $('#zone_infoBoxFixed #ib_persoBox_' + i + ' .personnage_image')
-          .css('background-image', 'url(' + silhouettesUrl[i] + ')')
+          .css('background-image', 'url("' + silhouettesUrl[i] + '")')
           .css('background-position', '0px 0px');
       }
 
