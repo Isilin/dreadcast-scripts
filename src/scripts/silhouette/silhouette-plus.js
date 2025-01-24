@@ -21,8 +21,6 @@
 // @updateURL
 // ==/UserScript==
 
-// TODO le déplacement Y des cases RP doit se faire de 100 en 100
-
 $(() => {
   const API_KEY = 'AIzaSyCSnNrK0PQMz20JVuUmuO9rl9iSWRHrPm4';
   const SHEET_ID = '1Ygt9q6WEU8cR_86GptLpHZ6qLHATfX42R0qcPKaqvqo';
@@ -202,6 +200,7 @@ $(() => {
               class="sp_pos_input"
               type="number"
               value="${positions[item].y}"
+              step="${positions[item].label.includes('RP') ? '50' : '1'}"
             />
           </div>
         `,
