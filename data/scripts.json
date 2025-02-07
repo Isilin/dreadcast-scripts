@@ -399,7 +399,7 @@
     "doc": "https://www.dreadcast.net/Forum/2-144695-ns-v13612u-visio-3d---logiciel-utilitaire-pour-la-decoration-dinterieur?1",
     "rp": "https://www.dreadcast.net/Forum/2-144695-ns-v13612u-visio-3d---logiciel-utilitaire-pour-la-decoration-dinterieur?1",
     "contact": "Pelagia",
-    "settings": false,
+    "settings": true,
     "section": ["game"],
     "category": ["ui", "mech"],
     "experimental": false
