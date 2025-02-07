@@ -2,7 +2,7 @@
 // @name        Dreadcast Development Kit
 // @namespace   Dreadcast
 // @match       https://www.dreadcast.net/Main
-// @version     1.1.6
+// @version     1.1.7
 // @author      Pelagia/Isilin
 // @description Development kit to ease Dreadcast scripts integration.
 // @license     https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
@@ -554,7 +554,7 @@ DC.UI = {
           right: -220px;
         }
 
-        .sidemenu_container:first-child .btnTxt {
+        .sidemenu_container > .btnTxt:first-child {
           margin: 0 auto;
           min-width: 100px;
           max-width: 100px;
@@ -570,7 +570,7 @@ DC.UI = {
           line-height: normal !important;
         }
 
-        .sidemenu_container:first-child .btnTxt:hover {
+        .sidemenu_container .btnTxt:hover {
           background: #0b9bcb;
           color: #fff;
         }
