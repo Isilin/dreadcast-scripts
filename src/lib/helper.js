@@ -2,7 +2,7 @@
 // @name        Dreadcast Development Kit
 // @namespace   Dreadcast
 // @match       https://www.dreadcast.net/Main
-// @version     1.1.4
+// @version     1.1.5
 // @author      Pelagia/Isilin
 // @description Development kit to ease Dreadcast scripts integration.
 // @license     https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
@@ -537,7 +537,7 @@ DC.UI = {
     $(`#${$idContainer}`).append(
       `<div id="${$idContent}" class="sidemenu_content"></div>`,
     );
-    $(`#${idContent}`).append(content);
+    $(`#${$idContent}`).append(content);
 
     DC.Style.apply(`
         #zone_sidemenu {
