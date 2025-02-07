@@ -2,7 +2,7 @@
 // @name        Visio 3D
 // @namespace   Violentmonkey Scripts
 // @match       https://www.dreadcast.net/Main
-// @version     1.4.0
+// @version     1.4.1
 // @author      Pelagia/IsilinBN
 // @description 13/11/2023 02:55:01
 // @license     http://creativecommons.org/licenses/by-nc-nd/4.0/
@@ -353,7 +353,7 @@ $(() => {
     getIDs();
 
     if (Util.isDSM?.()) {
-      $(document).on('clock', '#visio3d_setting', openSettings);
+      $(document).on('click', '#visio3d_setting', openSettings);
     } else {
       DC.UI.addSubMenuTo(
         'Paramètres ▾',
