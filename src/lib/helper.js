@@ -2,7 +2,7 @@
 // @name        Dreadcast Development Kit
 // @namespace   Dreadcast
 // @match       https://www.dreadcast.net/Main
-// @version     1.1.7
+// @version     1.1.8
 // @author      Pelagia/Isilin
 // @description Development kit to ease Dreadcast scripts integration.
 // @license     https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
@@ -523,12 +523,12 @@ DC.UI = {
             $(`#${$idButton}`)
               .empty()
               .append('<i class="fas fa-chevron-left"></i>' + label);
-            $(`#${$idContainer}`).css('right', '-220px');
+            $(`#${$idContent}`).css('display', 'none');
           } else {
             $(`#${$idButton}`)
               .empty()
               .append('<i class="fas fa-chevron-right"></i>' + label);
-            $(`#${$idContainer}`).css('right', '0px');
+            $(`#${$idContent}`).css('display', 'block');
           }
         },
       ),
@@ -551,7 +551,6 @@ DC.UI = {
 
         .sidemenu_container {
           display: flex;
-          right: -220px;
         }
 
         .sidemenu_container > .btnTxt:first-child {
@@ -581,6 +580,7 @@ DC.UI = {
           box-shadow: 0 0 15px -5px inset #a2e4fc !important;
           padding: 10px;
           width: 200px;
+          display: none;
         }
       `);
   },
