@@ -2,7 +2,7 @@
 // @name        Visio 3D
 // @namespace   Violentmonkey Scripts
 // @match       https://www.dreadcast.net/Main
-// @version     1.4.1
+// @version     1.4.2
 // @author      Pelagia/IsilinBN
 // @description 13/11/2023 02:55:01
 // @license     http://creativecommons.org/licenses/by-nc-nd/4.0/
@@ -23,7 +23,7 @@
 
 $(() => {
   // HACK ME IF YOU CAN
-  let hackMe = true;
+  let hackMe = false;
 
   // ====== Lib Functions =====
   function getUrl(element) {
@@ -144,7 +144,6 @@ $(() => {
     ) {
       $('#infoScanPanel').css('display', 'block');
       $('#refreshScanPanel').css('display', 'none');
-      refreshUI();
     } else {
       $('#infoScanPanel').css('display', 'none');
       $('#refreshScanPanel').css('display', 'flex');
