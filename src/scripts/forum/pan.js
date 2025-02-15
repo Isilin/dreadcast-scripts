@@ -170,7 +170,7 @@ $(() => {
         $(`
         <a class="folder" href="https://www.dreadcast.net/Forum/Tag/${folder.tag}">
           <h3><span class="nom_sujet">${folder.levels[level]}</span></h3>
-        </a>  
+        </a>
       `),
       );
     });
@@ -201,7 +201,7 @@ $(() => {
   };
 
   const removeDupes = (arr, level, map = new Map()) => {
-    arr.forEach((o) => map.set(o.levels[level], o));
+    arr.forEach((o) => map.set(o.levels.slice(0, level + 1).join(':'), o));
 
     return [...map.values()];
   };
@@ -217,6 +217,39 @@ $(() => {
         }),
       ),
     );
+  };
+
+  const addBreadcrumb = (currentFolder) => {
+    const breadcrumb = $(`
+      <h1>
+        <a href="https://www.dreadcast.net/Forum">Forum Extra</a>
+        <span style="color:#000">»</span>
+        <a href="https://www.dreadcast.net/Forum/1-22-forum-prive">Forum Privé</a>
+      </h1>
+    `);
+
+    for (let i = 0; i < currentFolder.length; ++i) {
+      $(breadcrumb).append(
+        $(`
+        <span style="color:#000"> » </span>
+      `),
+      );
+      if (i === currentFolder.length - 1) {
+        $(breadcrumb).append(
+          $(`<span style="color:#444;">${currentFolder[i]}</span>`),
+        );
+      } else {
+        $(breadcrumb).append(
+          $(
+            `<a href="https://www.dreadcast.net/Forum/Tag/${currentFolder
+              .slice(0, i + 1)
+              .join(':')}">${currentFolder[i]}</span>`,
+          ),
+        );
+      }
+    }
+    $('#header_forum h1').hide();
+    $('#header_forum').prepend(breadcrumb);
   };
 
   const createUI = () => {
@@ -237,10 +270,11 @@ $(() => {
           (folder) =>
             folder.tag.includes(tag) && folder.levels.length > currentLevel + 1,
         ),
-        currentLevel,
+        currentLevel + 1,
       );
       addFolders(subFolders, currentLevel + 1);
       addActions();
+      addBreadcrumb(tag.split(':'));
     }
   };
 
