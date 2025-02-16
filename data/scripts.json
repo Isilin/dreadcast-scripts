@@ -478,5 +478,20 @@
     "section": ["game"],
     "category": ["silhouette"],
     "experimental": false
+  },
+  {
+    "id": "vitrineStock",
+    "name": "Vitrine vs Stocks",
+    "description": "Check stock et vitrine / Check quantité",
+    "authors": "Laïn",
+    "icon": "",
+    "url": "https://update.greasyfork.org/scripts/527017/Vitrine%20vs%20Stocks.user.js?version=1537806",
+    "doc": "https://greasyfork.org/en/scripts/527017-vitrine-vs-stocks",
+    "rp": "",
+    "contact": "Laïn",
+    "settings": false,
+    "section": ["game"],
+    "category": ["ui", "mech"],
+    "experimental": false
   }
 ]
