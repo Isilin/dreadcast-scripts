@@ -34,14 +34,14 @@ $(() => {
       #liste_sujets {
         display: flex;
         flex-flow: row wrap;
-        gap: 1rem;
+        gap: 2rem 1rem;
         justify-content: center;
       }
 
       #liste_sujets .sujet {
         display: flex;
-        width: 10rem;
-        height: 12rem;
+        width: 8rem;
+        height: 10rem;
         overflow: hidden;
         clip-path: polygon(0% 0%, /*left top */
                     calc(100% - 2rem) -1px, /** right top start fold 40px = 2 times border width**/
@@ -102,7 +102,7 @@ $(() => {
       .folder {
         width: 10rem;
         height: 7rem;
-        margin-top: 3rem;
+        margin-top: 2rem;
         position: relative;
         background-color: #d3d3d3;
         border-radius: 0 6px 6px 6px;
