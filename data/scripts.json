@@ -507,7 +507,7 @@
     "settings": false,
     "section": ["game"],
     "category": ["chat"],
-    "experimental": true
+    "experimental": false
   },
   {
     "id": "copyPasteAll",
@@ -522,6 +522,6 @@
     "settings": false,
     "section": ["forum"],
     "category": ["ui"],
-    "experimental": true
+    "experimental": false
   }
 ]
