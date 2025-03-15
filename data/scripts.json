@@ -493,5 +493,35 @@
     "section": ["game"],
     "category": ["ui", "mech"],
     "experimental": false
+  },
+  {
+    "id": "objectLinking",
+    "name": "Partage d'objet chat",
+    "description": "Permet de partager un objet dans le chat facilement",
+    "authors": "Laïn",
+    "icon": "",
+    "url": "https://update.greasyfork.org/scripts/528245/Partage%20d%27objet%20chat.user.js?version=1553271",
+    "doc": "https://greasyfork.org/en/scripts/528245-partage-d-objet-chat",
+    "rp": "",
+    "contact": "Laïn",
+    "settings": false,
+    "section": ["game"],
+    "category": ["chat"],
+    "experimental": true
+  },
+  {
+    "id": "copyPasteAll",
+    "name": "Copy Paste all",
+    "description": "Ajoute un bouton qui vous permet de copier tous les posts d'une page forum dans votre presse-papier.",
+    "authors": "Silly",
+    "icon": "",
+    "url": "https://update.greasyfork.org/scripts/529290/%5BDC%5D%20Copy%20Paste%20All%20-%20Forum.user.js?version=1550441",
+    "doc": "https://www.dreadcast.net/Forum/2-151693-script-copy-paste-all---forum",
+    "rp": "",
+    "contact": "Silly",
+    "settings": false,
+    "section": ["forum"],
+    "category": ["ui"],
+    "experimental": true
   }
 ]
