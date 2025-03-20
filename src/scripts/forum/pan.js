@@ -168,9 +168,7 @@ $(() => {
     folders.forEach((folder) => {
       $('#liste_sujets').prepend(
         $(`
-        <a class="folder" href="https://www.dreadcast.net/Forum/Tag/${folder.levels
-          .slice(0, level + 1)
-          .join(':')}">
+        <a class="folder" href="https://www.dreadcast.net/Forum/Tag/${folder.levels.slice(0, level + 1).join(':')}">
           <h3><span class="nom_sujet">${folder.levels[level]}</span></h3>
         </a>
       `),
