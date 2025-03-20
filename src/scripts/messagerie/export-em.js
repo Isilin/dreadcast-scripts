@@ -60,13 +60,14 @@ $(() => {
   };
 
   const exportEM = (id) => {
-    var $children = $(
-      '#db_message_' + id + ' .content .zone_conversation',
-    ).children();
-    const message = $children.get().slice(1).reverse();
+    const messages = $(
+      '#db_message_' + id + ' .content .zone_conversation .link.conversation',
+    )
+      .get()
+      .reverse();
 
     const results = [];
-    const queue = message.slice();
+    const queue = messages.slice();
 
     const name = $('#txt_pseudo').html();
 
@@ -92,7 +93,6 @@ $(() => {
       const date = $('.ligne1', currentChild).html();
 
       nav.getMessagerie().openConversationMessage(id, id_message);
-      console.log(id_message);
 
       $(document).one('ajaxSuccess', function (event, xhr, settings) {
         if (settings.url.indexOf('action=ReadMessage') !== -1) {
@@ -122,7 +122,6 @@ $(() => {
         var intervalCheck = setInterval(function () {
           var $div = $('#db_message_' + id_conversation);
           if ($div.length) {
-            console.log('ok ?');
             clearInterval(intervalCheck);
 
             $('#db_message_' + id_conversation + ' .head .title').before(
