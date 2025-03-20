@@ -523,5 +523,20 @@
     "section": ["forum"],
     "category": ["ui"],
     "experimental": false
+  },
+  {
+    "id": "panFenestra",
+    "name": "P.A.N. Fenestra",
+    "description": "Un nouveau système d'exploitation pour votre espace matriciel personnel.",
+    "authors": "Isilin/Pelagia",
+    "icon": "",
+    "url": "https://update.greasyfork.org/scripts/530381/PAN%20Fenestra.user.js?version=1557231",
+    "doc": "",
+    "rp": "",
+    "contact": "Pelagia",
+    "settings": false,
+    "section": ["forum"],
+    "category": ["ui"],
+    "experimental": true
   }
 ]
