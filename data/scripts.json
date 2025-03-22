@@ -537,6 +537,6 @@
     "settings": false,
     "section": ["forum"],
     "category": ["ui"],
-    "experimental": true
+    "experimental": false
   }
 ]
