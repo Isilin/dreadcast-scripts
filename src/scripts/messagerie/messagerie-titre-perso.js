@@ -2,8 +2,8 @@
 // @name        Messagerie : Titres Perso
 // @author      Isilin
 // @namespace   Dreadcast
-// @include     http://www.dreadcast.net/Main
-// @version     1.0.3
+// @include     https://www.dreadcast.net/Main
+// @version     1.0.4
 // @grant       none
 // @description Personnalisation des titres et des avatars d'aperçu, sur la messagerie. Inspiré du script original "Messagerie : Titre Perso".
 // @downloadURL https://update.greasyfork.org/scripts/415294/Messagerie%20%3A%20Titres%20Perso.user.js
