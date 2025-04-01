@@ -380,7 +380,7 @@
     "description": "Modernisation de l'interface du Terminal Portable.",
     "authors": "Altaïr",
     "icon": "https://www.dreadcast.net/images/objets/mini/TERMINAL%20PORTABLE2.png",
-    "url": "https://update.greasyfork.org/scripts/488053/TP%20Overhaul.user.js",
+    "url": "https://update.greasyfork.org/scripts/488053/TP%20Overhaul.user.js?version=1558625",
     "doc": "https://www.dreadcast.net/Forum/2-145540-script-tp-overhaul",
     "rp": "",
     "contact": "Altaïr",
@@ -537,6 +537,36 @@
     "settings": false,
     "section": ["forum"],
     "category": ["ui"],
+    "experimental": false
+  },
+  {
+    "id": "deckExportData",
+    "name": "DeckExportData",
+    "description": "Permet de copier les données du deck",
+    "authors": "Amane-Mochizuki",
+    "icon": "https://i.imgur.com/Wn8zYJ8.png",
+    "url": "https://update.greasyfork.org/scripts/530389-dc-deckexportdata.user.js?version=1563381",
+    "doc": "https://www.dreadcast.net/Forum/2-152205-script-deck-export-data?1",
+    "rp": "",
+    "contact": "Amane-Mochizuki",
+    "settings": false,
+    "section": ["game"],
+    "category": ["fix"],
+    "experimental": false
+  },
+  {
+    "id": "fixUsine",
+    "name": "Fix Usine",
+    "description": "Empêche la fenêtre d'usine de se fermer quand on achète",
+    "authors": "Laïn",
+    "icon": "",
+    "url": "https://update.greasyfork.org/scripts/527127-fix-usine.user.js?version=1554902",
+    "doc": "",
+    "rp": "",
+    "contact": "Laïn",
+    "settings": false,
+    "section": ["game"],
+    "category": ["fix"],
     "experimental": false
   }
 ]

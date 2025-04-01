@@ -6,7 +6,7 @@
 // @match       https://www.dreadcast.net/Forum/*
 // @match       https://www.dreadcast.net/EDC
 // @match       https://www.dreadcast.net/EDC/*
-// @version     1.3.3
+// @version     1.3.4
 // @author      Pelagia/Isilin
 // @description Centralize all dreadcast scripts in one single source, integrated to the game.
 // @license     https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
