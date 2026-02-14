@@ -582,7 +582,7 @@
     "settings": false,
     "section": ["game"],
     "category": ["ui"],
-    "experimental": true
+    "experimental": false
   },
   {
     "id": "holovision",
@@ -597,7 +597,7 @@
     "settings": false,
     "section": ["game"],
     "category": ["chat"],
-    "experimental": true
+    "experimental": false
   },
   {
     "id": "neuvosmart",
@@ -612,7 +612,7 @@
     "settings": false,
     "section": ["game"],
     "category": ["ui", "mech"],
-    "experimental": true
+    "experimental": false
   },
   {
     "id": "dcmobilefix",
@@ -642,7 +642,7 @@
     "settings": false,
     "section": ["game"],
     "category": ["ui"],
-    "experimental": true
+    "experimental": false
   },
   {
     "id": "details",
@@ -657,7 +657,7 @@
     "settings": false,
     "section": ["game"],
     "category": ["ui"],
-    "experimental": true
+    "experimental": false
   },
   {
     "id": "chatBulle",
@@ -672,7 +672,7 @@
     "settings": false,
     "section": ["game"],
     "category": ["ui", "chat"],
-    "experimental": true
+    "experimental": false
   },
   {
     "id": "dcnotif",
@@ -687,7 +687,7 @@
     "settings": false,
     "section": ["game"],
     "category": ["ui", "fix"],
-    "experimental": true
+    "experimental": false
   },
   {
     "id": "pimpmypion",
@@ -702,7 +702,7 @@
     "settings": false,
     "section": ["game"],
     "category": ["ui"],
-    "experimental": true
+    "experimental": false
   },
   {
     "id": "fouilletracker",
@@ -717,7 +717,7 @@
     "settings": false,
     "section": ["game"],
     "category": ["ui"],
-    "experimental": true
+    "experimental": false
   },
   {
     "id": "ddm",
@@ -747,7 +747,7 @@
     "settings": false,
     "section": ["game", "forum"],
     "category": ["ui"],
-    "experimental": true
+    "experimental": false
   },
   {
     "id": "igforum",
@@ -762,7 +762,7 @@
     "settings": false,
     "section": ["game"],
     "category": ["ui"],
-    "experimental": true
+    "experimental": false
   },
   {
     "id": "gpsrouge",
@@ -777,7 +777,7 @@
     "settings": false,
     "section": ["game"],
     "category": ["ui"],
-    "experimental": true
+    "experimental": false
   },
   {
     "id": "kobsteak",
@@ -792,6 +792,6 @@
     "settings": false,
     "section": ["game"],
     "category": ["mech"],
-    "experimental": true
+    "experimental": false
   }
 ]
