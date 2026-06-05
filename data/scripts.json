@@ -570,21 +570,6 @@
     "experimental": false
   },
   {
-    "id": "dcCityRedux",
-    "name": "DC City Redux",
-    "description": "Amélioration graphique de la ville de Dreadcast",
-    "authors": "Darlene",
-    "icon": "",
-    "url": "https://update.greasyfork.org/scripts/511773/DC%20City%20Redux.user.js?version=1461036",
-    "doc": "https://www.dreadcast.net/Forum/2-152788-script-dc-city-redux-marran?1",
-    "rp": "",
-    "contact": "Darlene",
-    "settings": false,
-    "section": ["game"],
-    "category": ["ui"],
-    "experimental": false
-  },
-  {
     "id": "holovision",
     "name": "HoloVision",
     "description": "Historique chat malléable",
