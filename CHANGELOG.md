@@ -18,3 +18,18 @@ et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Existing scripts
 - DreadCast Development Kit
 - DreadCast Script Manager
+
+---
+
+## 🔖 Format utilisé
+
+| Tag          | Description                                               |
+| ------------ | --------------------------------------------------------- |
+| `Added`      | Pour les nouvelles fonctionnalités.                       |
+| `Changed`    | Pour les changements dans des fonctionnalités existantes. |
+| `Deprecated` | Pour les fonctionnalités bientôt obsolètes.               |
+| `Removed`    | Pour les fonctionnalités supprimées.                      |
+| `Fixed`      | Pour les bugs corrigés.                                   |
+| `Security`   | Pour les corrections de failles de sécurité.              |
+
+---

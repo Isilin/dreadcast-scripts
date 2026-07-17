@@ -1,0 +1,43 @@
+{
+  "name": "dreadcast-scripts",
+  "private": true,
+  "workspaces": [
+    "dc-development-kit",
+    "dc-script-manager",
+    "scripts/*"
+  ],
+  "version": "0.0.1",
+  "description": "",
+  "author": "Isilin <isilinbn@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Isilin/dreadcast-scripts"
+  },
+  "homepage": "https://github.com/Isilin/dreadcast-scripts#readme",
+  "bugs": {
+    "url": "https://github.com/Isilin/dreadcast-scripts/issues"
+  },
+  "packageManager": "yarn@4.4.0",
+  "scripts": {
+    "build": "yarn workspaces foreach --all -p run build",
+    "watch": "yarn workspaces foreach --all -p run watch",
+    "serve": "http-server ./dist -p 8080"
+  },
+  "devDependencies": {
+    "@types/jquery": "^3.5.32",
+    "http-server": "^14.1.1",
+    "jquery": "^3.7.1",
+    "prettier": "^3.5.3",
+    "terser-webpack-plugin": "^5.3.14",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.8.3",
+    "webpack": "^5.99.8",
+    "webpack-cli": "^6.0.1",
+    "webpack-userscript": "^3.2.3"
+  },
+  "engines": {
+    "node": ">=20",
+    "yarn": ">=4"
+  }
+}
