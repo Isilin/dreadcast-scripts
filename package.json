@@ -22,7 +22,8 @@
   "scripts": {
     "build": "yarn workspaces foreach --all -p run build",
     "watch": "yarn workspaces foreach --all -p run watch",
-    "serve": "http-server ./dist -p 8080"
+    "serve": "http-server ./dist -p 8080",
+    "sync:fallback": "node tools/sync-fallback.mjs"
   },
   "devDependencies": {
     "@types/jquery": "^3.5.32",

@@ -18,6 +18,20 @@ et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Existing scripts
 - DreadCast Development Kit
 - DreadCast Script Manager
+- DCSM : mise en cache de la liste des scripts pendant une heure, et liste de
+  secours embarquée dans le userscript. Les scripts continuent de se charger
+  quand la source distante est indisponible.
+- Un outil `yarn sync:fallback` régénère la liste de secours embarquée depuis
+  `data/scripts.json`, avec un contrôle en intégration continue.
+
+### Fixed
+
+- DCSM : la configuration des scripts n'est plus purgée quand la liste distante
+  est indisponible. Auparavant, les scripts absents de la liste utilisée voyaient
+  leur activation supprimée.
+- DCSM : le chargement de la liste des scripts expire au bout de huit secondes.
+  Sans délai maximal, une source qui ne répondait plus laissait la requête en
+  suspens et aucun script n'était jamais chargé.
 
 ---
 
