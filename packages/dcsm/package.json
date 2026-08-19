@@ -1,0 +1,21 @@
+{
+  "name": "@dreadcast/dcsm",
+  "version": "1.5.0",
+  "private": true,
+  "description": "Dreadcast Script Manager : catalogue et chargement des scripts, integres au jeu.",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite"
+  },
+  "dependencies": {
+    "@dreadcast/ddk": "workspace:*",
+    "@dreadcast/game-types": "workspace:*",
+    "@dreadcast/registry": "workspace:*"
+  },
+  "devDependencies": {
+    "@dreadcast/vite-config": "workspace:*",
+    "@types/node": "catalog:",
+    "vitest": "catalog:"
+  }
+}
