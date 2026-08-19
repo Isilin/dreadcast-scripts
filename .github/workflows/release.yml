@@ -1,0 +1,67 @@
+name: Release
+
+# Publie les userscripts construits sur la branche `dist`, d'où Greasy Fork les
+# resynchronise. Le webhook Greasy Fork exige un commit réel touchant le fichier
+# synchronisé, sinon il répond « No commits found in this push » : c'est bien ce
+# que fait ce job.
+#
+# Ordre de publication à respecter quand le DDK change :
+#   1. lancer ce workflow, laisser Greasy Fork resynchroniser le DDK ;
+#   2. relever le nouvel identifiant de version côté Greasy Fork ;
+#   3. le reporter dans DDK_REQUIRE (packages/dcsm/vite.config.ts) ;
+#   4. relancer ce workflow pour le gestionnaire.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+env:
+  CI: '1'
+  VP_NODE_MANAGER: 'yes'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Installer Vite+
+        run: |
+          curl -fsSL https://vite.plus | bash
+          echo "$HOME/.vite-plus/bin" >> "$GITHUB_PATH"
+
+      - run: vp install --frozen-lockfile
+      - run: vp check
+      - run: vp test --run
+      - run: vp run -r build
+
+      - name: Publier sur la branche dist
+        run: |
+          set -euo pipefail
+
+          mkdir -p /tmp/dist
+          cp packages/*/dist/*.user.js packages/*/dist/*.meta.js /tmp/dist/
+
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+          git fetch origin dist || true
+          git checkout dist 2>/dev/null || git checkout --orphan dist
+          git rm -rqf . 2>/dev/null || true
+
+          cp /tmp/dist/* .
+          printf 'Userscripts construits depuis %s.\nNe pas editer : cette branche est regeneree par .github/workflows/release.yml.\n' \
+            "$GITHUB_SHA" > README.md
+
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'Aucun changement à publier.'
+            exit 0
+          fi
+
+          git commit -m "build: userscripts depuis ${GITHUB_SHA::7}"
+          git push origin dist
