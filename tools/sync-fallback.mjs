@@ -96,9 +96,7 @@ if (file.slice(start, end) === block) {
 }
 
 if (check) {
-  fail(
-    "the embedded fallback list has drifted from data/scripts.json. Run 'yarn sync:fallback'.",
-  );
+  fail("the embedded fallback list has drifted from data/scripts.json. Run 'yarn sync:fallback'.");
 }
 
 writeFileSync(TARGET, file.slice(0, start) + block + file.slice(end), 'utf8');

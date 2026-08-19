@@ -17,6 +17,45 @@ Un guide complet sur les gestionnaires de scripts est également disponible [ICI
 
 Dans un second temps, il vous faudra installer les scripts que vous souhaitez. Deux approches sont proposées dans ce wiki, et qui vous sont détaillées ici : [Installation de scripts](https://github.com/Isilin/dreadcast-scripts/wiki/Installation).
 
+## Développement
+
+Le dépôt est un monorepo piloté par [Vite+](https://viteplus.dev) : une seule
+CLI (`vp`) pour le serveur de développement, le build, les tests, le lint et le
+formatage.
+
+```bash
+irm https://viteplus.dev/install.ps1 | iex
+```
+
+Sous Linux ou macOS : `curl -fsSL https://vite.plus | bash`. Vite+ gère aussi la
+version de Node (24, épinglée dans `.node-version`) et s'appuie sur pnpm.
+
+```bash
+vp install
+```
+
+| Commande                                    | Effet                                                                 |
+| ------------------------------------------- | --------------------------------------------------------------------- |
+| `vp run -r build`                           | Construit tous les userscripts dans `packages/*/dist/`                |
+| `vp check`                                  | Formatage (Oxfmt), lint (Oxlint) et types (TypeScript 7) en une passe |
+| `vp test --run`                             | Lance la suite Vitest                                                 |
+| `vp dev -C packages/dcsm`                   | Serveur de développement du gestionnaire, avec HMR                    |
+| `vp run --filter @dreadcast/registry check` | Valide `data/scripts.json` et la liste de secours                     |
+
+### Contenu
+
+| Paquet                | Rôle                                                                                |
+| --------------------- | ----------------------------------------------------------------------------------- |
+| `packages/ddk`        | Dreadcast Development Kit, la bibliothèque partagée ([API](packages/ddk/README.md)) |
+| `packages/dcsm`       | Dreadcast Script Manager, le gestionnaire intégré au jeu                            |
+| `packages/registry`   | Schéma de `data/scripts.json` et génération de la liste de secours                  |
+| `packages/game-types` | Déclarations TypeScript des globales du jeu                                         |
+| `src/`                | Scripts hérités, encore en JavaScript, migrés progressivement                       |
+
+`data/scripts.json` est le catalogue des scripts autorisés. Il ne change jamais
+d'emplacement : les gestionnaires déjà installés le téléchargent depuis cette
+adresse exacte.
+
 ## Contribuer
 
 Les [tickets](https://github.com/Isilin/dreadcast-scripts/issues) et les [pull request](https://github.com/Isilin/dreadcast-scripts/pulls) sur Github sont les bienvenues. Si vous êtes intéressé pour contribuer au code ou remonter une erreur ou une possible amélioration, merci d'ouvrir un ticket pour en discuter.

@@ -95,10 +95,75 @@ Les suggestions d'amélioration sont suivies en tant que [tickets Github](https:
 
 ### Votre première contribution au code
 
-<!-- TODO
-include Setup of env, IDE and typical getting started instructions?
+Le dépôt est un monorepo [Vite+](https://viteplus.dev). Une seule installation
+suffit : Vite+ apporte Vite 8, Vitest, Oxlint, Oxfmt, Rolldown et le lanceur de
+tâches, et gère aussi la version de Node.
 
--->
+```bash
+irm https://viteplus.dev/install.ps1 | iex   # Windows
+curl -fsSL https://vite.plus | bash          # Linux, macOS
+vp install
+```
+
+Node 24 est épinglé dans `.node-version` et téléchargé automatiquement, pnpm est
+résolu depuis le champ `packageManager`. Rien d'autre n'est à installer.
+
+Avant d'ouvrir une pull request :
+
+```bash
+vp check       # formatage, lint et types
+vp test --run  # suite de tests
+vp run -r build
+```
+
+Ces trois commandes sont exactement celles de l'intégration continue.
+
+#### Ajouter une dépendance
+
+Les versions des dépendances externes sont déclarées une seule fois, dans le
+catalogue de `pnpm-workspace.yaml`. Les manifestes ne portent que `catalog:` :
+
+```yaml
+# pnpm-workspace.yaml
+catalog:
+  ma-dependance: ^1.2.3
+```
+
+```json
+// packages/xxx/package.json
+"dependencies": { "ma-dependance": "catalog:" }
+```
+
+Sans cela, deux paquets finissent par épingler deux versions différentes de la
+même bibliothèque, et `node_modules` en embarque deux copies.
+
+#### Ajouter un script au catalogue
+
+Un script référencé dans `data/scripts.json` est chargé chez tous les joueurs
+qui l'activent : c'est une décision de sécurité autant qu'éditoriale.
+
+1. Ajoutez une entrée dans `data/scripts.json`. Le schéma est décrit dans
+   `packages/registry/src/schema.ts` : `section` et `category` sont des listes
+   fermées, une valeur inconnue fait échouer l'intégration.
+2. Épinglez l'URL sur une version précise. Les scripts Greasy Fork s'épinglent
+   avec `?version=…`, les fichiers GitHub avec un SHA de commit plutôt que
+   `main`.
+3. Régénérez la liste de secours embarquée dans le gestionnaire :
+
+   ```bash
+   vp run --filter @dreadcast/registry sync
+   ```
+
+4. Commitez `data/scripts.json` **et** `packages/dcsm/src/fallback.ts`
+   ensemble. L'intégration refuse toute divergence entre les deux.
+
+#### Modifier un script hérité
+
+Les fichiers de `src/scripts/` sont encore en JavaScript et ne sont ni lintés ni
+formatés : deux d'entre eux sont servis tels quels depuis ce dépôt, et les
+reformater changerait le fichier que les joueurs téléchargent. Ils sont migrés
+un par un vers `scripts/<nom>/`, en TypeScript, avec l'API
+[`DC.registerScript`](packages/ddk/README.md).
 
 ### Améliorer la documentation
 
