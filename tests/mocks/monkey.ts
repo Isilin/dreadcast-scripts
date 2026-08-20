@@ -22,6 +22,11 @@ export type Responder = (
 
 const store = new Map<string, unknown>();
 
+let clipboard = '';
+
+/** Dernier contenu passe a GM_setClipboard, pour les assertions. */
+export const readClipboard = (): string => clipboard;
+
 let responder: Responder = () => {
   throw new Error('aucune reponse HTTP simulee : appeler setResponder() dans le test.');
 };
@@ -29,6 +34,7 @@ let responder: Responder = () => {
 /** Vide la memoire persistante simulee entre deux tests. */
 export const resetStore = (entries: Record<string, unknown> = {}): void => {
   store.clear();
+  clipboard = '';
   for (const [key, value] of Object.entries(entries)) store.set(key, value);
 };
 
@@ -61,6 +67,10 @@ export const GM_deleteValue = (key: string): void => {
 };
 
 export const GM_listValues = (): string[] => [...store.keys()];
+
+export const GM_setClipboard = (data: string): void => {
+  clipboard = data;
+};
 
 export const GM_addStyle = (css: string): HTMLStyleElement => {
   const node = document.createElement('style');

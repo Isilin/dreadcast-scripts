@@ -39,6 +39,14 @@ et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- DCSM : les scripts chargés ne voyaient ni `DC`, ni `Util`, ni les fonctions
+  `GM_*`. Une fonction construite par `new Function` a pour portée globale celle
+  de la page, et non celle du bac à sable du gestionnaire de userscripts, où
+  vivent ces valeurs. Elles lui sont désormais passées explicitement, dans la
+  limite exacte des `@grant` du gestionnaire.
+- DCSM : `GM_setClipboard` n'a jamais figuré dans les `@grant`, alors que le
+  script `copyterminal` du catalogue en dépend. Il ne fonctionnait donc pas à
+  travers le gestionnaire, seulement installé seul.
 - DCSM : fermer la fenêtre sans sauvegarder laisse enfin la configuration
   intacte. La configuration temporaire partageait sa référence avec la
   configuration réelle, si bien que chaque case cochée était déjà appliquée.

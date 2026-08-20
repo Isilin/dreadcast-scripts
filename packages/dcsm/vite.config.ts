@@ -72,6 +72,12 @@ export default defineUserscript({
       'https://www.dreadcast.net/EDC/*',
     ],
     require: ddkRequire,
+    // `autoGrant` deduit les `@grant` du code de ce bundle. Le DDK en est
+    // exclu -- il arrive par `@require` -- donc ce qu'il appelle doit etre
+    // declare ici, sinon la fonction reste indefinie dans le bac a sable.
+    //
+    // Cette liste est aussi la surface exacte que le DDK repasse aux scripts
+    // charges : voir `capabilities` dans packages/ddk/src/net.ts.
     grant: [
       'GM_setValue',
       'GM_getValue',
@@ -79,6 +85,9 @@ export default defineUserscript({
       'GM_listValues',
       'GM_xmlhttpRequest',
       'GM_addStyle',
+      // Utilise par le script 'copyterminal' du catalogue, qui n'a donc jamais
+      // fonctionne a travers le gestionnaire.
+      'GM_setClipboard',
     ],
     connect: [
       'update.greasyfork.org',
