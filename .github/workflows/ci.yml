@@ -35,6 +35,9 @@ jobs:
       # exécuté ici changer sans que le dépôt bouge. Dependabot propose les
       # montées de version.
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          # Necessaire pour comparer une pull request a sa base.
+          fetch-depth: 0
 
       - name: Installer Vite+
         run: |
@@ -70,10 +73,26 @@ jobs:
       # embarquée dans le gestionnaire doit correspondre à data/scripts.json.
       - run: vp run --filter @dreadcast/registry check
 
-      # `published/` est ce que Greasy Fork sert aux joueurs. Sans ce contrôle,
-      # une retouche à la main ou un rebuild oublié y passerait inaperçu.
-      - name: Vérifier que published/ correspond au build
-        run: node tools/check-published.mjs
+      # `published/` appartient à la chaîne de publication : elle seule y écrit,
+      # après avoir construit. Une retouche à la main donnerait un fichier servi
+      # aux joueurs qui ne correspond à aucun code du dépôt, et serait écrasée
+      # sans avertissement à la publication suivante.
+      #
+      # On ne compare pas son contenu à un build de HEAD : entre deux
+      # publications, `published/` est légitimement en retard sur les sources.
+      # Cette comparaison n'a de sens que sur le commit qui le produit, et c'est
+      # la publication elle-même qui la fait.
+      - name: published/ n'est modifié que par la chaîne de publication
+        if: github.event_name == 'pull_request'
+        run: |
+          set -euo pipefail
+
+          if git diff --name-only "origin/${{ github.base_ref }}...HEAD" | grep -q '^published/'; then
+            echo "::error::published/ est produit par la chaîne de publication. Retirer ces modifications, elles seront écrasées."
+            exit 1
+          fi
+
+          echo 'published/ intact.'
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:

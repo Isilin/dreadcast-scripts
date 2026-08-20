@@ -38,11 +38,11 @@ workflow du dépôt.
 
 Trois issues, de la plus simple à la plus durable :
 
-| Solution | Ce que ça implique |
-| --- | --- |
-| **Jeton personnel à portée restreinte** | Un jeton *fine-grained* sur ce seul dépôt, permission `Contents: write`, enregistré en secret `RELEASE_TOKEN`. Le workflow s'en sert ; les commits portent votre identité. Le plus rapide, mais le jeton expire et suit une personne. |
-| **Application GitHub dédiée** | Une application propre au dépôt, ajoutée à la liste de contournement du ruleset. Identité distincte, journal d'audit, pas d'expiration. C'est la voie recommandée par GitHub, au prix d'une mise en place. |
-| **Déplacer `published/`** | Sur une branche non protégée, avec les URL de synchronisation Greasy Fork repointées dessus. Supprime le besoin d'écrire sur `main`, donc tout secret de longue durée — mais le webhook, éprouvé sur `main`, serait à revalider ailleurs. |
+| Solution                                | Ce que ça implique                                                                                                                                                                                                                        |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Jeton personnel à portée restreinte** | Un jeton _fine-grained_ sur ce seul dépôt, permission `Contents: write`, enregistré en secret `RELEASE_TOKEN`. Le workflow s'en sert ; les commits portent votre identité. Le plus rapide, mais le jeton expire et suit une personne.     |
+| **Application GitHub dédiée**           | Une application propre au dépôt, ajoutée à la liste de contournement du ruleset. Identité distincte, journal d'audit, pas d'expiration. C'est la voie recommandée par GitHub, au prix d'une mise en place.                                |
+| **Déplacer `published/`**               | Sur une branche non protégée, avec les URL de synchronisation Greasy Fork repointées dessus. Supprime le besoin d'écrire sur `main`, donc tout secret de longue durée — mais le webhook, éprouvé sur `main`, serait à revalider ailleurs. |
 
 Le workflow lit `secrets.RELEASE_TOKEN` et retombe sur le jeton des Actions
 quand il est absent : rien à modifier dans les fichiers pour passer de l'une à

@@ -60,6 +60,10 @@ jobs:
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+          # Le jeton par defaut echoue quand le depot interdit aux Actions de
+          # creer des pull requests, et les pull requests qu'il ouvre ne
+          # declenchent aucun workflow. Le jeton dedie leve les deux.
+          token: ${{ secrets.RELEASE_TOKEN || github.token }}
 
       - name: Rien à publier
         if: steps.release.outputs.releases_created != 'true' && github.event_name != 'workflow_dispatch'
