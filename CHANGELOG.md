@@ -18,24 +18,33 @@ et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   est conservée à l'identique et continue de renvoyer des objets jQuery.
 - DCSM 1.5.0 : réécriture en TypeScript. Le comportement visible ne change pas,
   hors correctifs ci-dessous.
-- Les scripts chargés par le gestionnaire s'exécutent désormais via
-  `new Function` et non `eval` : chacun retrouve la portée de fonction non
-  stricte que lui donnerait un gestionnaire de userscripts, au lieu d'hériter du
-  mode strict du bundle et de voir ses variables internes.
+- Les scripts chargés par le gestionnaire s'exécutent via `new Function` et non
+  `eval` : chacun retrouve la portée de fonction non stricte que lui donnerait
+  un gestionnaire de userscripts, au lieu d'hériter du mode strict du bundle et
+  de voir ses variables internes.
 
 ### Added
 
+- Readme, licence, guide de contribution, code de conduite, changelog.
+- Les fonctionnalités de la bibliothèque, et les scripts existants.
+- DreadCast Development Kit et DreadCast Script Manager.
+- DCSM : mise en cache de la liste des scripts pendant une heure, et liste de
+  secours embarquée dans le userscript. Les scripts continuent de se charger
+  quand la source distante est indisponible.
 - API v2 pour les scripts : `DC.registerScript({ id, settings, init })`, stockage
   persistant cloisonné par script, et écran de réglages généré par le
   gestionnaire depuis le schéma déclaré. Le bouton engrenage, jusqu'ici sans
   effet, ouvre cet écran.
 - `@dreadcast/registry` : schéma du catalogue vérifié en intégration, et
-  génération de la liste de secours embarquée.
+  génération de la liste de secours embarquée par `vp run registry:sync`.
 - `@dreadcast/game-types` : déclarations TypeScript des globales du jeu, plus un
   inventaire de 47 classes extrait du bundle par `tools/extract-game-api.mjs`.
-- Suite de tests Vitest : résolution de la liste dans ses quatre modes,
-  synchronisation de la configuration, contrôles de type, mise en forme du chat,
-  couche DOM.
+- Suite de tests Vitest, jusqu'aux userscripts construits : résolution de la
+  liste dans ses quatre modes, synchronisation de la configuration, couche de
+  compatibilité vérifiée contre le vrai jQuery 1.8.2, et démarrage complet du
+  gestionnaire dans les deux façons dont un gestionnaire assemble un `@require`.
+- Une [recette de vérification en jeu](docs/recette-dcsm.md), et l'outillage qui
+  va avec : `tools/serve-dist.mjs` et le build local `DCSM_LOCAL_DDK`.
 
 ### Fixed
 
@@ -56,6 +65,12 @@ et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   ouverture de la fenêtre, sur des contenus déjà détruits.
 - DCSM : changer un filtre ne révèle plus les scripts expérimentaux quand le
   mode développeur est désactivé.
+- DCSM : la configuration des scripts n'est plus purgée quand la liste distante
+  est indisponible. Auparavant, les scripts absents de la liste utilisée voyaient
+  leur activation supprimée.
+- DCSM : le chargement de la liste des scripts expire au bout de huit secondes.
+  Sans délai maximal, une source qui ne répondait plus laissait la requête en
+  suspens et aucun script n'était jamais chargé.
 - DDK : `DC.Chat.t` fermait le gras avec `[b]` au lieu de `[/b]`, laissant la
   balise ouverte. La chaîne vide est désormais acceptée comme « pas de couleur ».
 - DDK : une commande de chat personnalisée laissait systématiquement une
@@ -67,30 +82,6 @@ et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - DDK : `DC.UI.ColorPicker` produisait une balise `<input>` non fermée.
 - DDK : les messages d'erreur des contrôles de paramètres citaient tous
   `MenuChat.prototype.onSend`, quelle que soit la fonction appelée.
-
-- Readme
-- License
-- Contributing guide
-- Code of conduct
-- Changelog
-- Helpers functionalities
-- Existing scripts
-- DreadCast Development Kit
-- DreadCast Script Manager
-- DCSM : mise en cache de la liste des scripts pendant une heure, et liste de
-  secours embarquée dans le userscript. Les scripts continuent de se charger
-  quand la source distante est indisponible.
-- Un outil `yarn sync:fallback` régénère la liste de secours embarquée depuis
-  `data/scripts.json`, avec un contrôle en intégration continue.
-
-### Fixed
-
-- DCSM : la configuration des scripts n'est plus purgée quand la liste distante
-  est indisponible. Auparavant, les scripts absents de la liste utilisée voyaient
-  leur activation supprimée.
-- DCSM : le chargement de la liste des scripts expire au bout de huit secondes.
-  Sans délai maximal, une source qui ne répondait plus laissait la requête en
-  suspens et aucun script n'était jamais chargé.
 
 ---
 
