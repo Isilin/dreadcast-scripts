@@ -23,7 +23,7 @@ catalog:
   # Version exacte embarquee par le jeu. Sert uniquement aux tests : la couche
   # de compatibilite est verifiee contre le vrai runtime, pas contre une
   # approximation.
-  jquery: 1.8.2
+  jquery: 3.5.0
   jsdom: ^30.0.1
   typescript: ^7.0.2
   vite: ^8.2.1
