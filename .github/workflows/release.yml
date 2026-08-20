@@ -76,6 +76,11 @@ jobs:
         if: steps.release.outputs.releases_created == 'true' || github.event_name == 'workflow_dispatch'
         with:
           ref: main
+          # Ce jeton est celui que git utilisera pour les deux pushes de
+          # publication. Sans lui, `main` protegee les refuse -- au milieu de la
+          # publication, entre le DDK envoye et le gestionnaire qui ne part pas.
+          # C'est ce que la sonde `probe-push.yml` verifie.
+          token: ${{ secrets.RELEASE_TOKEN || github.token }}
 
       - name: Installer Vite+
         if: steps.release.outputs.releases_created == 'true' || github.event_name == 'workflow_dispatch'
