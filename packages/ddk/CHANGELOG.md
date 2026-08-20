@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/Isilin/dreadcast-scripts/compare/ddk-v1.3.0...ddk-v1.3.1) (2026-08-20)
+
+
+### Bug Fixes
+
+* **deps:** verse jQuery 1.8.2 au lieu d'en dependre ([78dbfda](https://github.com/Isilin/dreadcast-scripts/commit/78dbfda147de887657437f6274b2ac85be5e76ab))
+
 ## [1.3.0](https://github.com/Isilin/dreadcast-scripts/compare/ddk-v1.2.0...ddk-v1.3.0) (2026-08-20)
 
 
