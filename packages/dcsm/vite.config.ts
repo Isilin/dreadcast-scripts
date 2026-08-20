@@ -9,16 +9,58 @@ import { defineUserscript } from '@dreadcast/vite-config';
  * A REPINNER apres chaque publication du DDK sur Greasy Fork : le parametre
  * `version` fige la revision utilisee.
  */
-const DDK_REQUIRE =
+const GREASYFORK_DDK =
   'https://update.greasyfork.org/scripts/507382/Dreadcast%20Development%20Kit.user.js?version=1533476';
+
+/**
+ * Build de verification locale.
+ *
+ * `DCSM_LOCAL_DDK` doit contenir l'URL du DDK servi en local -- voir
+ * `node tools/serve-dist.mjs`. Sans elle, le build est celui de production.
+ *
+ * L'URL recoit un horodatage : les gestionnaires mettent les `@require` en
+ * cache et ne les resollicitent pas au rechargement de la page. Une URL neuve a
+ * chaque build est le seul contournement fiable.
+ */
+const localDdk = process.env['DCSM_LOCAL_DDK'];
+const isLocal = localDdk !== undefined && localDdk !== '';
+
+const ddkRequire = isLocal
+  ? `${localDdk}${localDdk.includes('?') ? '&' : '?'}t=${Date.now()}`
+  : GREASYFORK_DDK;
+
+/**
+ * Le build local prend un nom et un namespace distincts : sans cela, il
+ * ecraserait l'installation Greasy Fork du joueur, qui l'identifie par ce
+ * couple. Il demarre donc aussi sur une memoire vierge, ce qui fait passer la
+ * fenetre d'accueil et les valeurs par defaut dans la recette.
+ *
+ * Il n'a surtout pas d'URL de mise a jour : avec celles de Greasy Fork, le
+ * gestionnaire remplacerait tot ou tard le build de test par la version
+ * officielle, en pleine recette.
+ */
+const identity = isLocal
+  ? {
+      name: 'Dreadcast Script Manager (local)',
+      namespace: 'Dreadcast-local',
+    }
+  : {
+      name: 'Dreadcast Script Manager',
+      namespace: 'Dreadcast',
+      // Entrees Greasy Fork existantes : ne pas changer, c'est par la que les
+      // installations en place se mettent a jour.
+      downloadURL:
+        'https://update.greasyfork.org/scripts/507383/Dreadcast%20Script%20Manager.user.js',
+      updateURL:
+        'https://update.greasyfork.org/scripts/507383/Dreadcast%20Script%20Manager.meta.js',
+    };
 
 export default defineUserscript({
   root: import.meta.dirname,
   fileName: 'dcsm',
   devPort: 5181,
   userscript: {
-    name: 'Dreadcast Script Manager',
-    namespace: 'Dreadcast',
+    ...identity,
     author: 'Pelagia/Isilin',
     description: 'Centralize all dreadcast scripts in one single source, integrated to the game.',
     license: 'https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file',
@@ -29,7 +71,7 @@ export default defineUserscript({
       'https://www.dreadcast.net/EDC',
       'https://www.dreadcast.net/EDC/*',
     ],
-    require: DDK_REQUIRE,
+    require: ddkRequire,
     grant: [
       'GM_setValue',
       'GM_getValue',
@@ -45,9 +87,6 @@ export default defineUserscript({
       'sheets.googleapis.com',
       'raw.githubusercontent.com',
     ],
-    downloadURL:
-      'https://update.greasyfork.org/scripts/507383/Dreadcast%20Script%20Manager.user.js',
-    updateURL: 'https://update.greasyfork.org/scripts/507383/Dreadcast%20Script%20Manager.meta.js',
   },
   externalGlobals: {
     '@dreadcast/ddk': 'DC',
