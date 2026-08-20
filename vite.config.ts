@@ -18,6 +18,9 @@ const IGNORED = [
   'data/**',
   'packages/game-types/catalogue/**',
   'packages/dcsm/src/fallback.ts',
+  // Le code publie doit rester au bit pres ce que le build a produit : c'est
+  // ce fichier exact que Greasy Fork sert aux joueurs.
+  'published/**',
 ];
 
 export default defineConfig({

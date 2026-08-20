@@ -12,8 +12,11 @@ Thumbs.db
 
 # Dependencies & build output
 node_modules/
-dist/
+packages/*/dist/
 *.log
+
+# published/ n'est PAS ignore : c'est ce que Greasy Fork synchronise. Voir
+# docs/publication.md.
 
 # Vite+ / Vite
 .vite/
