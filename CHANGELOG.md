@@ -54,6 +54,9 @@ et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- Catalogue : `kobsteak` était épinglé sur une révision que son auteur a
+  supprimée, et répondait 410. Repincé sur la 3.1, la version publiée
+  aujourd'hui.
 - Catalogue : `deckExportData` et `fixUsine` portaient une URL de la forme
   `/scripts/<id>-<slug>.user.js`, celle du site et non celle des mises à jour.
   Les deux répondaient 404 : ces scripts n'ont jamais pu se charger. La révision
