@@ -21,6 +21,11 @@ const IGNORED = [
   // Le code publie doit rester au bit pres ce que le build a produit : c'est
   // ce fichier exact que Greasy Fork sert aux joueurs.
   'published/**',
+  // Changelogs produits par release-please depuis les commits. Les formater
+  // ferait echouer la verification sur chaque pull request de release, que
+  // personne ne peut corriger a la main sans que l'outil la reecrive.
+  // Le CHANGELOG.md racine, lui, est redige et reste verifie.
+  'packages/*/CHANGELOG.md',
 ];
 
 export default defineConfig({
