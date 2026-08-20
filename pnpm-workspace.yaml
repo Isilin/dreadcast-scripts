@@ -18,7 +18,7 @@ catalog:
   # .size). Ne pas relever sans changer le jQuery de la page, ce qui n'est pas
   # de notre ressort.
   '@types/jquery': 1.10.45
-  '@types/node': ^24.10.1
+  '@types/node': ^26.2.0
   '@vitejs/plugin-basic-ssl': ^2.3.0
   # Version exacte embarquee par le jeu. Sert uniquement aux tests : la couche
   # de compatibilite est verifiee contre le vrai runtime, pas contre une
