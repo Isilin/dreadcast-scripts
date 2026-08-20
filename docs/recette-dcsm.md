@@ -66,22 +66,22 @@ cinquante scripts publiés utilisent.
 
 ## Recette
 
-| #   | Action                                                              | Ce que ça prouve                                                                                                                                                           |
-| --- | ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Ouvrir `https://www.dreadcast.net/Main`, console ouverte            | **Le point décisif.** Aucune `ReferenceError: DC is not defined`, aucune `TypeError` sur `DC.storage` : le `DC` du `@require` est bien visible depuis le script principal. |
-| 2   | Lire la console                                                     | `DCSM - Liste des scripts mise a jour depuis la source distante.`                                                                                                          |
-| 3   | Fermer la fenêtre d'accueil, recharger                              | Elle ne revient pas : `dcsm_intro_disabled` est écrit.                                                                                                                     |
-| 4   | Paramètres ▾ > Scripts & Skins                                      | Entrée injectée dans le bon menu ; bandeau indiquant la source de la liste ; les scripts non expérimentaux listés.                                                         |
-| 5   | Filtres section, catégorie, recherche                               | Le rendu unique remplace les trois blocs dupliqués de la version précédente.                                                                                               |
-| 6   | Cocher deux scripts, **fermer sans sauvegarder**, rouvrir           | Les cases sont revenues à leur état initial. La version précédente appliquait déjà chaque clic.                                                                            |
-| 7   | Cocher un script simple, Sauvegarder                                | Rechargement, puis `DCSM - Le script '<nom>' a ete charge.`                                                                                                                |
-| 8   | Boutons Documentation, Topic RP, Contact                            | Le bouton RP ouvre le topic RP, et non la documentation. Le bouton Contact ouvre un message.                                                                               |
-| 9   | Importer la configuration exportée en préparation                   | Configuration réelle reprise. `dcsm_scripts_cache` est volontairement ignoré à l'import comme à l'export.                                                                  |
-| 10  | Mode développeur : voir le détail sous le tableau                   | Le rendu tient compte du mode en direct. L'ancienne version laissait les filtres révéler les scripts expérimentaux alors que le mode était éteint.                         |
-| 11  | Ouvrir et fermer la fenêtre cinq fois, puis le contrôle ci-dessous  | Ni écouteurs ni feuilles de style accumulés.                                                                                                                               |
-| 12  | Devtools > Network > bloquer `raw.githubusercontent.com`, recharger | Bandeau rouge « liste en cache ». Après vidage du cache : « liste de secours embarquée ». Les scripts se chargent dans les deux cas.                                       |
-| 13  | Ouvrir `/Forum` puis `/EDC`                                         | Pas de fenêtre — elle n'existe qu'en jeu — mais les scripts de la section correspondante se chargent.                                                                      |
-| 14  | Réinitialiser                                                       | Mémoire vidée, retour à l'état d'installation.                                                                                                                             |
+| #   | Action                                                             | Ce que ça prouve                                                                                                                                                           |
+| --- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Ouvrir `https://www.dreadcast.net/Main`, console ouverte           | **Le point décisif.** Aucune `ReferenceError: DC is not defined`, aucune `TypeError` sur `DC.storage` : le `DC` du `@require` est bien visible depuis le script principal. |
+| 2   | Lire la console                                                    | `DCSM - Liste des scripts mise a jour depuis la source distante.`                                                                                                          |
+| 3   | Fermer la fenêtre d'accueil, recharger                             | Elle ne revient pas : `dcsm_intro_disabled` est écrit.                                                                                                                     |
+| 4   | Paramètres ▾ > Scripts & Skins                                     | Entrée injectée dans le bon menu ; bandeau indiquant la source de la liste ; les scripts non expérimentaux listés.                                                         |
+| 5   | Filtres section, catégorie, recherche                              | Le rendu unique remplace les trois blocs dupliqués de la version précédente.                                                                                               |
+| 6   | Cocher deux scripts, **fermer sans sauvegarder**, rouvrir          | Les cases sont revenues à leur état initial. La version précédente appliquait déjà chaque clic.                                                                            |
+| 7   | Cocher un script simple, Sauvegarder                               | Rechargement, puis `DCSM - Le script '<nom>' a ete charge.`                                                                                                                |
+| 8   | Boutons Documentation, Topic RP, Contact                           | Le bouton RP ouvre le topic RP, et non la documentation. Le bouton Contact ouvre un message.                                                                               |
+| 9   | Importer la configuration exportée en préparation                  | Configuration réelle reprise. `dcsm_scripts_cache` est volontairement ignoré à l'import comme à l'export.                                                                  |
+| 10  | Mode développeur : voir le détail sous le tableau                  | Le rendu tient compte du mode en direct. L'ancienne version laissait les filtres révéler les scripts expérimentaux alors que le mode était éteint.                         |
+| 11  | Ouvrir et fermer la fenêtre cinq fois, puis le contrôle ci-dessous | Ni écouteurs ni feuilles de style accumulés.                                                                                                                               |
+| 12  | Modes dégradés : voir le détail sous le tableau                    | Le gestionnaire tient quand la source du catalogue est injoignable, et le dit.                                                                                             |
+| 13  | Ouvrir `/Forum` puis `/EDC`                                        | Pas de fenêtre — elle n'existe qu'en jeu — mais les scripts de la section correspondante se chargent.                                                                      |
+| 14  | Réinitialiser                                                      | Mémoire vidée, retour à l'état d'installation.                                                                                                                             |
 
 ### Détail de l'étape 10
 
@@ -102,6 +102,36 @@ Dernière ligne à **49** mode éteint, **51** mode allumé.
 
 Laisser le mode éteint avant de sauvegarder : sauvegarder avec le mode allumé
 rend les deux scripts expérimentaux réellement chargeables.
+
+### Détail de l'étape 12
+
+**Le panneau Réseau des devtools ne sert à rien ici.** `GM_xmlhttpRequest` est
+exécuté par l'extension, pas par la page : la requête ne traverse jamais la pile
+réseau de l'onglet, n'y apparaît pas, et le blocage d'URL n'a aucune prise sur
+elle. C'est la raison d'être de cette API.
+
+On force donc l'échec depuis le script lui-même, dans l'éditeur du gestionnaire
+de userscripts. Les constantes sont lisibles telles quelles dans le fichier
+installé — c'est à cela que sert `minify: false`.
+
+**Liste en cache périmée.** Deux remplacements :
+
+| Chercher                   | Remplacer par            | Effet                                                                                                            |
+| -------------------------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| `var FETCH_TIMEOUT = 8e3;` | `var FETCH_TIMEOUT = 1;` | La requête expire au bout d'une milliseconde : un échec de transport réel, sans toucher au réseau de la machine. |
+| `< 36e5`                   | `< 0`                    | Le cache est toujours jugé périmé, donc une requête est toujours tentée.                                         |
+
+Attendu au rechargement : bandeau rouge « ⚠ Source injoignable : liste en cache
+du … », la trace `DCSM - Mise a jour impossible, la liste en cache est
+conservee` en console, et les scripts qui se chargent quand même.
+
+**Liste de secours embarquée.** Garder les deux modifications et cliquer
+**Réinitialiser**, ce qui vide le stockage, cache compris. Attendu : « ⚠ Source
+injoignable : liste de secours embarquée, potentiellement incomplète », et les
+scripts qui se chargent toujours. Cela couvre aussi l'étape 14.
+
+Réinstaller ensuite le userscript depuis le serveur local pour revenir à un
+fichier intact.
 
 Contrôle objectif à coller en console à l'étape 11 :
 
