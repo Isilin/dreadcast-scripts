@@ -1,0 +1,19 @@
+{
+  "name": "@dreadcast/game-types",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Declarations TypeScript des globales exposees par le client Dreadcast.",
+  "type": "module",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts"
+    }
+  },
+  "scripts": {
+    "extract": "node ../../tools/extract-game-api.mjs"
+  },
+  "dependencies": {
+    "@types/jquery": "catalog:"
+  }
+}

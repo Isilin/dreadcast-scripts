@@ -10,14 +10,21 @@ Thumbs.db
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# Yarn
+# Dependencies & build output
 node_modules/
-dist/
-.yarn/cache
-.yarn/unplugged
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+packages/*/dist/
+*.log
+
+# published/ n'est PAS ignore : c'est ce que Greasy Fork synchronise. Voir
+# docs/publication.md.
+
+# Vite+ / Vite
+.vite/
+.vite-task/
+vite.config.ts.timestamp-*
 
 # Environment files
 .env.*
+
+# Dreadcast : sources du jeu, recuperees depuis le navigateur, non redistribuables
+vendor/dreadcast.net

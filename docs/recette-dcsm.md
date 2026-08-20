@@ -1,0 +1,178 @@
+# Recette du gestionnaire en jeu
+
+Protocole de vérification du Dreadcast Script Manager dans un vrai navigateur,
+avant publication sur Greasy Fork. À rejouer à chaque version qui touche au
+gestionnaire ou à la bibliothèque.
+
+Ce que les tests automatiques ne peuvent pas couvrir : la sémantique exacte du
+bac à sable du gestionnaire de userscripts, c'est-à-dire le fait que le `DC`
+posé par le DDK chargé en `@require` soit visible depuis le script principal.
+Tout le reste est vérifié par `vp test --run`, y compris sur les fichiers
+construits.
+
+## Gestionnaires couverts
+
+**Tampermonkey**, **Violentmonkey** et **Greasemonkey 3**, qui fournissent les
+`GM_*` synchrones.
+
+**Greasemonkey 4 et FireMonkey ne fonctionnent pas**, et n'ont jamais
+fonctionné : ils sont passés exclusivement aux `GM.*` asynchrones, alors que
+`DC.LocalMemory` est synchrone depuis la version 1. Les rendre compatibles
+demanderait de rendre le stockage asynchrone, donc de casser l'API que les
+cinquante scripts publiés utilisent.
+
+---
+
+## Préparation
+
+1. **Exporter la configuration existante** : Paramètres ▾ > Scripts & Skins >
+   Exporter la configuration. C'est le filet de sécurité, et le jeu de données
+   de l'étape 9.
+
+2. **Désactiver dans le gestionnaire** les deux userscripts Greasy Fork :
+
+   | Userscript                | Pourquoi                                                                                                                                                                                                                             |
+   | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+   | Dreadcast Script Manager  | Sinon deux gestionnaires tournent et chargent chacun les scripts.                                                                                                                                                                    |
+   | Dreadcast Development Kit | **Non optionnel.** Installé seul, il patche `MenuChat.prototype` sur l'objet de la page ; le nouveau DDK verrait `originalSend` déjà défini et renoncerait à poser le sien. Les commandes de chat garderaient l'ancien comportement. |
+
+3. **Construire et servir** :
+
+   ```bash
+   vp run -r build && node tools/serve-dist.mjs
+   ```
+
+   Puis, dans un second terminal, reconstruire le gestionnaire contre le DDK
+   local — la commande exacte est affichée par le serveur :
+
+   ```bash
+   DCSM_LOCAL_DDK=http://localhost:8720/ddk.user.js vp run -r build
+   ```
+
+   Le build local prend le nom `Dreadcast Script Manager (local)` et le
+   namespace `Dreadcast-local` : il n'écrase pas l'installation Greasy Fork et
+   démarre sur une mémoire vierge. Il n'a pas d'URL de mise à jour, sinon le
+   gestionnaire le remplacerait par la version officielle en pleine recette.
+
+   L'URL du `@require` porte un horodatage regénéré à chaque build. Les
+   gestionnaires mettent les `@require` en cache et ne les resollicitent pas au
+   rechargement de la page : sans URL neuve, le DDK servi resterait celui du
+   build précédent.
+
+4. **Installer** `http://localhost:8720/dcsm.user.js`, et lui seul. Le DDK n'est
+   pas installé : il arrive par `@require`.
+
+---
+
+## Recette
+
+| #   | Action                                                             | Ce que ça prouve                                                                                                                                                           |
+| --- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Ouvrir `https://www.dreadcast.net/Main`, console ouverte           | **Le point décisif.** Aucune `ReferenceError: DC is not defined`, aucune `TypeError` sur `DC.storage` : le `DC` du `@require` est bien visible depuis le script principal. |
+| 2   | Lire la console                                                    | `DCSM - Liste des scripts mise a jour depuis la source distante.`                                                                                                          |
+| 3   | Fermer la fenêtre d'accueil, recharger                             | Elle ne revient pas : `dcsm_intro_disabled` est écrit.                                                                                                                     |
+| 4   | Paramètres ▾ > Scripts & Skins                                     | Entrée injectée dans le bon menu ; bandeau indiquant la source de la liste ; les scripts non expérimentaux listés.                                                         |
+| 5   | Filtres section, catégorie, recherche                              | Le rendu unique remplace les trois blocs dupliqués de la version précédente.                                                                                               |
+| 6   | Cocher deux scripts, **fermer sans sauvegarder**, rouvrir          | Les cases sont revenues à leur état initial. La version précédente appliquait déjà chaque clic.                                                                            |
+| 7   | Cocher un script simple, Sauvegarder                               | Rechargement, puis `DCSM - Le script '<nom>' a ete charge.`                                                                                                                |
+| 8   | Boutons Documentation, Topic RP, Contact                           | Le bouton RP ouvre le topic RP, et non la documentation. Le bouton Contact ouvre un message.                                                                               |
+| 9   | Importer la configuration exportée en préparation                  | Configuration réelle reprise. `dcsm_scripts_cache` est volontairement ignoré à l'import comme à l'export.                                                                  |
+| 10  | Mode développeur : voir le détail sous le tableau                  | Le rendu tient compte du mode en direct. L'ancienne version laissait les filtres révéler les scripts expérimentaux alors que le mode était éteint.                         |
+| 11  | Ouvrir et fermer la fenêtre cinq fois, puis le contrôle ci-dessous | Ni écouteurs ni feuilles de style accumulés.                                                                                                                               |
+| 12  | Modes dégradés : voir le détail sous le tableau                    | Le gestionnaire tient quand la source du catalogue est injoignable, et le dit.                                                                                             |
+| 13  | Ouvrir `/Forum` puis `/EDC`                                        | Pas de fenêtre — elle n'existe qu'en jeu — mais les scripts de la section correspondante se chargent.                                                                      |
+| 14  | Réinitialiser                                                      | Mémoire vidée, retour à l'état d'installation.                                                                                                                             |
+
+### Détail de l'étape 10
+
+L'interrupteur « Mode développeur » est en haut de la fenêtre. Deux scripts du
+catalogue sont marqués expérimentaux : **DC Mobile Fix** (Jeu / Correctifs) et
+**DC Dynamic Message V2** (Jeu / UI). Ils s'affichent préfixés d'un `[DEV]`
+rouge.
+
+1. Mode éteint, filtre catégorie sur **Correctifs** : aucune ligne `[DEV]`.
+   C'est le point qui compte — les gestionnaires de filtre de l'ancienne version
+   réappliquaient le rendu sans le filtre d'expérimentalité.
+2. Allumer : la liste se redessine immédiatement, sans sauvegarde ni
+   rechargement, et `[DEV] DC Mobile Fix` apparaît dans la vue filtrée.
+3. Éteindre : il disparaît aussitôt.
+
+Contrôle chiffré : filtres sur « Tous », la colonne `#` numérote à partir de 0.
+Dernière ligne à **49** mode éteint, **51** mode allumé.
+
+Laisser le mode éteint avant de sauvegarder : sauvegarder avec le mode allumé
+rend les deux scripts expérimentaux réellement chargeables.
+
+### Détail de l'étape 12
+
+**Le panneau Réseau des devtools ne sert à rien ici.** `GM_xmlhttpRequest` est
+exécuté par l'extension, pas par la page : la requête ne traverse jamais la pile
+réseau de l'onglet, n'y apparaît pas, et le blocage d'URL n'a aucune prise sur
+elle. C'est la raison d'être de cette API.
+
+On force donc l'échec depuis le script lui-même, dans l'éditeur du gestionnaire
+de userscripts. Les constantes sont lisibles telles quelles dans le fichier
+installé — c'est à cela que sert `minify: false`.
+
+**Liste en cache périmée.** Deux remplacements :
+
+| Chercher                   | Remplacer par            | Effet                                                                                                            |
+| -------------------------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| `var FETCH_TIMEOUT = 8e3;` | `var FETCH_TIMEOUT = 1;` | La requête expire au bout d'une milliseconde : un échec de transport réel, sans toucher au réseau de la machine. |
+| `< 36e5`                   | `< 0`                    | Le cache est toujours jugé périmé, donc une requête est toujours tentée.                                         |
+
+Attendu au rechargement : bandeau rouge « ⚠ Source injoignable : liste en cache
+du … », la trace `DCSM - Mise a jour impossible, la liste en cache est
+conservee` en console, et les scripts qui se chargent quand même.
+
+**Liste de secours embarquée.** Garder les deux modifications et cliquer
+**Réinitialiser**, ce qui vide le stockage, cache compris. Attendu : « ⚠ Source
+injoignable : liste de secours embarquée, potentiellement incomplète », et les
+scripts qui se chargent toujours. Cela couvre aussi l'étape 14.
+
+Réinstaller ensuite le userscript depuis le serveur local pour revenir à un
+fichier intact.
+
+Contrôle objectif à coller en console à l'étape 11 :
+
+```js
+({
+  styles: document.querySelectorAll('style').length,
+  tooltips: [...document.querySelectorAll('style')].filter((s) =>
+    s.textContent.includes('.tooltiptext'),
+  ).length,
+  modales: document.querySelectorAll('#scripts_modal').length,
+});
+```
+
+`tooltips` doit valoir 1 quel que soit le nombre d'ouvertures. La version
+précédente réinjectait la feuille à chaque infobulle construite, soit cinq par
+ligne de script.
+
+### Passage sur Violentmonkey
+
+Étapes 1, 2, 4, 7 et 12 uniquement : il s'agit de confirmer que le partage de
+`DC` et le chargement des scripts tiennent sur un autre bac à sable.
+
+---
+
+## Si l'étape 1 échoue
+
+C'est le seul scénario qui remet en cause la conception.
+
+1. En console, dans le contexte du userscript : `typeof DC`. S'il vaut
+   `"undefined"`, le `@require` n'a pas partagé sa portée globale.
+2. Vérifier dans l'onglet Externals du gestionnaire que le `@require` a bien été
+   téléchargé depuis `localhost` et non servi depuis le cache.
+3. Le correctif serait d'ajouter, en pied du fichier du DDK et hors de son
+   IIFE, `var DC = globalThis.DC, Util = globalThis.Util;` — le mécanisme de
+   portée partagée sur lequel s'appuyait la version 1. Attention :
+   `build.rolldownOptions.output.footer` injecte la ligne **deux fois**, dont
+   une à l'intérieur de l'IIFE où elle redéclare le `DC` du bundle. Il faut
+   passer par un greffon Vite qui écrit dans l'artefact émis.
+
+## Retour en arrière
+
+Supprimer le userscript `(local)`, réactiver les deux userscripts Greasy Fork.
+La configuration d'origine n'a pas été touchée : le build local utilise un
+namespace distinct, donc une mémoire distincte.

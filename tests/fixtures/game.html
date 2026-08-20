@@ -1,0 +1,53 @@
+<!--
+  Extrait réduit de la page de jeu (vendor/dreadcast.net/Main.html), limité aux
+  éléments que le DDK et le DCSM manipulent. Le balisage, les classes et les
+  gestionnaires en dur sont recopiés tels quels : c'est ce que les sélecteurs
+  doivent trouver en production.
+
+  Le fichier d'origine n'est pas versionné (il fait 282 ko et appartient au
+  jeu). Pour le régénérer après une mise à jour du jeu, comparer les blocs
+  ci-dessous avec la page réelle.
+-->
+<div id="loader" style="display: none"></div>
+
+<ul class="menus">
+  <li class="account link couleur5">Compte Premium</li>
+  <li class="separator"></li>
+  <li class="pils_nb link couleur5"><span>2548</span> pilules</li>
+  <li class="separator"></li>
+  <li class="parametres couleur5 right hover" onclick="$(this).find('ul').slideDown()">
+    Paramètres ▾
+    <ul>
+      <li class="link couleur2 separator">Gestion du compte</li>
+      <li class="link couleur2">Gestion de l'interface</li>
+      <li class="link couleur2">Gestion de la fiche personnage</li>
+      <li class="link couleur2 separator">Réactions de personnage</li>
+    </ul>
+  </li>
+  <li class="statistics link couleur5 left">Statistiques</li>
+  <li class="separator"></li>
+  <!-- Second menu déroulant : addSubMenuTo ne doit jamais viser celui-ci. -->
+  <li class="navigation couleur5 right hover" onclick="$(this).find('ul').slideDown()">
+    Navigation ▾
+    <ul>
+      <li class="link couleur2 separator">Forum</li>
+      <li class="link couleur2">Espace DC</li>
+    </ul>
+  </li>
+</ul>
+
+<!-- Feuille de personnage : le niveau d'informatique commande les decks. -->
+<div class="stats">
+  <span class="stat_6_entier">7</span>
+</div>
+
+<div id="chatForm">
+  <input class="text_chat" type="text" name="message_chat" maxlength="140" autocomplete="off" />
+  <div class="text_valider"></div>
+</div>
+
+<div id="db_deck_42" class="dataBox">
+  <div class="zone_ecrit">
+    <div class="ligne_ecrite_fixed"><input value="date" /></div>
+  </div>
+</div>

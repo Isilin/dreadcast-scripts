@@ -11,11 +11,53 @@ Quelques outils, tel le gestionnaire de script sont également proposés aux uti
 
 ## Démarrage
 
-Dans un premier temps, il est nécessaire d'installer un gestionnaire de scripts pour votre navigateur, tel [Greasemonkey](https://addons.mozilla.org/fr/firefox/addon/greasemonkey/), [Tampermonkey](https://www.tampermonkey.net/), [Violentmonkey](https://violentmonkey.github.io/), ou tout autre gestionnaire équivalent.
+Dans un premier temps, il est nécessaire d'installer un gestionnaire de scripts pour votre navigateur : [Tampermonkey](https://www.tampermonkey.net/) ou [Violentmonkey](https://violentmonkey.github.io/).
+
+> **Greasemonkey 4 et FireMonkey ne fonctionnent pas.** Ils ont abandonné les fonctions `GM_*` synchrones au profit de leurs équivalents asynchrones `GM.*`, dont les scripts Dreadcast dépendent depuis toujours pour lire et écrire leur configuration. Greasemonkey 3 fonctionne, mais n'est plus distribué.
 
 Un guide complet sur les gestionnaires de scripts est également disponible [ICI](https://github.com/Isilin/dreadcast-scripts/wiki/Gestionnaires-de-scripts).
 
 Dans un second temps, il vous faudra installer les scripts que vous souhaitez. Deux approches sont proposées dans ce wiki, et qui vous sont détaillées ici : [Installation de scripts](https://github.com/Isilin/dreadcast-scripts/wiki/Installation).
+
+## Développement
+
+Le dépôt est un monorepo piloté par [Vite+](https://viteplus.dev) : une seule
+CLI (`vp`) pour le serveur de développement, le build, les tests, le lint et le
+formatage.
+
+```bash
+irm https://viteplus.dev/install.ps1 | iex
+```
+
+Sous Linux ou macOS : `curl -fsSL https://vite.plus | bash`. Vite+ gère aussi la
+version de Node (24, épinglée dans `.node-version`) et s'appuie sur pnpm.
+
+```bash
+vp install
+```
+
+| Commande                                    | Effet                                                                 |
+| ------------------------------------------- | --------------------------------------------------------------------- |
+| `vp run -r build`                           | Construit tous les userscripts dans `packages/*/dist/`                |
+| `vp check`                                  | Formatage (Oxfmt), lint (Oxlint) et types (TypeScript 7) en une passe |
+| `vp test --run`                             | Lance la suite Vitest                                                 |
+| `vp dev -C packages/dcsm`                   | Serveur de développement du gestionnaire, avec HMR                    |
+| `vp run --filter @dreadcast/registry check` | Valide `data/scripts.json` et la liste de secours                     |
+
+### Contenu
+
+| Paquet                | Rôle                                                                                           |
+| --------------------- | ---------------------------------------------------------------------------------------------- |
+| `packages/ddk`        | Dreadcast Development Kit, la bibliothèque partagée ([API](packages/ddk/README.md))            |
+| `packages/dcsm`       | Dreadcast Script Manager, le gestionnaire intégré au jeu                                       |
+| `packages/registry`   | Schéma de `data/scripts.json` et génération de la liste de secours                             |
+| `packages/game-types` | Déclarations TypeScript des globales du jeu                                                    |
+| `src/`                | Scripts hérités, encore en JavaScript, migrés progressivement                                  |
+| `published/`          | Les userscripts construits, tels que Greasy Fork les sert ([publication](docs/publication.md)) |
+
+`data/scripts.json` est le catalogue des scripts autorisés. Il ne change jamais
+d'emplacement : les gestionnaires déjà installés le téléchargent depuis cette
+adresse exacte.
 
 ## Contribuer
 
