@@ -25,8 +25,39 @@ https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/published/dcsm.u
 Le webhook GitHub reste celui déjà en place : seul le chemin change, l'ancien
 pointant sur `src/lib/helper.js` et `src/scripts/script-manager.js`.
 
-Si `main` est protégée, le push du workflow demande un jeton autorisé à
-contourner la protection.
+Si `main` est protégée, voir la section suivante : le jeton par défaut des
+Actions ne suffit pas.
+
+## Protection de la branche `main`
+
+La publication écrit deux commits sur `main`. Une branche protégée les refuse,
+et **`github-actions[bot]` ne peut pas être ajouté à une liste de
+contournement** : GitHub l'interdit par conception, l'identité n'étant liée à
+aucune branche, l'autoriser reviendrait à ouvrir la protection à n'importe quel
+workflow du dépôt.
+
+Trois issues, de la plus simple à la plus durable :
+
+| Solution | Ce que ça implique |
+| --- | --- |
+| **Jeton personnel à portée restreinte** | Un jeton *fine-grained* sur ce seul dépôt, permission `Contents: write`, enregistré en secret `RELEASE_TOKEN`. Le workflow s'en sert ; les commits portent votre identité. Le plus rapide, mais le jeton expire et suit une personne. |
+| **Application GitHub dédiée** | Une application propre au dépôt, ajoutée à la liste de contournement du ruleset. Identité distincte, journal d'audit, pas d'expiration. C'est la voie recommandée par GitHub, au prix d'une mise en place. |
+| **Déplacer `published/`** | Sur une branche non protégée, avec les URL de synchronisation Greasy Fork repointées dessus. Supprime le besoin d'écrire sur `main`, donc tout secret de longue durée — mais le webhook, éprouvé sur `main`, serait à revalider ailleurs. |
+
+Le workflow lit `secrets.RELEASE_TOKEN` et retombe sur le jeton des Actions
+quand il est absent : rien à modifier dans les fichiers pour passer de l'une à
+l'autre.
+
+### Vérifier sans rien publier
+
+`.github/workflows/probe-push.yml`, déclenché à la main, pousse un commit vide
+sur `main`. Aucun fichier modifié, donc aucune synchronisation Greasy Fork ; un
+sujet `chore:` que release-please ignore. Il échoue exactement là où la
+publication échouerait.
+
+À lancer après toute modification des règles de protection — et avant la
+première vraie publication automatique, faute de quoi l'échec surviendrait entre
+le DDK déjà envoyé et le gestionnaire qui ne partirait jamais.
 
 ## Amorcer un nouveau script
 

@@ -1,0 +1,50 @@
+name: Sonde d'écriture sur main
+
+# Vérifie que la chaîne de publication pourra pousser sur `main`, sans rien
+# publier.
+#
+# La publication écrit deux commits sur `main`. Si la branche est protégée, le
+# jeton par défaut des Actions est refusé — et on ne le découvrirait qu'au
+# milieu d'une vraie publication, entre le DDK déjà envoyé et le gestionnaire
+# qui ne partirait jamais.
+#
+# La sonde pousse un commit vide : aucun fichier modifié, donc aucune
+# synchronisation Greasy Fork déclenchée, et un sujet `chore:` que
+# release-please ignore. Elle échoue exactement là où la publication
+# échouerait.
+#
+# À lancer à la main après toute modification des règles de protection.
+# Supprimable une fois la chaîne éprouvée.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sonde:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: main
+          # Le jeton dédié s'il existe, celui des Actions sinon : c'est aussi ce
+          # que la sonde met à l'épreuve.
+          token: ${{ secrets.RELEASE_TOKEN || github.token }}
+
+      - name: Pousser un commit vide
+        run: |
+          set -euo pipefail
+
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git commit --allow-empty -m 'chore: sonde d écriture de la chaîne de publication'
+
+          if git push origin main; then
+            echo '::notice::La chaîne de publication peut écrire sur main.'
+          else
+            echo '::error::Push refusé. Voir docs/publication.md, section « Protection de la branche main ».'
+            exit 1
+          fi
