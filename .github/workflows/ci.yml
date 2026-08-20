@@ -45,13 +45,6 @@ jobs:
       # embarquée dans le gestionnaire doit correspondre à data/scripts.json.
       - run: vp run --filter @dreadcast/registry check
 
-      # Transitoire : src/scripts/script-manager.js reste le gestionnaire
-      # publié tant que la version TypeScript n'est pas en ligne sur Greasy
-      # Fork. Sa propre liste de secours doit donc rester synchronisée elle
-      # aussi. À supprimer, avec le fichier et tools/sync-fallback.mjs, une fois
-      # la bascule faite.
-      - run: node tools/sync-fallback.mjs --check
-
       - uses: actions/upload-artifact@v4
         with:
           name: dreadcast-userscripts
