@@ -12,11 +12,19 @@ name: Release
 #    n'attribue qu'une fois la synchronisation faite. Le DDK part donc en
 #    premier, et le gestionnaire attend cet identifiant avant d'être construit.
 #
+# Les numéros de version et les changelogs sont produits par release-please, à
+# partir des commits. Il ouvre une pull request de release ; la fusionner
+# déclenche la publication, dans le même job — la publication doit lire les
+# package.json déjà incrémentés.
+#
 # La marche à suivre complète est dans docs/publication.md.
 
 on:
   push:
-    tags: ['v*']
+    branches: [main]
+    # Les commits de publication touchent `published/` : sans cela, le workflow
+    # se rappellerait lui-même à chaque publication.
+    paths-ignore: ['published/**']
   workflow_dispatch:
     inputs:
       publish_dcsm:
@@ -27,33 +35,61 @@ on:
 env:
   CI: '1'
   VP_NODE_MANAGER: 'yes'
+  VP_VERSION: '0.2.9'
 
 permissions:
   contents: write
+  pull-requests: write
+
+# Deux publications ne doivent jamais pousser sur `main` en même temps, et
+# aucune ne doit être interrompue en cours de route.
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      # On publie toujours le contenu de `main`, y compris sur déclenchement par
-      # tag : les commits de publication doivent atterrir sur une branche, pas
-      # sur une tête détachée. Le tag est donc à poser sur `main` à jour.
-      - uses: actions/checkout@v5
+      # Ouvre ou met à jour la pull request de release. `releases_created` ne
+      # vaut vrai que lorsqu'elle vient d'être fusionnée : c'est ce qui
+      # distingue un commit ordinaire d'une publication.
+      - uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4
+        id: release
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+      - name: Rien à publier
+        if: steps.release.outputs.releases_created != 'true' && github.event_name != 'workflow_dispatch'
+        run: |
+          echo "Aucune release creee. La pull request de release attend sa fusion."
+
+      # `main` porte déjà, à ce stade, le commit de release et ses versions
+      # incrémentées.
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        if: steps.release.outputs.releases_created == 'true' || github.event_name == 'workflow_dispatch'
         with:
           ref: main
 
       - name: Installer Vite+
+        if: steps.release.outputs.releases_created == 'true' || github.event_name == 'workflow_dispatch'
         run: |
           curl -fsSL https://vite.plus | bash
           echo "$HOME/.vite-plus/bin" >> "$GITHUB_PATH"
 
-      - run: vp install --frozen-lockfile
-      - run: vp check
-      - run: vp run -r build
-      - run: vp test --run
+      - name: Vérifier et construire
+        if: steps.release.outputs.releases_created == 'true' || github.event_name == 'workflow_dispatch'
+        run: |
+          vp install --frozen-lockfile
+          vp check
+          vp run -r build
+          vp test --run
 
       - name: Relever les versions
         id: versions
+        if: steps.release.outputs.releases_created == 'true' || github.event_name == 'workflow_dispatch'
         run: |
           set -euo pipefail
           {
@@ -62,12 +98,14 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Configurer git
+        if: steps.release.outputs.releases_created == 'true' || github.event_name == 'workflow_dispatch'
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
       - name: Publier le DDK
         id: ddk
+        if: steps.release.outputs.releases_created == 'true' || github.event_name == 'workflow_dispatch'
         run: |
           set -euo pipefail
           cp packages/ddk/dist/ddk.user.js packages/ddk/dist/ddk.meta.js published/
@@ -88,6 +126,7 @@ jobs:
       # DDK précédent -- exactement la panne que l'épinglage doit empêcher.
       - name: Attendre la synchronisation du DDK
         id: pin
+        if: steps.release.outputs.releases_created == 'true' || github.event_name == 'workflow_dispatch'
         run: |
           set -euo pipefail
           {
@@ -98,7 +137,10 @@ jobs:
       # chaine vide et `false` en 0, donc `inputs.publish_dcsm != false` serait
       # faux et le gestionnaire ne partirait jamais. On teste l'evenement.
       - name: Publier le gestionnaire
-        if: github.event_name != 'workflow_dispatch' || inputs.publish_dcsm
+        if: >-
+          (steps.release.outputs.releases_created == 'true' || github.event_name ==
+          'workflow_dispatch') && (github.event_name != 'workflow_dispatch' ||
+          inputs.publish_dcsm)
         env:
           DCSM_DDK_VERSION: ${{ steps.pin.outputs.version }}
         run: |
@@ -120,7 +162,8 @@ jobs:
           git pull --rebase origin main
           git push origin main
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: steps.release.outputs.releases_created == 'true' || github.event_name == 'workflow_dispatch'
         with:
           name: dreadcast-userscripts
           path: published/*.js

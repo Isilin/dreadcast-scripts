@@ -28,46 +28,46 @@ pointant sur `src/lib/helper.js` et `src/scripts/script-manager.js`.
 Si `main` est protégée, le push du workflow demande un jeton autorisé à
 contourner la protection.
 
-## La première publication est manuelle
+## Amorcer un nouveau script
 
-Le workflow ne publie que ce qui a changé : il compare les fichiers construits à
-ceux de `published/`. Or ceux-ci y sont déjà, aux versions à publier. Il ne
-verrait donc rien à envoyer, puis attendrait en vain que Greasy Fork annonce une
-version que personne ne lui a poussée.
+Le workflow ne publie que ce qui a changé, et le gestionnaire s'épingle sur une
+révision du DDK que Greasy Fork n'attribue qu'après synchronisation. Un script
+publié pour la première fois demande donc quelques gestes manuels :
 
-Pour cette première fois, une fois les URL de synchronisation changées :
+1. Synchroniser le nouveau script à la main sur sa fiche Greasy Fork.
+2. Si le gestionnaire en dépend, relever la révision attribuée :
+   `node tools/greasyfork.mjs resolve <scriptId> <version>`, et la reporter dans
+   la constante correspondante de sa configuration Vite.
 
-1. Synchroniser **le DDK** à la main sur sa fiche Greasy Fork.
-2. Relever l'identifiant que Greasy Fork vient de lui attribuer :
-   `node tools/greasyfork.mjs resolve 507382 <version du DDK>`.
-3. **Le reporter dans `DDK_VERSION`**, packages/dcsm/vite.config.ts, puis
-   reconstruire et recopier dans `published/`.
-4. Synchroniser **le gestionnaire**.
-
-L'étape 3 n'est pas facultative : sans elle, le gestionnaire publié réclame
-l'identifiant de l'ancien DDK, charge une bibliothèque qui n'a pas les modules
-attendus, et échoue au démarrage sur `DC.dom is undefined`. C'est précisément ce
-que le workflow automatise, et qui manque quand on le court-circuite.
-
-Les publications suivantes passent par le workflow, chaque version apportant par
-construction un fichier différent.
+C'est cette seconde étape, omise lors de la bascule vers la version TypeScript,
+qui a livré un gestionnaire 1.5.0 réclamant l'identifiant de l'ancien DDK : il
+chargeait une bibliothèque dépourvue des modules attendus et échouait au
+démarrage sur `DC.dom is undefined`.
 
 ## Publier
 
-```bash
-git tag v1.5.0 && git push origin v1.5.0
-```
+Rien à taguer, rien à incrémenter : les numéros de version viennent des commits.
 
-Le workflow [release.yml](../.github/workflows/release.yml) enchaîne :
-vérification, tests, build, publication du DDK, attente de sa synchronisation
-par Greasy Fork, puis construction et publication du gestionnaire épinglé sur
-lui. Il publie toujours le contenu de `main` : le tag est donc à poser sur une
-branche à jour. `workflow_dispatch` permet aussi de le déclencher à la main, et
-de décocher la publication du gestionnaire pour un essai à blanc.
+1. Fusionner les changements vers `main`, en Conventional Commits. Le paquet
+   concerné est déduit des **chemins modifiés** — un commit qui touche
+   `packages/ddk/**` fait monter le DDK — et non du scope, qui reste une aide à
+   la lecture.
+2. release-please ouvre ou met à jour une **pull request de release** : elle
+   porte les nouveaux numéros et les changelogs. Elle s'accumule tant qu'on ne
+   la fusionne pas.
+3. La fusionner déclenche la publication, dans le même workflow : vérification,
+   tests, build, publication du DDK, attente de sa synchronisation par Greasy
+   Fork, puis construction et publication du gestionnaire épinglé sur lui.
 
-Les numéros de version viennent des `package.json` et se règlent à la main.
-Greasy Fork refuse une version identique à la précédente : sans incrément, la
-synchronisation ne fait rien.
+`workflow_dispatch` permet de forcer une publication sans release, et de
+décocher le gestionnaire pour un essai à blanc.
+
+Greasy Fork refuse une version identique à la précédente. C'est exactement ce
+que cette mécanique supprime : l'incrément n'est plus à penser.
+
+> Une pull request ouverte par `GITHUB_TOKEN` ne déclenche pas les workflows :
+> la pull request de release n'aura donc pas de passage en intégration. Elle ne
+> touche que des numéros et des changelogs.
 
 ## Deux règles à ne pas enfreindre
 

@@ -5,6 +5,12 @@ Tous changement notable dans ce projet sera référencé dans ce fichier.
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+> **Ce fichier retrace la migration vers la stack Vite+, et s'arrête là.**
+> Chaque userscript suit désormais sa propre numérotation, et son changelog est
+> produit par release-please à partir des commits :
+> [Development Kit](packages/ddk/CHANGELOG.md) et
+> [Script Manager](packages/dcsm/CHANGELOG.md).
+
 ## [Unreleased]
 
 ### Changed
@@ -48,6 +54,10 @@ et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- Catalogue : `deckExportData` et `fixUsine` portaient une URL de la forme
+  `/scripts/<id>-<slug>.user.js`, celle du site et non celle des mises à jour.
+  Les deux répondaient 404 : ces scripts n'ont jamais pu se charger. La révision
+  épinglée est inchangée, seule la forme de l'URL est corrigée.
 - DCSM 1.5.1 : le `@require` publié épinglait l'identifiant du DDK 1.1.8. Le
   gestionnaire chargeait donc une bibliothèque dépourvue des modules attendus et
   échouait au démarrage sur `DC.dom is undefined`. L'épingle suit désormais la

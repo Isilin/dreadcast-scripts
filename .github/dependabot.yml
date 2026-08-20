@@ -1,0 +1,32 @@
+version: 2
+
+updates:
+  # Les actions sont épinglées sur des SHA : sans Dependabot, elles ne
+  # bougeraient jamais, y compris pour un correctif de sécurité.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ['*']
+
+  # Dependabot gère les catalogues pnpm depuis février 2025. Un défaut connu
+  # subsiste : le pnpm-lock.yaml qu'il produit peut perdre des entrées du
+  # catalogue. `vp install --frozen-lockfile` le rejette alors en intégration,
+  # ce qui est le comportement voulu — la pull request échoue au lieu d'être
+  # fusionnée.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      toolchain:
+        patterns: ['*']
+    ignore:
+      # Le jeu tourne sur jQuery 1.8.2. Ces deux versions décrivent ce runtime,
+      # elles ne sont pas en retard : les relever ferait décrire au typage une
+      # API qui n'existe pas, et tester la couche de compatibilité contre un
+      # jQuery que personne n'exécute.
+      - dependency-name: '@types/jquery'
+      - dependency-name: 'jquery'
