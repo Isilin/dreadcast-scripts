@@ -1,6 +1,6 @@
 {
   "name": "@dreadcast/dcsm",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "private": true,
   "description": "Dreadcast Script Manager : catalogue et chargement des scripts, integres au jeu.",
   "type": "module",
