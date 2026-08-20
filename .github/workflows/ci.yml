@@ -35,9 +35,11 @@ jobs:
       # Une seule passe : formatage, lint et vérification de types.
       - run: vp check
 
-      - run: vp test --run
-
+      # Le build passe avant les tests : le test d'integration du gestionnaire
+      # porte sur les fichiers construits, pas sur les sources.
       - run: vp run -r build
+
+      - run: vp test --run
 
       # Le catalogue est validé par son schéma, et la liste de secours
       # embarquée dans le gestionnaire doit correspondre à data/scripts.json.
