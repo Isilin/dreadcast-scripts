@@ -1,0 +1,14 @@
+#!/bin/sh
+# Formate et lint les fichiers indexes avant le commit.
+#
+# Ce qu'il empeche : editer un fichier, le commiter sans repasser par le
+# formateur, et decouvrir l'echec en integration. Le cas est arrive deux fois
+# sur des fichiers Markdown, et chaque fois toutes les pull requests ouvertes
+# sur cette base ont herite de l'echec, sans rapport avec leur contenu.
+#
+# La liste des motifs et la commande associee sont dans le bloc `staged` du
+# vite.config.ts racine.
+#
+# Pour passer outre ponctuellement : `git commit --no-verify`.
+
+vp staged

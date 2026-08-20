@@ -54,6 +54,15 @@ export default defineConfig({
     // un client HTTP simules.
     alias: [{ find: /^monkey$/, replacement: '/tests/mocks/monkey.ts' }],
   },
+  // Formatage et lint des fichiers indexes, avant chaque commit. Sans ce
+  // garde-fou, un fichier edite puis commite sans repasser par le formateur
+  // fait echouer l'integration -- et, plus vicieux, toutes les pull requests
+  // ouvertes sur cette base heritent de l'echec.
+  //
+  // A activer une fois par copie de travail : `vp hooks enable`.
+  staged: {
+    '*.{ts,mts,js,mjs,json,md,yml,yaml}': 'vp check --fix',
+  },
   fmt: {
     ignorePatterns: IGNORED,
     singleQuote: true,

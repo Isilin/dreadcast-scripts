@@ -108,6 +108,16 @@ vp install
 Node 24 est épinglé dans `.node-version` et téléchargé automatiquement, pnpm est
 résolu depuis le champ `packageManager`. Rien d'autre n'est à installer.
 
+Une fois par copie de travail, activez le hook de pré-commit :
+
+```bash
+vp hooks enable
+```
+
+Il formate et lint les fichiers indexés avant chaque commit. `core.hooksPath`
+étant une configuration locale, chacun doit l'activer chez soi — le hook
+lui-même, `.vite-hooks/pre-commit`, est versionné.
+
 Avant d'ouvrir une pull request :
 
 ```bash
