@@ -126,6 +126,26 @@ entre le `@require` et le script principal ne peut être vérifié que dans un v
 gestionnaire de userscripts. La mise en ligne elle-même est décrite dans
 [docs/publication.md](docs/publication.md).
 
+#### Le type de commit décide de la publication
+
+Les numéros de version sont dérivés des commits. Le type engage donc une
+publication chez les joueurs :
+
+| Type                                                     | Effet                            |
+| -------------------------------------------------------- | -------------------------------- |
+| `feat(ddk):` / `feat(dcsm):`                             | Version mineure, publication.    |
+| `fix(ddk):` / `fix(dcsm):`                               | Version corrective, publication. |
+| `chore:`, `test:`, `docs:`, `ci:`, `build:`, `refactor:` | Aucune publication.              |
+
+La règle : `feat` et `fix` décrivent ce qui change **pour le joueur**. Une
+dépendance de test retirée, un test réécrit, un outillage revu ne changent pas
+le userscript publié — ce sont des `chore:` ou des `test:`, même s'ils
+corrigent quelque chose de bien réel.
+
+Le paquet concerné est déduit des **chemins modifiés**, pas du scope : un
+`chore:` qui touche `packages/ddk/` ne publie rien, un `fix(outillage):` qui y
+touche publie une version corrective du DDK.
+
 #### Ajouter une dépendance
 
 Les versions des dépendances externes sont déclarées une seule fois, dans le

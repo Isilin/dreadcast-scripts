@@ -155,6 +155,23 @@ jobs:
           DCSM_DDK_VERSION: ${{ steps.pin.outputs.version }}
         run: |
           set -euo pipefail
+
+          # Une release du seul DDK ne doit pas republier le gestionnaire. Le
+          # reconstruire changerait son `@require` -- la nouvelle revision du
+          # DDK -- sans changer son `@version` : Greasy Fork refuserait la
+          # synchronisation, le depot et le site divergeraient en silence, et le
+          # gestionnaire se retrouverait epingle sur un DDK jamais teste avec
+          # lui. Tant que sa version ne bouge pas, il garde l'epingle avec
+          # laquelle il a ete publie.
+          publiee=$(grep -m1 '^// @version' published/dcsm.user.js | awk '{print $3}')
+          attendue='${{ steps.versions.outputs.dcsm }}'
+
+          if [ "$publiee" = "$attendue" ]; then
+            echo "Gestionnaire deja publie en $publiee : rien a faire."
+            exit 0
+          fi
+
+          echo "Gestionnaire : $publiee -> $attendue"
           vp run --filter @dreadcast/dcsm build
           cp packages/dcsm/dist/dcsm.user.js packages/dcsm/dist/dcsm.meta.js published/
 
