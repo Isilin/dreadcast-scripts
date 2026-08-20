@@ -46,13 +46,14 @@ vp install
 
 ### Contenu
 
-| Paquet                | Rôle                                                                                |
-| --------------------- | ----------------------------------------------------------------------------------- |
-| `packages/ddk`        | Dreadcast Development Kit, la bibliothèque partagée ([API](packages/ddk/README.md)) |
-| `packages/dcsm`       | Dreadcast Script Manager, le gestionnaire intégré au jeu                            |
-| `packages/registry`   | Schéma de `data/scripts.json` et génération de la liste de secours                  |
-| `packages/game-types` | Déclarations TypeScript des globales du jeu                                         |
-| `src/`                | Scripts hérités, encore en JavaScript, migrés progressivement                       |
+| Paquet                | Rôle                                                                                           |
+| --------------------- | ---------------------------------------------------------------------------------------------- |
+| `packages/ddk`        | Dreadcast Development Kit, la bibliothèque partagée ([API](packages/ddk/README.md))            |
+| `packages/dcsm`       | Dreadcast Script Manager, le gestionnaire intégré au jeu                                       |
+| `packages/registry`   | Schéma de `data/scripts.json` et génération de la liste de secours                             |
+| `packages/game-types` | Déclarations TypeScript des globales du jeu                                                    |
+| `src/`                | Scripts hérités, encore en JavaScript, migrés progressivement                                  |
+| `published/`          | Les userscripts construits, tels que Greasy Fork les sert ([publication](docs/publication.md)) |
 
 `data/scripts.json` est le catalogue des scripts autorisés. Il ne change jamais
 d'emplacement : les gestionnaires déjà installés le téléchargent depuis cette

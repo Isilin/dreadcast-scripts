@@ -123,7 +123,8 @@ fichiers construits, et non sur les sources.
 Toute modification du gestionnaire ou de la bibliothèque doit en plus passer la
 [recette en jeu](docs/recette-dcsm.md) avant publication : le partage de `DC`
 entre le `@require` et le script principal ne peut être vérifié que dans un vrai
-gestionnaire de userscripts.
+gestionnaire de userscripts. La mise en ligne elle-même est décrite dans
+[docs/publication.md](docs/publication.md).
 
 #### Ajouter une dépendance
 

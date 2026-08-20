@@ -1,20 +1,28 @@
 name: Release
 
-# Publie les userscripts construits sur la branche `dist`, d'où Greasy Fork les
-# resynchronise. Le webhook Greasy Fork exige un commit réel touchant le fichier
-# synchronisé, sinon il répond « No commits found in this push » : c'est bien ce
-# que fait ce job.
+# Publie les userscripts construits dans `published/`, sur `main`, d'où Greasy
+# Fork les resynchronise par webhook.
 #
-# Ordre de publication à respecter quand le DDK change :
-#   1. lancer ce workflow, laisser Greasy Fork resynchroniser le DDK ;
-#   2. relever le nouvel identifiant de version côté Greasy Fork ;
-#   3. le reporter dans DDK_REQUIRE (packages/dcsm/vite.config.ts) ;
-#   4. relancer ce workflow pour le gestionnaire.
+# Deux règles gouvernent ce workflow, l'une et l'autre apprises à leurs dépens :
+#
+# 1. Greasy Fork n'agit que sur un fichier qui apparaît en `modified` dans le
+#    push. On écrit donc par-dessus des fichiers qui existent déjà, sans jamais
+#    les supprimer au préalable et sans `--force`.
+# 2. Le gestionnaire épingle le DDK par `?version=`, identifiant que Greasy Fork
+#    n'attribue qu'une fois la synchronisation faite. Le DDK part donc en
+#    premier, et le gestionnaire attend cet identifiant avant d'être construit.
+#
+# La marche à suivre complète est dans docs/publication.md.
 
 on:
   push:
     tags: ['v*']
   workflow_dispatch:
+    inputs:
+      publish_dcsm:
+        description: 'Publier aussi le gestionnaire (décocher pour un essai à blanc)'
+        type: boolean
+        default: true
 
 env:
   CI: '1'
@@ -27,7 +35,12 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
+      # On publie toujours le contenu de `main`, y compris sur déclenchement par
+      # tag : les commits de publication doivent atterrir sur une branche, pas
+      # sur une tête détachée. Le tag est donc à poser sur `main` à jour.
       - uses: actions/checkout@v5
+        with:
+          ref: main
 
       - name: Installer Vite+
         run: |
@@ -36,32 +49,78 @@ jobs:
 
       - run: vp install --frozen-lockfile
       - run: vp check
-      - run: vp test --run
       - run: vp run -r build
+      - run: vp test --run
 
-      - name: Publier sur la branche dist
+      - name: Relever les versions
+        id: versions
         run: |
           set -euo pipefail
+          {
+            echo "ddk=$(node -p "require('./packages/ddk/package.json').version")"
+            echo "dcsm=$(node -p "require('./packages/dcsm/package.json').version")"
+          } >> "$GITHUB_OUTPUT"
 
-          mkdir -p /tmp/dist
-          cp packages/*/dist/*.user.js packages/*/dist/*.meta.js /tmp/dist/
-
+      - name: Configurer git
+        run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
-          git fetch origin dist || true
-          git checkout dist 2>/dev/null || git checkout --orphan dist
-          git rm -rqf . 2>/dev/null || true
+      - name: Publier le DDK
+        id: ddk
+        run: |
+          set -euo pipefail
+          cp packages/ddk/dist/ddk.user.js packages/ddk/dist/ddk.meta.js published/
 
-          cp /tmp/dist/* .
-          printf 'Userscripts construits depuis %s.\nNe pas editer : cette branche est regeneree par .github/workflows/release.yml.\n' \
-            "$GITHUB_SHA" > README.md
-
-          git add -A
-          if git diff --cached --quiet; then
-            echo 'Aucun changement à publier.'
+          if git diff --quiet -- published/; then
+            echo 'DDK inchangé, rien à publier.'
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          git commit -m "build: userscripts depuis ${GITHUB_SHA::7}"
-          git push origin dist
+          git add published/
+          git commit -m "build(ddk): publie la version ${{ steps.versions.outputs.ddk }}"
+          git push origin main
+          echo 'changed=true' >> "$GITHUB_OUTPUT"
+
+      # Greasy Fork n'attribue l'identifiant de version qu'après avoir
+      # synchronisé. Sans cette attente, le gestionnaire serait épinglé sur le
+      # DDK précédent -- exactement la panne que l'épinglage doit empêcher.
+      - name: Attendre la synchronisation du DDK
+        id: pin
+        run: |
+          set -euo pipefail
+          {
+            echo "version=$(node tools/greasyfork.mjs wait 507382 '${{ steps.versions.outputs.ddk }}')"
+          } >> "$GITHUB_OUTPUT"
+
+      # Sur un declenchement par tag, `inputs` est vide : GitHub convertit la
+      # chaine vide et `false` en 0, donc `inputs.publish_dcsm != false` serait
+      # faux et le gestionnaire ne partirait jamais. On teste l'evenement.
+      - name: Publier le gestionnaire
+        if: github.event_name != 'workflow_dispatch' || inputs.publish_dcsm
+        env:
+          DCSM_DDK_VERSION: ${{ steps.pin.outputs.version }}
+        run: |
+          set -euo pipefail
+          vp run --filter @dreadcast/dcsm build
+          cp packages/dcsm/dist/dcsm.user.js packages/dcsm/dist/dcsm.meta.js published/
+
+          if git diff --quiet -- published/; then
+            echo 'Gestionnaire inchangé, rien à publier.'
+            exit 0
+          fi
+
+          grep -q "version=${DCSM_DDK_VERSION}" published/dcsm.user.js \
+            || { echo "L'épingle du DDK n'a pas été injectée."; exit 1; }
+
+          git add published/
+          git commit -m "build(dcsm): publie la version ${{ steps.versions.outputs.dcsm }}"
+          # `main` a pu bouger pendant l'attente de Greasy Fork.
+          git pull --rebase origin main
+          git push origin main
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dreadcast-userscripts
+          path: published/*.js
