@@ -116,7 +116,14 @@ vp test --run  # suite de tests
 vp run -r build
 ```
 
-Ces trois commandes sont exactement celles de l'intégration continue.
+Ces trois commandes sont exactement celles de l'intégration continue. Le build
+passe avant les tests : le test d'intégration du gestionnaire porte sur les
+fichiers construits, et non sur les sources.
+
+Toute modification du gestionnaire ou de la bibliothèque doit en plus passer la
+[recette en jeu](docs/recette-dcsm.md) avant publication : le partage de `DC`
+entre le `@require` et le script principal ne peut être vérifié que dans un vrai
+gestionnaire de userscripts.
 
 #### Ajouter une dépendance
 
