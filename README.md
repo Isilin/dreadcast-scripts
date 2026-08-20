@@ -11,7 +11,9 @@ Quelques outils, tel le gestionnaire de script sont également proposés aux uti
 
 ## Démarrage
 
-Dans un premier temps, il est nécessaire d'installer un gestionnaire de scripts pour votre navigateur, tel [Greasemonkey](https://addons.mozilla.org/fr/firefox/addon/greasemonkey/), [Tampermonkey](https://www.tampermonkey.net/), [Violentmonkey](https://violentmonkey.github.io/), ou tout autre gestionnaire équivalent.
+Dans un premier temps, il est nécessaire d'installer un gestionnaire de scripts pour votre navigateur : [Tampermonkey](https://www.tampermonkey.net/) ou [Violentmonkey](https://violentmonkey.github.io/).
+
+> **Greasemonkey 4 et FireMonkey ne fonctionnent pas.** Ils ont abandonné les fonctions `GM_*` synchrones au profit de leurs équivalents asynchrones `GM.*`, dont les scripts Dreadcast dépendent depuis toujours pour lire et écrire leur configuration. Greasemonkey 3 fonctionne, mais n'est plus distribué.
 
 Un guide complet sur les gestionnaires de scripts est également disponible [ICI](https://github.com/Isilin/dreadcast-scripts/wiki/Gestionnaires-de-scripts).
 
