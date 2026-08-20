@@ -2,8 +2,9 @@
 // Interroge l'API Greasy Fork pour retrouver l'URL epinglee d'une version
 // publiee.
 //
-//   node tools/greasyfork.mjs resolve <scriptId> <version>
-//   node tools/greasyfork.mjs wait    <scriptId> <version> [--timeout=900] [--interval=20]
+//   node tools/greasyfork.mjs resolve  <scriptId> <version>
+//   node tools/greasyfork.mjs wait     <scriptId> <version> [--timeout=900] [--interval=20]
+//   node tools/greasyfork.mjs outdated [catalogue]
 //
 // Les deux impriment l'identifiant numerique de version, celui qui sert de
 // `?version=NNNN` dans une URL de mise a jour. On rend cet identifiant plutot
@@ -17,9 +18,19 @@
 // sur la version precedente du DDK. Le delai expire en erreur, jamais en
 // silence.
 //
+// `outdated` compare, pour chaque entree du catalogue, la revision epinglee a
+// la derniere publiee par son auteur. Les URL du catalogue portent un
+// `?version=NNNN` : sans cette veille, la correction qu'un auteur tiers publie
+// n'atteint jamais les joueurs, et rien ne le signale.
+//
 // N'utilise que la bibliotheque standard.
 
+import { readFile } from 'node:fs/promises';
+
 const API = 'https://api.greasyfork.org/en/scripts';
+
+/** Pause entre deux scripts : cinquante appels d'affilee seraient impolis. */
+const CATALOGUE_INTERVAL_MS = 300;
 
 const fail = (message) => {
   console.error(`greasyfork: ${message}`);
@@ -51,6 +62,45 @@ const fetchVersions = async (scriptId) => {
   return versions;
 };
 
+/** Derniere version publiee, celle que l'auteur sert aujourd'hui. */
+const latestVersion = (versions) =>
+  versions.reduce(
+    (newest, entry) =>
+      newest === undefined || Date.parse(entry.created_at) > Date.parse(newest.created_at)
+        ? entry
+        : newest,
+    undefined,
+  );
+
+const pinnedId = (url) => {
+  try {
+    return new URL(url).searchParams.get('version');
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Identifiant du script Greasy Fork porte par une URL, ou undefined.
+ *
+ * Deux formes cohabitent dans le catalogue, et il faut les couvrir toutes deux :
+ *   /scripts/17200/Com'back.user.js
+ *   /scripts/530389-dc-deckexportdata.user.js
+ */
+const scriptIdOf = (url) => {
+  try {
+    const { hostname, pathname } = new URL(url);
+    if (!hostname.endsWith('greasyfork.org')) return undefined;
+
+    const [, section, segment] = pathname.split('/');
+    if (section !== 'scripts') return undefined;
+
+    return /^([0-9]+)/.exec(segment ?? '')?.[1];
+  } catch {
+    return undefined;
+  }
+};
+
 /**
  * Identifiant numerique de la version demandee, ou undefined si elle n'est pas
  * publiee.
@@ -74,10 +124,93 @@ const sleep = (seconds) =>
     setTimeout(done, seconds * 1000);
   });
 
+/**
+ * Compare chaque entree du catalogue a la derniere version publiee par son
+ * auteur, et rend les ecarts.
+ *
+ * Les entrees qui ne sont pas sur Greasy Fork -- celles servies depuis ce depot
+ * -- n'ont pas de notion de version : elles sont signalees a part plutot
+ * qu'ignorees en silence.
+ */
+const outdated = async (file) => {
+  const catalogue = JSON.parse(await readFile(file, 'utf8'));
+  const ecarts = [];
+  const horsGreasyFork = [];
+  const erreurs = [];
+
+  for (const script of catalogue) {
+    const id = scriptIdOf(script.url);
+
+    if (id === undefined) {
+      horsGreasyFork.push(script);
+      continue;
+    }
+
+    const epinglee = pinnedId(script.url);
+
+    try {
+      const versions = await fetchVersions(id);
+      const derniere = latestVersion(versions);
+
+      if (derniere === undefined) {
+        erreurs.push(`${script.name} : aucune version publiee`);
+        continue;
+      }
+
+      const derniereId = pinnedId(derniere.code_url);
+
+      if (epinglee === null) {
+        // L'entree suit la derniere version sans l'epingler : rien a signaler,
+        // mais rien ne protege non plus d'une mise a jour hostile.
+        continue;
+      }
+
+      if (epinglee !== derniereId) {
+        const actuelle =
+          versions.find((entry) => pinnedId(entry.code_url) === epinglee)?.version ??
+          `revision ${epinglee}`;
+
+        ecarts.push({
+          nom: script.name,
+          id: script.id,
+          de: actuelle,
+          vers: derniere.version,
+          url: derniere.code_url,
+        });
+      }
+    } catch (error) {
+      erreurs.push(`${script.name} : ${String(error)}`);
+    }
+
+    await sleep(CATALOGUE_INTERVAL_MS / 1000);
+  }
+
+  return { ecarts, horsGreasyFork, erreurs };
+};
+
 const [, , command, scriptId, version] = process.argv;
 
-if (command !== 'resolve' && command !== 'wait') {
-  fail(`commande inconnue '${command ?? ''}'. Attendu : resolve | wait.`);
+if (command !== 'resolve' && command !== 'wait' && command !== 'outdated') {
+  fail(`commande inconnue '${command ?? ''}'. Attendu : resolve | wait | outdated.`);
+}
+
+if (command === 'outdated') {
+  const { ecarts, horsGreasyFork, erreurs } = await outdated(scriptId ?? 'data/scripts.json').catch(
+    (error) => fail(String(error)),
+  );
+
+  for (const { nom, id, de, vers } of ecarts) {
+    console.log(`- **${nom}** (\`${id}\`) : ${de} -> ${vers}`);
+  }
+
+  console.error(
+    `greasyfork: ${ecarts.length} script(s) en retard, ` +
+      `${horsGreasyFork.length} hors Greasy Fork, ${erreurs.length} en erreur.`,
+  );
+
+  for (const erreur of erreurs) console.error(`greasyfork: ${erreur}`);
+
+  process.exit(0);
 }
 
 if (!scriptId || !version) {

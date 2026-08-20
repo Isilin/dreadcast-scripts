@@ -1,0 +1,113 @@
+name: Veille sur le catalogue
+
+# Le catalogue reference des scripts que nous n'écrivons pas et ne contrôlons
+# pas. Deux choses s'y dégradent sans que personne ne l'apprenne :
+#
+# - un script retiré de Greasy Fork, ou une révision épinglée supprimée par son
+#   auteur, casse en silence chez les joueurs qui l'avaient activé ;
+# - une correction publiée en amont n'atteint jamais personne, puisque chaque
+#   entrée est figée sur une révision précise.
+#
+# Le résultat part dans une issue plutôt que dans un échec d'intégration : un
+# job qui rougit toutes les semaines finit ignoré, une issue se traite.
+
+on:
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: catalogue
+  cancel-in-progress: false
+
+env:
+  TITRE: 'Catalogue : scripts à vérifier'
+
+jobs:
+  veille:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      # Les deux outils n'utilisent que la bibliothèque standard : pas
+      # d'installation de dépendances, pas de toolchain.
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .node-version
+
+      - name: Scripts injoignables
+        id: injoignables
+        run: |
+          set -euo pipefail
+          {
+            echo 'liste<<FIN'
+            node tools/check-catalogue.mjs
+            echo 'FIN'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Mises à jour disponibles en amont
+        id: retard
+        run: |
+          set -euo pipefail
+          {
+            echo 'liste<<FIN'
+            node tools/greasyfork.mjs outdated
+            echo 'FIN'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Ouvrir, mettre à jour ou clore l'issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INJOIGNABLES: ${{ steps.injoignables.outputs.liste }}
+          RETARD: ${{ steps.retard.outputs.liste }}
+        run: |
+          set -euo pipefail
+
+          numero=$(gh issue list --state open --search "$TITRE in:title" \
+            --json number --jq '.[0].number // empty')
+
+          if [ -z "$INJOIGNABLES" ] && [ -z "$RETARD" ]; then
+            if [ -n "$numero" ]; then
+              gh issue close "$numero" \
+                --comment 'Le catalogue est de nouveau intact : tous les scripts répondent et aucun n'"'"'est en retard.'
+            fi
+            echo 'Catalogue intact.'
+            exit 0
+          fi
+
+          {
+            echo "Relevé automatique du $(date -u '+%d/%m/%Y'). Voir .github/workflows/catalogue.yml."
+            echo
+
+            if [ -n "$INJOIGNABLES" ]; then
+              echo '## Injoignables'
+              echo
+              echo 'Ces scripts ne se chargent plus chez les joueurs qui les ont activés.'
+              echo 'Une révision épinglée supprimée par son auteur donne un 410.'
+              echo
+              echo "$INJOIGNABLES"
+              echo
+            fi
+
+            if [ -n "$RETARD" ]; then
+              echo '## Mises à jour disponibles en amont'
+              echo
+              echo 'La révision épinglée dans data/scripts.json est plus ancienne que'
+              echo "celle que l'auteur publie aujourd'hui. Relire avant de repincer :"
+              echo 'le catalogue engage la responsabilité du projet.'
+              echo
+              echo "$RETARD"
+            fi
+          } > corps.md
+
+          if [ -n "$numero" ]; then
+            gh issue edit "$numero" --body-file corps.md
+            echo "Issue #$numero mise à jour."
+          else
+            gh issue create --title "$TITRE" --body-file corps.md
+          fi
