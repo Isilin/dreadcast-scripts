@@ -127,6 +127,7 @@ jobs:
 
           git add published/
           git commit -m "build(ddk): publie la version ${{ steps.versions.outputs.ddk }}"
+          git pull --rebase --autostash origin main
           git push origin main
           echo 'changed=true' >> "$GITHUB_OUTPUT"
 
@@ -167,8 +168,16 @@ jobs:
 
           git add published/
           git commit -m "build(dcsm): publie la version ${{ steps.versions.outputs.dcsm }}"
+
+          # Le build laisse des fichiers non suivis ou modifies hors de
+          # `published/` -- `git pull --rebase` refuse alors de tourner. On les
+          # met de cote automatiquement, et on trace ce qui trainait pour ne pas
+          # avoir a le deviner la prochaine fois.
+          echo 'Etat de l arbre avant le rebase :'
+          git status --porcelain || true
+
           # `main` a pu bouger pendant l'attente de Greasy Fork.
-          git pull --rebase origin main
+          git pull --rebase --autostash origin main
           git push origin main
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
