@@ -24,9 +24,13 @@ updates:
       toolchain:
         patterns: ['*']
     ignore:
-      # Le jeu tourne sur jQuery 1.8.2. Ces deux versions décrivent ce runtime,
-      # elles ne sont pas en retard : les relever ferait décrire au typage une
-      # API qui n'existe pas, et tester la couche de compatibilité contre un
-      # jQuery que personne n'exécute.
+      # Le jeu tourne sur jQuery 1.8.2 : ces types décrivent ce runtime, ils ne
+      # sont pas en retard. Les relever ferait décrire au typage une API qui
+      # n'existe pas à l'exécution.
       - dependency-name: '@types/jquery'
-      - dependency-name: 'jquery'
+      # Les types de Node doivent suivre le runtime, jamais le devancer : la
+      # version est épinglée dans .node-version. Les correctifs et mineures de
+      # la ligne courante restent proposés ; la majeure suivra un changement
+      # délibéré de .node-version.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']

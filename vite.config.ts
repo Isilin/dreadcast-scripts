@@ -13,7 +13,10 @@ import { defineConfig } from 'vite-plus';
 const IGNORED = [
   'src/**',
   'examples/**',
+  // Sources du jeu, et build navigateur de jQuery 1.8.2 verse pour les tests :
+  // du code tiers, qui doit rester tel quel au bit pres.
   'vendor/**',
+  'tests/fixtures/vendor/**',
   'dist/**',
   'data/**',
   'packages/game-types/catalogue/**',

@@ -17,7 +17,6 @@
   "devDependencies": {
     "@dreadcast/vite-config": "workspace:*",
     "@types/node": "catalog:",
-    "jquery": "catalog:",
     "vitest": "catalog:"
   }
 }

@@ -1,5 +1,4 @@
 import { readFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
 import { join } from 'node:path';
 
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -13,17 +12,16 @@ import { resetStore } from '../../../tests/mocks/monkey.ts';
 // extrait fidèle de sa page.
 const FIXTURE = join(import.meta.dirname, '..', '..', '..', 'tests', 'fixtures', 'game.html');
 
-const require = createRequire(import.meta.url);
-
 let legacy: typeof import('../src/legacy.ts');
 
 beforeAll(async () => {
   // On évalue le build navigateur de jQuery dans le document de test, comme le
-  // jeu l'évalue dans le sien. Importer le paquet donnerait `lib/node-jquery.js`,
-  // son entrée Node, qui fabrique son propre jsdom : jQuery serait alors lié à
-  // un autre document que celui des assertions, et le test passerait sans rien
-  // vérifier.
-  const source = readFileSync(require.resolve('jquery/tmp/jquery.js'), 'utf8');
+  // jeu l'évalue dans le sien. Le fichier est versionné plutôt que tiré de npm :
+  // voir tests/fixtures/vendor/README.md.
+  const source = readFileSync(
+    join(import.meta.dirname, '..', '..', '..', 'tests', 'fixtures', 'vendor', 'jquery-1.8.2.js'),
+    'utf8',
+  );
   // oxlint-disable-next-line no-implied-eval
   new Function(source).call(window);
 

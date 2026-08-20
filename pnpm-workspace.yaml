@@ -2,13 +2,6 @@ packages:
   - 'packages/*'
   - 'scripts/*'
 
-# jquery@1.8.2 declare jsdom 0.2 et contextify -- un module natif -- comme
-# dependances d'execution, alors que ce sont celles de son harnais de test de
-# 2012. Seul `dist/jquery.js` est charge : rien n'a besoin d'etre compile, et
-# une compilation native casserait l'integration continue pour rien.
-allowBuilds:
-  contextify: false
-
 # Versions des dependances externes, declarees une seule fois pour tout le
 # depot. Les manifestes les reprennent avec `catalog:`, ce qui evite qu'un
 # paquet derive et fasse cohabiter deux copies dans node_modules.
@@ -20,10 +13,6 @@ catalog:
   '@types/jquery': 1.10.45
   '@types/node': ^24.10.1
   '@vitejs/plugin-basic-ssl': ^2.3.0
-  # Version exacte embarquee par le jeu. Sert uniquement aux tests : la couche
-  # de compatibilite est verifiee contre le vrai runtime, pas contre une
-  # approximation.
-  jquery: 1.8.2
   jsdom: ^30.0.1
   typescript: ^7.0.2
   vite: ^8.2.1

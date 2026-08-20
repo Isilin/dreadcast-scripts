@@ -54,6 +54,14 @@ et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- Le paquet npm `jquery@1.8.2` n'est plus une dépendance : son build navigateur
+  est versionné dans `tests/fixtures/vendor/`. Le paquet déclarait comme
+  dépendances d'exécution son harnais de test de 2012 — `jsdom` 0.2, `request`,
+  `tough-cookie`, `qs`, `form-data`, `xmlhttprequest` —, que rien ne chargeait,
+  mais qui portait douze vulnérabilités, provoquait des montées de version à
+  refuser, et faisait produire à Dependabot des lockfiles incohérents en
+  confondant ce `jsdom` 0.2 avec celui du catalogue. La fidélité des tests est
+  inchangée : c'est le même fichier.
 - Catalogue : `Details!` (1.5.5 → 1.9.3, quinze révisions de retard), `ChatBulle`
   (1.3.4 → 1.4.0) et `Copy Paste all` (1.5 → 1.5.1) sont repincés sur la version
   publiée aujourd'hui par leurs auteurs. Les correctifs parus depuis
