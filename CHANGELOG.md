@@ -54,6 +54,10 @@ et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- Catalogue : `Details!` (1.5.5 → 1.9.3, quinze révisions de retard), `ChatBulle`
+  (1.3.4 → 1.4.0) et `Copy Paste all` (1.5 → 1.5.1) sont repincés sur la version
+  publiée aujourd'hui par leurs auteurs. Les correctifs parus depuis
+  n'atteignaient personne.
 - Catalogue : `kobsteak` était épinglé sur une révision que son auteur a
   supprimée, et répondait 410. Repincé sur la 3.1, la version publiée
   aujourd'hui.
