@@ -48,6 +48,10 @@ et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- DCSM 1.5.1 : le `@require` publié épinglait l'identifiant du DDK 1.1.8. Le
+  gestionnaire chargeait donc une bibliothèque dépourvue des modules attendus et
+  échouait au démarrage sur `DC.dom is undefined`. L'épingle suit désormais la
+  version réellement publiée.
 - DCSM : les scripts chargés ne voyaient ni `DC`, ni `Util`, ni les fonctions
   `GM_*`. Une fonction construite par `new Function` a pour portée globale celle
   de la page, et non celle du bac à sable du gestionnaire de userscripts, où

@@ -35,10 +35,22 @@ ceux de `published/`. Or ceux-ci y sont déjà, aux versions à publier. Il ne
 verrait donc rien à envoyer, puis attendrait en vain que Greasy Fork annonce une
 version que personne ne lui a poussée.
 
-Pour cette première fois, une fois les URL de synchronisation changées, il faut
-donc déclencher la synchronisation à la main sur la fiche de chaque script —
-d'abord le DDK, puis le gestionnaire. Les publications suivantes passent par le
-workflow, chaque version apportant par construction un fichier différent.
+Pour cette première fois, une fois les URL de synchronisation changées :
+
+1. Synchroniser **le DDK** à la main sur sa fiche Greasy Fork.
+2. Relever l'identifiant que Greasy Fork vient de lui attribuer :
+   `node tools/greasyfork.mjs resolve 507382 <version du DDK>`.
+3. **Le reporter dans `DDK_VERSION`**, packages/dcsm/vite.config.ts, puis
+   reconstruire et recopier dans `published/`.
+4. Synchroniser **le gestionnaire**.
+
+L'étape 3 n'est pas facultative : sans elle, le gestionnaire publié réclame
+l'identifiant de l'ancien DDK, charge une bibliothèque qui n'a pas les modules
+attendus, et échoue au démarrage sur `DC.dom is undefined`. C'est précisément ce
+que le workflow automatise, et qui manque quand on le court-circuite.
+
+Les publications suivantes passent par le workflow, chaque version apportant par
+construction un fichier différent.
 
 ## Publier
 

@@ -22,7 +22,7 @@ const DDK_URL = `https://update.greasyfork.org/scripts/${DDK_SCRIPT_ID}/Dreadcas
  * variable produise malgre tout un fichier installable -- elle designe la
  * derniere revision publiee a la main.
  */
-const DDK_VERSION = process.env['DCSM_DDK_VERSION'] ?? '1533476';
+const DDK_VERSION = process.env['DCSM_DDK_VERSION'] ?? '1907758';
 
 /**
  * Build de verification locale.
