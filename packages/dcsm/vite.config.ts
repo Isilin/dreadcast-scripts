@@ -6,11 +6,23 @@ import { defineUserscript } from '@dreadcast/vite-config';
  * dans ce bundle : `externalGlobals` fait pointer les imports sur le `DC`
  * global que le DDK installe.
  *
- * A REPINNER apres chaque publication du DDK sur Greasy Fork : le parametre
- * `version` fige la revision utilisee.
+ * L'hote est `update.greasyfork.org`, celui que Greasy Fork destine aux mises a
+ * jour. L'API rend une URL sur `greasyfork.org` : on n'en reprend que
+ * l'identifiant de version.
  */
-const GREASYFORK_DDK =
-  'https://update.greasyfork.org/scripts/507382/Dreadcast%20Development%20Kit.user.js?version=1533476';
+const DDK_SCRIPT_ID = 507382;
+const DDK_URL = `https://update.greasyfork.org/scripts/${DDK_SCRIPT_ID}/Dreadcast%20Development%20Kit.user.js`;
+
+/**
+ * Revision du DDK utilisee, figee par `?version=`.
+ *
+ * La chaine de publication la fournit : `tools/greasyfork.mjs` attend que
+ * Greasy Fork ait synchronise la version attendue, puis rend son identifiant.
+ * La valeur en dur ci-dessous n'est qu'un repli, pour qu'un build local sans
+ * variable produise malgre tout un fichier installable -- elle designe la
+ * derniere revision publiee a la main.
+ */
+const DDK_VERSION = process.env['DCSM_DDK_VERSION'] ?? '1533476';
 
 /**
  * Build de verification locale.
@@ -27,7 +39,7 @@ const isLocal = localDdk !== undefined && localDdk !== '';
 
 const ddkRequire = isLocal
   ? `${localDdk}${localDdk.includes('?') ? '&' : '?'}t=${Date.now()}`
-  : GREASYFORK_DDK;
+  : `${DDK_URL}?version=${DDK_VERSION}`;
 
 /**
  * Le build local prend un nom et un namespace distincts : sans cela, il
