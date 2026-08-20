@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Dreadcast Development Kit
 // @namespace    Dreadcast
-// @version      1.2.0
+// @version      1.3.0
 // @author       Pelagia/Isilin
 // @description  Development kit to ease Dreadcast scripts integration.
 // @license      https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
