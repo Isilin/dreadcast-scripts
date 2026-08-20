@@ -10,8 +10,12 @@
     "rp": "",
     "contact": "",
     "settings": false,
-    "section": ["game"],
-    "category": ["mailing"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "mailing"
+    ],
     "experimental": false
   },
   {
@@ -25,8 +29,12 @@
     "rp": "",
     "contact": "",
     "settings": false,
-    "section": ["game"],
-    "category": ["mailing"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "mailing"
+    ],
     "experimental": false
   },
   {
@@ -40,8 +48,12 @@
     "rp": "",
     "contact": "Odul",
     "settings": false,
-    "section": ["game"],
-    "category": ["mailing"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "mailing"
+    ],
     "experimental": false
   },
   {
@@ -55,8 +67,12 @@
     "rp": "",
     "contact": "Pelagia",
     "settings": false,
-    "section": ["game"],
-    "category": ["mailing"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "mailing"
+    ],
     "experimental": false
   },
   {
@@ -70,8 +86,12 @@
     "rp": "",
     "contact": "Odul, Pelagia",
     "settings": false,
-    "section": ["game"],
-    "category": ["mailing"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "mailing"
+    ],
     "experimental": false
   },
   {
@@ -85,8 +105,12 @@
     "rp": "",
     "contact": "Nasty, Odul",
     "settings": false,
-    "section": ["game"],
-    "category": ["mailing"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "mailing"
+    ],
     "experimental": false
   },
   {
@@ -100,8 +124,12 @@
     "rp": "",
     "contact": "Odul",
     "settings": false,
-    "section": ["game"],
-    "category": ["chat"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "chat"
+    ],
     "experimental": false
   },
   {
@@ -115,8 +143,12 @@
     "rp": "",
     "contact": "Odul, Pelagia",
     "settings": false,
-    "section": ["game"],
-    "category": ["chat"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "chat"
+    ],
     "experimental": false
   },
   {
@@ -130,8 +162,12 @@
     "rp": "",
     "contact": "Pelagia",
     "settings": false,
-    "section": ["game"],
-    "category": ["chat"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "chat"
+    ],
     "experimental": false
   },
   {
@@ -145,8 +181,12 @@
     "rp": "",
     "contact": "Odul",
     "settings": false,
-    "section": ["game"],
-    "category": ["silhouette"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "silhouette"
+    ],
     "experimental": false
   },
   {
@@ -160,8 +200,12 @@
     "rp": "",
     "contact": "Pelagia",
     "settings": false,
-    "section": ["game"],
-    "category": ["silhouette"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "silhouette"
+    ],
     "experimental": false
   },
   {
@@ -175,8 +219,12 @@
     "rp": "",
     "contact": "",
     "settings": false,
-    "section": ["game"],
-    "category": ["silhouette"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "silhouette"
+    ],
     "experimental": false
   },
   {
@@ -190,8 +238,12 @@
     "rp": "",
     "contact": "Pelagia",
     "settings": false,
-    "section": ["forum"],
-    "category": ["fix"],
+    "section": [
+      "forum"
+    ],
+    "category": [
+      "fix"
+    ],
     "experimental": false
   },
   {
@@ -205,8 +257,12 @@
     "rp": "",
     "contact": "Odul, Pelagia",
     "settings": false,
-    "section": ["forum"],
-    "category": ["ui"],
+    "section": [
+      "forum"
+    ],
+    "category": [
+      "ui"
+    ],
     "experimental": false
   },
   {
@@ -220,8 +276,12 @@
     "rp": "",
     "contact": "Pelagia",
     "settings": false,
-    "section": ["forum"],
-    "category": ["fix"],
+    "section": [
+      "forum"
+    ],
+    "category": [
+      "fix"
+    ],
     "experimental": false
   },
   {
@@ -235,8 +295,12 @@
     "rp": "",
     "contact": "Radium",
     "settings": false,
-    "section": ["game"],
-    "category": ["ui"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui"
+    ],
     "experimental": false
   },
   {
@@ -250,8 +314,12 @@
     "rp": "",
     "contact": "",
     "settings": false,
-    "section": ["game"],
-    "category": ["ui"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui"
+    ],
     "experimental": false
   },
   {
@@ -265,8 +333,13 @@
     "rp": "",
     "contact": "",
     "settings": false,
-    "section": ["game"],
-    "category": ["ui", "mech"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui",
+      "mech"
+    ],
     "experimental": false
   },
   {
@@ -280,8 +353,12 @@
     "rp": "",
     "contact": "",
     "settings": false,
-    "section": ["game"],
-    "category": ["ui"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui"
+    ],
     "experimental": false
   },
   {
@@ -295,8 +372,12 @@
     "rp": "",
     "contact": "Odul",
     "settings": false,
-    "section": ["game"],
-    "category": ["ui"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui"
+    ],
     "experimental": false
   },
   {
@@ -310,8 +391,13 @@
     "rp": "",
     "contact": "",
     "settings": false,
-    "section": ["game"],
-    "category": ["ui", "fix"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui",
+      "fix"
+    ],
     "experimental": false
   },
   {
@@ -325,8 +411,12 @@
     "rp": "",
     "contact": "",
     "settings": false,
-    "section": ["game"],
-    "category": ["mech"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "mech"
+    ],
     "experimental": false
   },
   {
@@ -340,8 +430,12 @@
     "rp": "",
     "contact": "",
     "settings": false,
-    "section": ["game"],
-    "category": ["ui"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui"
+    ],
     "experimental": false
   },
   {
@@ -355,8 +449,12 @@
     "rp": "",
     "contact": "Redline",
     "settings": false,
-    "section": ["game"],
-    "category": ["ui"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui"
+    ],
     "experimental": false
   },
   {
@@ -370,8 +468,12 @@
     "rp": "",
     "contact": "Altaïr",
     "settings": false,
-    "section": ["game"],
-    "category": ["ui"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui"
+    ],
     "experimental": false
   },
   {
@@ -385,8 +487,12 @@
     "rp": "",
     "contact": "Altaïr",
     "settings": false,
-    "section": ["game"],
-    "category": ["ui"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui"
+    ],
     "experimental": false
   },
   {
@@ -400,8 +506,13 @@
     "rp": "https://www.dreadcast.net/Forum/2-144695-ns-v13612u-visio-3d---logiciel-utilitaire-pour-la-decoration-dinterieur?1",
     "contact": "Pelagia",
     "settings": true,
-    "section": ["game"],
-    "category": ["ui", "mech"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui",
+      "mech"
+    ],
     "experimental": false
   },
   {
@@ -415,8 +526,13 @@
     "rp": "https://www.dreadcast.net/Forum/2-136024--aequilibrium-financial-#10",
     "contact": "Pelagia",
     "settings": false,
-    "section": ["game"],
-    "category": ["ui", "mech"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui",
+      "mech"
+    ],
     "experimental": false
   },
   {
@@ -430,8 +546,13 @@
     "rp": "",
     "contact": "Amane-Mochizuki",
     "settings": false,
-    "section": ["game"],
-    "category": ["ui", "mech"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui",
+      "mech"
+    ],
     "experimental": false
   },
   {
@@ -445,8 +566,12 @@
     "rp": "",
     "contact": "",
     "settings": false,
-    "section": ["game"],
-    "category": ["fix"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "fix"
+    ],
     "experimental": false
   },
   {
@@ -460,8 +585,13 @@
     "rp": "",
     "contact": "",
     "settings": false,
-    "section": ["forum", "edc"],
-    "category": ["mech"],
+    "section": [
+      "forum",
+      "edc"
+    ],
+    "category": [
+      "mech"
+    ],
     "experimental": false
   },
   {
@@ -475,8 +605,12 @@
     "rp": "",
     "contact": "Pelagia",
     "settings": true,
-    "section": ["game"],
-    "category": ["silhouette"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "silhouette"
+    ],
     "experimental": false
   },
   {
@@ -490,8 +624,13 @@
     "rp": "",
     "contact": "Laïn",
     "settings": false,
-    "section": ["game"],
-    "category": ["ui", "mech"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui",
+      "mech"
+    ],
     "experimental": false
   },
   {
@@ -505,8 +644,12 @@
     "rp": "",
     "contact": "Laïn",
     "settings": false,
-    "section": ["game"],
-    "category": ["chat"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "chat"
+    ],
     "experimental": false
   },
   {
@@ -520,8 +663,12 @@
     "rp": "",
     "contact": "Silly",
     "settings": false,
-    "section": ["forum"],
-    "category": ["ui"],
+    "section": [
+      "forum"
+    ],
+    "category": [
+      "ui"
+    ],
     "experimental": false
   },
   {
@@ -535,8 +682,12 @@
     "rp": "",
     "contact": "Pelagia",
     "settings": false,
-    "section": ["forum"],
-    "category": ["ui"],
+    "section": [
+      "forum"
+    ],
+    "category": [
+      "ui"
+    ],
     "experimental": false
   },
   {
@@ -545,13 +696,17 @@
     "description": "Permet de copier les données du deck",
     "authors": "Amane-Mochizuki",
     "icon": "https://i.imgur.com/Wn8zYJ8.png",
-    "url": "https://update.greasyfork.org/scripts/530389-dc-deckexportdata.user.js?version=1563381",
+    "url": "https://update.greasyfork.org/scripts/530389/DC%20-%20DeckExportData.user.js?version=1563381",
     "doc": "https://www.dreadcast.net/Forum/2-152205-script-deck-export-data?1",
     "rp": "",
     "contact": "Amane-Mochizuki",
     "settings": false,
-    "section": ["game"],
-    "category": ["fix"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "fix"
+    ],
     "experimental": false
   },
   {
@@ -560,13 +715,17 @@
     "description": "Empêche la fenêtre d'usine de se fermer quand on achète",
     "authors": "Laïn",
     "icon": "",
-    "url": "https://update.greasyfork.org/scripts/527127-fix-usine.user.js?version=1554902",
+    "url": "https://update.greasyfork.org/scripts/527127/%22Fix%22%20usine.user.js?version=1554902",
     "doc": "",
     "rp": "",
     "contact": "Laïn",
     "settings": false,
-    "section": ["game"],
-    "category": ["fix"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "fix"
+    ],
     "experimental": false
   },
   {
@@ -580,8 +739,12 @@
     "rp": "",
     "contact": "Laïn",
     "settings": false,
-    "section": ["game"],
-    "category": ["chat"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "chat"
+    ],
     "experimental": false
   },
   {
@@ -595,8 +758,13 @@
     "rp": "",
     "contact": "Laïn",
     "settings": false,
-    "section": ["game"],
-    "category": ["ui", "mech"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui",
+      "mech"
+    ],
     "experimental": false
   },
   {
@@ -610,8 +778,12 @@
     "rp": "",
     "contact": "Laïn",
     "settings": false,
-    "section": ["game"],
-    "category": ["fix"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "fix"
+    ],
     "experimental": true
   },
   {
@@ -625,8 +797,12 @@
     "rp": "",
     "contact": "Laïn",
     "settings": false,
-    "section": ["game"],
-    "category": ["ui"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui"
+    ],
     "experimental": false
   },
   {
@@ -640,8 +816,12 @@
     "rp": "",
     "contact": "Laïn",
     "settings": false,
-    "section": ["game"],
-    "category": ["ui"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui"
+    ],
     "experimental": false
   },
   {
@@ -655,8 +835,13 @@
     "rp": "",
     "contact": "Asalia",
     "settings": false,
-    "section": ["game"],
-    "category": ["ui", "chat"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui",
+      "chat"
+    ],
     "experimental": false
   },
   {
@@ -670,8 +855,13 @@
     "rp": "",
     "contact": "Laïn",
     "settings": false,
-    "section": ["game"],
-    "category": ["ui", "fix"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui",
+      "fix"
+    ],
     "experimental": false
   },
   {
@@ -685,8 +875,12 @@
     "rp": "",
     "contact": "Darlene",
     "settings": false,
-    "section": ["game"],
-    "category": ["ui"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui"
+    ],
     "experimental": false
   },
   {
@@ -700,8 +894,12 @@
     "rp": "",
     "contact": "",
     "settings": false,
-    "section": ["game"],
-    "category": ["ui"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui"
+    ],
     "experimental": false
   },
   {
@@ -715,8 +913,12 @@
     "rp": "",
     "contact": "Laïn",
     "settings": false,
-    "section": ["game"],
-    "category": ["ui"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui"
+    ],
     "experimental": true
   },
   {
@@ -730,8 +932,13 @@
     "rp": "",
     "contact": "Laïn",
     "settings": false,
-    "section": ["game", "forum"],
-    "category": ["ui"],
+    "section": [
+      "game",
+      "forum"
+    ],
+    "category": [
+      "ui"
+    ],
     "experimental": false
   },
   {
@@ -745,8 +952,12 @@
     "rp": "",
     "contact": "Ciel",
     "settings": false,
-    "section": ["game"],
-    "category": ["ui"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui"
+    ],
     "experimental": false
   },
   {
@@ -760,8 +971,12 @@
     "rp": "",
     "contact": "Laïn",
     "settings": false,
-    "section": ["game"],
-    "category": ["ui"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui"
+    ],
     "experimental": false
   },
   {
@@ -775,8 +990,12 @@
     "rp": "",
     "contact": "Laïn",
     "settings": false,
-    "section": ["game"],
-    "category": ["mech"],
+    "section": [
+      "game"
+    ],
+    "category": [
+      "mech"
+    ],
     "experimental": false
   }
 ]
