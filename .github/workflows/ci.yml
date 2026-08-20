@@ -11,20 +11,45 @@ on:
 env:
   CI: '1'
   VP_NODE_MANAGER: 'yes'
+  # `curl | bash` installerait sinon la dernière version publiée : l'intégration
+  # pourrait casser sans qu'une ligne du dépôt ait bougé. À garder aligné sur la
+  # dépendance `vite-plus` du package.json racine.
+  VP_VERSION: '0.2.9'
+
+# Une poussée en chasse une autre sur la même pull request. Sur `main`, chaque
+# exécution va au bout : elle valide un état qui sera publié.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# L'intégration ne publie rien : elle n'a aucun besoin d'écriture.
+permissions:
+  contents: read
 
 jobs:
   verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v5
+      # Actions épinglées sur des SHA : une étiquette mobile laisserait le code
+      # exécuté ici changer sans que le dépôt bouge. Dependabot propose les
+      # montées de version.
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       - name: Installer Vite+
         run: |
           curl -fsSL https://vite.plus | bash
           echo "$HOME/.vite-plus/bin" >> "$GITHUB_PATH"
 
+      - name: Cache du store pnpm
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.pnpm-store
+          key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: pnpm-${{ runner.os }}-
+
       - name: Cache des tâches Vite Task
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: .vite-task
           key: vite-task-${{ runner.os }}-${{ github.sha }}
@@ -35,7 +60,7 @@ jobs:
       # Une seule passe : formatage, lint et vérification de types.
       - run: vp check
 
-      # Le build passe avant les tests : le test d'integration du gestionnaire
+      # Le build passe avant les tests : le test d'intégration du gestionnaire
       # porte sur les fichiers construits, pas sur les sources.
       - run: vp run -r build
 
@@ -45,9 +70,14 @@ jobs:
       # embarquée dans le gestionnaire doit correspondre à data/scripts.json.
       - run: vp run --filter @dreadcast/registry check
 
-      - uses: actions/upload-artifact@v4
+      # `published/` est ce que Greasy Fork sert aux joueurs. Sans ce contrôle,
+      # une retouche à la main ou un rebuild oublié y passerait inaperçu.
+      - name: Vérifier que published/ correspond au build
+        run: node tools/check-published.mjs
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: dreadcast-userscripts
           path: |
-            packages/*/dist/*.user.js
-            packages/*/dist/*.meta.js
+            published/*.user.js
+            published/*.meta.js
