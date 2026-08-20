@@ -77,11 +77,31 @@ cinquante scripts publiés utilisent.
 | 7   | Cocher un script simple, Sauvegarder                                | Rechargement, puis `DCSM - Le script '<nom>' a ete charge.`                                                                                                                |
 | 8   | Boutons Documentation, Topic RP, Contact                            | Le bouton RP ouvre le topic RP, et non la documentation. Le bouton Contact ouvre un message.                                                                               |
 | 9   | Importer la configuration exportée en préparation                   | Configuration réelle reprise. `dcsm_scripts_cache` est volontairement ignoré à l'import comme à l'export.                                                                  |
-| 10  | Basculer le mode développeur                                        | `dcmobilefix` et `ddm` apparaissent immédiatement, et disparaissent au retour.                                                                                             |
+| 10  | Mode développeur : voir le détail sous le tableau                   | Le rendu tient compte du mode en direct. L'ancienne version laissait les filtres révéler les scripts expérimentaux alors que le mode était éteint.                         |
 | 11  | Ouvrir et fermer la fenêtre cinq fois, puis le contrôle ci-dessous  | Ni écouteurs ni feuilles de style accumulés.                                                                                                                               |
 | 12  | Devtools > Network > bloquer `raw.githubusercontent.com`, recharger | Bandeau rouge « liste en cache ». Après vidage du cache : « liste de secours embarquée ». Les scripts se chargent dans les deux cas.                                       |
 | 13  | Ouvrir `/Forum` puis `/EDC`                                         | Pas de fenêtre — elle n'existe qu'en jeu — mais les scripts de la section correspondante se chargent.                                                                      |
 | 14  | Réinitialiser                                                       | Mémoire vidée, retour à l'état d'installation.                                                                                                                             |
+
+### Détail de l'étape 10
+
+L'interrupteur « Mode développeur » est en haut de la fenêtre. Deux scripts du
+catalogue sont marqués expérimentaux : **DC Mobile Fix** (Jeu / Correctifs) et
+**DC Dynamic Message V2** (Jeu / UI). Ils s'affichent préfixés d'un `[DEV]`
+rouge.
+
+1. Mode éteint, filtre catégorie sur **Correctifs** : aucune ligne `[DEV]`.
+   C'est le point qui compte — les gestionnaires de filtre de l'ancienne version
+   réappliquaient le rendu sans le filtre d'expérimentalité.
+2. Allumer : la liste se redessine immédiatement, sans sauvegarde ni
+   rechargement, et `[DEV] DC Mobile Fix` apparaît dans la vue filtrée.
+3. Éteindre : il disparaît aussitôt.
+
+Contrôle chiffré : filtres sur « Tous », la colonne `#` numérote à partir de 0.
+Dernière ligne à **49** mode éteint, **51** mode allumé.
+
+Laisser le mode éteint avant de sauvegarder : sauvegarder avec le mode allumé
+rend les deux scripts expérimentaux réellement chargeables.
 
 Contrôle objectif à coller en console à l'étape 11 :
 
