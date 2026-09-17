@@ -11,12 +11,12 @@ catalog:
   # .size). Ne pas relever sans changer le jQuery de la page, ce qui n'est pas
   # de notre ressort.
   '@types/jquery': 1.10.45
-  '@types/node': ^24.10.1
+  '@types/node': ^24.13.4
   '@vitejs/plugin-basic-ssl': ^2.3.0
   jsdom: ^30.0.1
   typescript: ^7.0.2
-  vite: ^8.2.1
-  vite-plugin-monkey: ^8.1.0
-  vite-plus: ^0.2.9
-  vitest: ^4.1.10
-  zod: ^4.4.3
+  vite: ^8.3.0
+  vite-plugin-monkey: ^8.1.1
+  vite-plus: ^0.3.1
+  vitest: ^5.0.0
+  zod: ^4.6.5
