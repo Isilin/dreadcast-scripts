@@ -3,6 +3,7 @@ import {
   GM_deleteValue,
   GM_getValue,
   GM_listValues,
+  GM_notification,
   GM_setClipboard,
   GM_setValue,
   GM_xmlhttpRequest,
@@ -87,6 +88,7 @@ const capabilities = (): Record<string, unknown> => {
     GM_listValues,
     GM_addStyle,
     GM_setClipboard,
+    GM_notification,
     GM_xmlhttpRequest,
   };
 };
