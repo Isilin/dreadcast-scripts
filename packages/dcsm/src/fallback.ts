@@ -1005,5 +1005,24 @@ export const FALLBACK_LIST: ScriptEntry[] = [
       "mech"
     ],
     "experimental": false
+  },
+  {
+    "id": "agendaperso",
+    "name": "Agenda perso",
+    "description": "Agenda personnel local : calendrier, catégories colorées, tâches, import en masse, sauvegarde JSON et rappels.",
+    "authors": "Mika",
+    "icon": "",
+    "url": "https://update.greasyfork.org/scripts/595206/Dreadcast%20-%20Agenda%20perso.user.js?version=1939188",
+    "doc": "https://www.dreadcast.net/Forum/2-164889-script-agenda-dreadcast",
+    "rp": "",
+    "contact": "Mika",
+    "settings": false,
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui"
+    ],
+    "experimental": true
   }
 ];
