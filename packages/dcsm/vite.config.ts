@@ -100,6 +100,8 @@ export default defineUserscript({
       // Utilise par le script 'copyterminal' du catalogue, qui n'a donc jamais
       // fonctionne a travers le gestionnaire.
       'GM_setClipboard',
+      // Utilise par les rappels du script 'agendaperso' du catalogue.
+      'GM_notification',
     ],
     connect: [
       'update.greasyfork.org',
