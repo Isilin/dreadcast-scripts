@@ -1023,6 +1023,6 @@ export const FALLBACK_LIST: ScriptEntry[] = [
     "category": [
       "ui"
     ],
-    "experimental": true
+    "experimental": false
   }
 ];
