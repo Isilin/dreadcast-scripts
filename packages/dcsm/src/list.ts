@@ -87,11 +87,15 @@ const fetchList = async (): Promise<ScriptEntry[]> => {
 /**
  * Cache de moins d'une heure, sinon liste distante, sinon cache quel que soit
  * son age, sinon copie embarquee dans ce userscript.
+ *
+ * `force` saute le cache frais : c'est le bouton d'actualisation de la
+ * fenetre, pour voir un script ajoute au catalogue sans attendre une heure.
+ * Les replis restent les memes si la source ne repond pas.
  */
-export const resolveList = async (): Promise<ResolvedList> => {
+export const resolveList = async (force = false): Promise<ResolvedList> => {
   const cache = readCache();
 
-  if (cache !== undefined && Date.now() - cache.ts < CACHE_TTL) {
+  if (!force && cache !== undefined && Date.now() - cache.ts < CACHE_TTL) {
     console.info('DCSM - Liste des scripts lue depuis le cache.');
     return { scripts: cache.scripts, source: 'cache', ts: cache.ts };
   }

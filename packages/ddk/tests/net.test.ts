@@ -51,12 +51,13 @@ describe('net.run', () => {
         typeof GM_listValues,
         typeof GM_addStyle,
         typeof GM_setClipboard,
+        typeof GM_notification,
         typeof GM_xmlhttpRequest,
       ];
     `);
 
     expect(globals['__vu']).toBe('util');
-    expect(globals['__gm']).toEqual(Array.from({ length: 7 }, () => 'function'));
+    expect(globals['__gm']).toEqual(Array.from({ length: 8 }, () => 'function'));
   });
 
   it('execute en mode non strict, comme un userscript installe seul', () => {

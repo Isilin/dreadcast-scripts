@@ -72,6 +72,8 @@ export const GM_setClipboard = (data: string): void => {
   clipboard = data;
 };
 
+export const GM_notification = (): void => undefined;
+
 export const GM_addStyle = (css: string): HTMLStyleElement => {
   const node = document.createElement('style');
   node.textContent = css;

@@ -24,16 +24,12 @@ export const listStatus = (source: ListSource, ts: number): HTMLElement => {
   const degraded = source === 'cache-stale' || source === 'embedded';
 
   return DC.dom.h(
-    'p',
-    { style: { marginBottom: '1rem' } },
+    'small',
+    null,
     DC.dom.h(
-      'small',
-      null,
-      DC.dom.h(
-        'em',
-        degraded ? { style: { color: 'red' } } : { class: 'couleur5' },
-        messages[source],
-      ),
+      'em',
+      degraded ? { style: { color: 'red' } } : { class: 'couleur5' },
+      messages[source],
     ),
   );
 };

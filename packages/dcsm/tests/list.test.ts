@@ -59,6 +59,17 @@ describe('resolveList', () => {
     expect(snapshot()[KEYS.cache]).toEqual({ ts: NOW, scripts: remoteList });
   });
 
+  it('interroge la source malgre un cache frais quand l actualisation est forcee', async () => {
+    resetStore({ [KEYS.cache]: { ts: NOW - 1000, scripts: cached } });
+    setResponder(() => ({ response: remoteList }));
+
+    await expect(resolveList(true)).resolves.toEqual({
+      scripts: remoteList,
+      source: 'remote',
+      ts: NOW,
+    });
+  });
+
   it('rafraichit un cache perime', async () => {
     resetStore({ [KEYS.cache]: { ts: NOW - CACHE_TTL - 1, scripts: cached } });
     setResponder(() => ({ response: remoteList }));
