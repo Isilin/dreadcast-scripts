@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/Isilin/dreadcast-scripts/compare/ddk-v1.3.1...ddk-v1.4.0) (2026-09-24)
+
+
+### Features
+
+* **ddk:** transmet GM_notification aux scripts charges ([f755031](https://github.com/Isilin/dreadcast-scripts/commit/f7550318a6fedbb3f009738d3e153a02982f0570))
+
 ## [1.3.1](https://github.com/Isilin/dreadcast-scripts/compare/ddk-v1.3.0...ddk-v1.3.1) (2026-08-20)
 
 

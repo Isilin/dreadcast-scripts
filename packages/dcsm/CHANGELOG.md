@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.0](https://github.com/Isilin/dreadcast-scripts/compare/dcsm-v1.6.0...dcsm-v1.7.0) (2026-09-24)
+
+
+### Features
+
+* **dcsm:** accorde GM_notification aux scripts du catalogue ([c33a6e4](https://github.com/Isilin/dreadcast-scripts/commit/c33a6e47077d16f2ff530d8e05b231aeb43271e5))
+* **dcsm:** ajoute un bouton pour actualiser la liste des scripts ([0079669](https://github.com/Isilin/dreadcast-scripts/commit/0079669658c3e838b25f97b044e6a6c03bb3ce19))
+
 ## [1.6.0](https://github.com/Isilin/dreadcast-scripts/compare/dcsm-v1.5.1...dcsm-v1.6.0) (2026-08-20)
 
 
