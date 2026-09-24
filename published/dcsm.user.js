@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Dreadcast Script Manager
 // @namespace    Dreadcast
-// @version      1.6.0
+// @version      1.7.0
 // @author       Pelagia/Isilin
 // @description  Centralize all dreadcast scripts in one single source, integrated to the game.
 // @license      https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
@@ -12,7 +12,7 @@
 // @match        https://www.dreadcast.net/Forum/*
 // @match        https://www.dreadcast.net/EDC
 // @match        https://www.dreadcast.net/EDC/*
-// @require      https://update.greasyfork.org/scripts/507382/Dreadcast%20Development%20Kit.user.js?version=1907828
+// @require      https://update.greasyfork.org/scripts/507382/Dreadcast%20Development%20Kit.user.js?version=1941660
 // @connect      update.greasyfork.org
 // @connect      docs.google.com
 // @connect      googleusercontent.com
@@ -22,6 +22,7 @@
 // @grant        GM_deleteValue
 // @grant        GM_getValue
 // @grant        GM_listValues
+// @grant        GM_notification
 // @grant        GM_setClipboard
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
@@ -830,6 +831,21 @@
 			"section": ["game"],
 			"category": ["mech"],
 			"experimental": false
+		},
+		{
+			"id": "agendaperso",
+			"name": "Agenda perso",
+			"description": "Agenda personnel local : calendrier, catégories colorées, tâches, import en masse, sauvegarde JSON et rappels.",
+			"authors": "Mika",
+			"icon": "",
+			"url": "https://update.greasyfork.org/scripts/595206/Dreadcast%20-%20Agenda%20perso.user.js?version=1939188",
+			"doc": "https://www.dreadcast.net/Forum/2-164889-script-agenda-dreadcast",
+			"rp": "",
+			"contact": "Mika",
+			"settings": false,
+			"section": ["game"],
+			"category": ["ui"],
+			"experimental": false
 		}
 	];
 	var KEYS = {
@@ -914,9 +930,9 @@
 		if (!isValidList(list)) throw new Error("la liste distante est vide ou malformee");
 		return list;
 	};
-	var resolveList = async () => {
+	var resolveList = async (force = false) => {
 		const cache = readCache();
-		if (cache !== void 0 && Date.now() - cache.ts < 36e5) {
+		if (!force && cache !== void 0 && Date.now() - cache.ts < 36e5) {
 			console.info("DCSM - Liste des scripts lue depuis le cache.");
 			return {
 				scripts: cache.scripts,
@@ -1108,7 +1124,7 @@
 			embedded: "⚠ Source injoignable : liste de secours embarquée, potentiellement incomplète."
 		};
 		const degraded = source === "cache-stale" || source === "embedded";
-		return _dreadcast_ddk.default.dom.h("p", { style: { marginBottom: "1rem" } }, _dreadcast_ddk.default.dom.h("small", null, _dreadcast_ddk.default.dom.h("em", degraded ? { style: { color: "red" } } : { class: "couleur5" }, messages[source])));
+		return _dreadcast_ddk.default.dom.h("small", null, _dreadcast_ddk.default.dom.h("em", degraded ? { style: { color: "red" } } : { class: "couleur5" }, messages[source]));
 	};
 	var { h } = _dreadcast_ddk.default.dom;
 	var MODAL_ID = "scripts_modal";
@@ -1235,6 +1251,34 @@
 				tbody.appendChild(scriptRows(script, index, draft.enabled));
 			});
 		};
+		const statusText = h("span", null, listStatus(options.source, options.ts));
+		let refreshing = false;
+		const refreshButton = _dreadcast_ddk.default.ui.button("scripts_list_refresh", "<i class=\"fas fa-sync-alt\"></i>", () => {
+			if (refreshing) return;
+			refreshing = true;
+			const icon = refreshButton.querySelector("i");
+			icon?.classList.add("fa-spin");
+			resolveList(true).then(({ scripts, source, ts }) => {
+				Object.assign(options, {
+					scripts,
+					source,
+					ts
+				});
+				statusText.replaceChildren(listStatus(source, ts));
+				renderRows();
+			}).catch((error) => {
+				console.error(`DCSM - Actualisation de la liste impossible : ${String(error)}`);
+			}).finally(() => {
+				refreshing = false;
+				icon?.classList.remove("fa-spin");
+			});
+		});
+		const statusBar = h("div", { style: {
+			display: "flex",
+			alignItems: "center",
+			gap: "0.5rem",
+			marginBottom: "1rem"
+		} }, statusText, _dreadcast_ddk.default.ui.tooltip("Actualiser la liste des scripts", refreshButton));
 		const devModeSwitch = h("div", { style: {
 			display: "flex",
 			justifyContent: "flex-start",
@@ -1312,7 +1356,7 @@
 				location.replace(GAME_URL);
 			});
 		}), _dreadcast_ddk.default.ui.textButton("config_export", "<i class=\"fas fa-download\"></i> Exporter la configuration", () => download(exportConfig())));
-		const content = h("div", { style: { color: "white" } }, listStatus(options.source, options.ts), devModeSwitch, h("div", { style: {
+		const content = h("div", { style: { color: "white" } }, statusBar, devModeSwitch, h("div", { style: {
 			display: "flex",
 			justifyContent: "space-between"
 		} }, allSwitch, h("div", { style: {
