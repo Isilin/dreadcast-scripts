@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Dreadcast Development Kit
 // @namespace    Dreadcast
-// @version      1.3.1
+// @version      1.4.0
 // @author       Pelagia/Isilin
 // @description  Development kit to ease Dreadcast scripts integration.
 // @license      https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
@@ -16,6 +16,7 @@
 // @grant        GM_deleteValue
 // @grant        GM_getValue
 // @grant        GM_listValues
+// @grant        GM_notification
 // @grant        GM_setClipboard
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
@@ -338,6 +339,7 @@
 	var _GM_deleteValue = (() => typeof GM_deleteValue != "undefined" ? GM_deleteValue : void 0)();
 	var _GM_getValue = (() => typeof GM_getValue != "undefined" ? GM_getValue : void 0)();
 	var _GM_listValues = (() => typeof GM_listValues != "undefined" ? GM_listValues : void 0)();
+	var _GM_notification = (() => typeof GM_notification != "undefined" ? GM_notification : void 0)();
 	var _GM_setClipboard = (() => typeof GM_setClipboard != "undefined" ? GM_setClipboard : void 0)();
 	var _GM_setValue = (() => typeof GM_setValue != "undefined" ? GM_setValue : void 0)();
 	var _GM_xmlhttpRequest = (() => typeof GM_xmlhttpRequest != "undefined" ? GM_xmlhttpRequest : void 0)();
@@ -384,6 +386,7 @@
 			GM_listValues: _GM_listValues,
 			GM_addStyle: _GM_addStyle,
 			GM_setClipboard: _GM_setClipboard,
+			GM_notification: _GM_notification,
 			GM_xmlhttpRequest: _GM_xmlhttpRequest
 		};
 	};
