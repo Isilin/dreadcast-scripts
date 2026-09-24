@@ -1021,7 +1021,7 @@ export const FALLBACK_LIST: ScriptEntry[] = [
       "game"
     ],
     "category": [
-      "ui"
+      "mech"
     ],
     "experimental": false
   }
