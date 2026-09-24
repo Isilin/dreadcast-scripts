@@ -1,7 +1,7 @@
 import DC from '@dreadcast/ddk';
 import type { Category, ScriptEntry, Section } from '@dreadcast/registry';
 
-import type { ListSource } from '../list.ts';
+import { type ListSource, resolveList } from '../list.ts';
 import * as state from '../state.ts';
 import { scriptRows } from './rows.ts';
 import { listStatus } from './status.ts';
@@ -141,6 +141,55 @@ const openManager = (options: ManagerOptions): void => {
       });
   };
 
+  const statusText = h('span', null, listStatus(options.source, options.ts));
+
+  // L'actualisation remplace la liste sur place, sans recharger la page : le
+  // brouillon en cours reste intact. Un script apparu n'est chargé qu'après
+  // activation et sauvegarde, comme les autres.
+  //
+  // `options` est modifié, et non une copie : c'est l'objet que le menu repasse
+  // à chaque ouverture, qui montrera donc lui aussi la liste actualisée.
+  let refreshing = false;
+  const refreshButton = DC.ui.button(
+    'scripts_list_refresh',
+    '<i class="fas fa-sync-alt"></i>',
+    () => {
+      if (refreshing) return;
+      refreshing = true;
+
+      const icon = refreshButton.querySelector('i');
+      icon?.classList.add('fa-spin');
+
+      resolveList(true)
+        .then(({ scripts, source, ts }) => {
+          Object.assign(options, { scripts, source, ts });
+          statusText.replaceChildren(listStatus(source, ts));
+          renderRows();
+        })
+        .catch((error: unknown) => {
+          console.error(`DCSM - Actualisation de la liste impossible : ${String(error)}`);
+        })
+        .finally(() => {
+          refreshing = false;
+          icon?.classList.remove('fa-spin');
+        });
+    },
+  );
+
+  const statusBar = h(
+    'div',
+    {
+      style: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.5rem',
+        marginBottom: '1rem',
+      },
+    },
+    statusText,
+    DC.ui.tooltip('Actualiser la liste des scripts', refreshButton),
+  );
+
   const devModeSwitch = h(
     'div',
     {
@@ -251,7 +300,7 @@ const openManager = (options: ManagerOptions): void => {
   const content = h(
     'div',
     { style: { color: 'white' } },
-    listStatus(options.source, options.ts),
+    statusBar,
     devModeSwitch,
     h(
       'div',
