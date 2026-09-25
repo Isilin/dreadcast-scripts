@@ -13,6 +13,7 @@ Thumbs.db
 # Dependencies & build output
 node_modules/
 packages/*/dist/
+scripts/*/dist/
 *.log
 
 # published/ n'est PAS ignore : c'est ce que Greasy Fork synchronise. Voir

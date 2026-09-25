@@ -13,7 +13,7 @@ import { dirname, extname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const PACKAGES = join(ROOT, 'packages');
+const WORKSPACES = ['packages', 'scripts'].map((nom) => join(ROOT, nom));
 const PORT = Number.parseInt(process.argv[2] ?? '8720', 10);
 
 const TYPES = {
@@ -22,20 +22,25 @@ const TYPES = {
   '.html': 'text/html; charset=utf-8',
 };
 
-/** Fichiers servis : packages/<nom>/dist/<fichier> devient /<fichier>. */
+/**
+ * Fichiers servis : <espace>/<nom>/dist/<fichier> devient /<fichier>, pour
+ * `packages/` comme pour `scripts/`.
+ */
 const collect = () => {
   const files = new Map();
 
-  if (!existsSync(PACKAGES)) return files;
+  for (const workspace of WORKSPACES) {
+    if (!existsSync(workspace)) continue;
 
-  for (const pkg of readdirSync(PACKAGES)) {
-    const dist = join(PACKAGES, pkg, 'dist');
-    if (!existsSync(dist) || !statSync(dist).isDirectory()) continue;
+    for (const pkg of readdirSync(workspace)) {
+      const dist = join(workspace, pkg, 'dist');
+      if (!existsSync(dist) || !statSync(dist).isDirectory()) continue;
 
-    for (const file of readdirSync(dist)) {
-      // Deux paquets ne produisent jamais le meme nom de fichier : le nom de
-      // sortie est celui du userscript.
-      files.set(`/${file}`, join(dist, file));
+      for (const file of readdirSync(dist)) {
+        // Deux paquets ne produisent jamais le meme nom de fichier : le nom de
+        // sortie est celui du userscript.
+        files.set(`/${file}`, join(dist, file));
+      }
     }
   }
 
