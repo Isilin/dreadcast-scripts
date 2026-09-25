@@ -1,12 +1,16 @@
 # Publier sur Greasy Fork
 
-Les deux userscripts sont distribués par Greasy Fork, qui se synchronise tout
-seul depuis ce dépôt.
+Les userscripts sont distribués par Greasy Fork, qui se synchronise tout seul
+depuis ce dépôt.
 
-| Script                    | Greasy Fork                                     | Fichier synchronisé      |
-| ------------------------- | ----------------------------------------------- | ------------------------ |
-| Dreadcast Development Kit | [507382](https://greasyfork.org/scripts/507382) | `published/ddk.user.js`  |
-| Dreadcast Script Manager  | [507383](https://greasyfork.org/scripts/507383) | `published/dcsm.user.js` |
+| Script                    | Greasy Fork                                     | Fichier synchronisé                 |
+| ------------------------- | ----------------------------------------------- | ----------------------------------- |
+| Dreadcast Development Kit | [507382](https://greasyfork.org/scripts/507382) | `published/ddk.user.js`             |
+| Dreadcast Script Manager  | [507383](https://greasyfork.org/scripts/507383) | `published/dcsm.user.js`            |
+| Silhouette+               | [524423](https://greasyfork.org/scripts/524423) | `published/silhouette-plus.user.js` |
+
+Silhouette+ épingle le DDK par `@require`, comme le gestionnaire : il part après
+lui, sur la même révision.
 
 `published/` est **versionné**, contrairement à `packages/*/dist`. C'est
 volontaire : Greasy Fork lit un fichier à une URL GitHub, et le dépôt montre
@@ -75,6 +79,30 @@ qui a livré un gestionnaire 1.5.0 réclamant l'identifiant de l'ancien DDK : il
 chargeait une bibliothèque dépourvue des modules attendus et échouait au
 démarrage sur `DC.dom is undefined`.
 
+### Un script de `scripts/`
+
+La première publication **ajoute** son fichier à `published/`. Le webhook de
+Greasy Fork l'ignore (voir plus bas, « Le fichier doit apparaître en
+`modified` ») : la première synchronisation se fait donc à la main.
+
+1. Fusionner la pull request de release. Le workflow publie le DDK, puis le
+   gestionnaire, puis ajoute `published/<script>.user.js`, épinglé sur le DDK.
+2. Sur la fiche Greasy Fork du script, régler l'URL de synchronisation sur
+   `https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/published/<script>.user.js`,
+   puis synchroniser à la main. Les publications suivantes modifient le fichier,
+   et le webhook prend le relais.
+3. Relever la révision attribuée,
+   `node tools/greasyfork.mjs resolve <scriptId> <version>`, et pointer l'entrée
+   de `data/scripts.json` sur
+   `https://update.greasyfork.org/scripts/<scriptId>/<Nom>.user.js?version=NNNN`.
+   Régénérer la liste de secours (`vp run --filter @dreadcast/registry sync`) et
+   commiter les deux ensemble.
+
+Pour Silhouette+ : fiche 524423, fichier `published/silhouette-plus.user.js`,
+URL `https://update.greasyfork.org/scripts/524423/Silhouette%2B.user.js`.
+L'ancien fichier `src/scripts/silhouette/silhouette-plus.js` reste en place tant
+que des gestionnaires installés le servent depuis leur liste de secours.
+
 ## Publier
 
 Rien à taguer, rien à incrémenter : les numéros de version viennent des commits.
@@ -114,7 +142,8 @@ identifiant que Greasy Fork n'attribue qu'après avoir synchronisé. Le workflow
 attend donc, via `tools/greasyfork.mjs`, que la version attendue apparaisse dans
 l'API avant de construire le gestionnaire. Publier le gestionnaire d'abord
 livrerait un fichier réclamant l'ancien DDK, dont l'API a changé : il ne
-démarrerait pas.
+démarrerait pas. Les scripts de `scripts/` suivent le gestionnaire, épinglés
+sur la même révision.
 
 ## Diagnostic
 

@@ -1,4 +1,5 @@
 {
   "packages/ddk": "1.4.0",
-  "packages/dcsm": "1.7.0"
+  "packages/dcsm": "1.7.0",
+  "scripts/silhouette-plus": "1.0.1"
 }

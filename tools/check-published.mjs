@@ -30,10 +30,21 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLISHED = join(ROOT, 'published');
 const DDK_SCRIPT_ID = 507382;
 
+// `espace` : dossier du paquet, `packages/` pour la bibliotheque et le
+// gestionnaire, `scripts/` pour les scripts migres. Un script de `scripts/` peut
+// ne jamais avoir ete publie : la premiere publication ajoute son fichier.
 const ARTEFACTS = [
-  { paquet: 'ddk', fichiers: ['ddk.user.js', 'ddk.meta.js'] },
-  { paquet: 'dcsm', fichiers: ['dcsm.user.js', 'dcsm.meta.js'] },
+  { espace: 'packages', paquet: 'ddk', fichiers: ['ddk.user.js', 'ddk.meta.js'] },
+  { espace: 'packages', paquet: 'dcsm', fichiers: ['dcsm.user.js', 'dcsm.meta.js'] },
+  {
+    espace: 'scripts',
+    paquet: 'silhouette-plus',
+    fichiers: ['silhouette-plus.user.js', 'silhouette-plus.meta.js'],
+  },
 ];
+
+/** Fichiers publies qui epinglent une revision du DDK par leur `@require`. */
+const EPINGLES = ['dcsm.user.js', 'silhouette-plus.user.js'];
 
 const erreurs = [];
 
@@ -69,22 +80,24 @@ const lire = async (chemin) => {
   }
 };
 
-for (const { paquet, fichiers } of ARTEFACTS) {
-  const manifeste = JSON.parse(
-    await readFile(join(ROOT, 'packages', paquet, 'package.json'), 'utf8'),
-  );
+for (const { espace, paquet, fichiers } of ARTEFACTS) {
+  const manifeste = JSON.parse(await readFile(join(ROOT, espace, paquet, 'package.json'), 'utf8'));
 
   for (const fichier of fichiers) {
-    const construit = await lire(join(ROOT, 'packages', paquet, 'dist', fichier));
+    const construit = await lire(join(ROOT, espace, paquet, 'dist', fichier));
     const publie = await lire(join(PUBLISHED, fichier));
 
     if (construit === undefined) {
-      erreurs.push(`packages/${paquet}/dist/${fichier} est absent : lancer 'vp run -r build'.`);
+      erreurs.push(`${espace}/${paquet}/dist/${fichier} est absent : lancer 'vp run -r build'.`);
       continue;
     }
 
     if (publie === undefined) {
-      erreurs.push(`published/${fichier} est absent.`);
+      if (espace === 'scripts') {
+        console.warn(`check-published: published/${fichier} absent -- script jamais publie.`);
+      } else {
+        erreurs.push(`published/${fichier} est absent.`);
+      }
       continue;
     }
 
@@ -100,40 +113,46 @@ for (const { paquet, fichiers } of ARTEFACTS) {
     if (version !== manifeste.version) {
       erreurs.push(
         `published/${fichier} annonce la version ${version ?? '(absente)'}, ` +
-          `alors que packages/${paquet}/package.json est en ${manifeste.version}.`,
+          `alors que ${espace}/${paquet}/package.json est en ${manifeste.version}.`,
       );
     }
   }
 }
 
 if (!process.argv.includes('--offline')) {
-  const publie = (await lire(join(PUBLISHED, 'dcsm.user.js'))) ?? '';
-  const epinglee = /^\/\/ @require\s+\S*[?&]version=([0-9]+)/m.exec(publie)?.[1];
+  // Revisions publiees du DDK, demandees une seule fois pour tous les fichiers.
+  let revisions;
 
-  if (epinglee === undefined) {
-    erreurs.push("published/dcsm.user.js n'epingle aucune revision du DDK.");
-  } else {
-    try {
-      const reponse = await fetch(
-        `https://api.greasyfork.org/en/scripts/${DDK_SCRIPT_ID}/versions.json`,
+  try {
+    const reponse = await fetch(
+      `https://api.greasyfork.org/en/scripts/${DDK_SCRIPT_ID}/versions.json`,
+    );
+
+    if (!reponse.ok) throw new Error(`statut ${reponse.status}`);
+
+    const versions = await reponse.json();
+    revisions = new Set(
+      versions.map((entree) => new URL(entree.code_url).searchParams.get('version')),
+    );
+  } catch (error) {
+    // Injoignable n'est pas invalide.
+    console.warn(`check-published: revisions du DDK non verifiees (${String(error)}).`);
+  }
+
+  for (const fichier of EPINGLES) {
+    const publie = await lire(join(PUBLISHED, fichier));
+    // Un script jamais publie a deja ete signale plus haut.
+    if (publie === undefined) continue;
+
+    const epinglee = /^\/\/ @require\s+\S*[?&]version=([0-9]+)/m.exec(publie)?.[1];
+
+    if (epinglee === undefined) {
+      erreurs.push(`published/${fichier} n'epingle aucune revision du DDK.`);
+    } else if (revisions !== undefined && !revisions.has(epinglee)) {
+      erreurs.push(
+        `la revision ${epinglee} epinglee par published/${fichier} n'est pas ` +
+          `publiee pour le DDK : le script chargerait une bibliotheque inexistante.`,
       );
-
-      if (!reponse.ok) throw new Error(`statut ${reponse.status}`);
-
-      const versions = await reponse.json();
-      const connue = versions.some(
-        (entree) => new URL(entree.code_url).searchParams.get('version') === epinglee,
-      );
-
-      if (!connue) {
-        erreurs.push(
-          `la revision ${epinglee} epinglee par published/dcsm.user.js n'est pas ` +
-            `publiee pour le DDK : le gestionnaire chargerait une bibliotheque inexistante.`,
-        );
-      }
-    } catch (error) {
-      // Injoignable n'est pas invalide.
-      console.warn(`check-published: revision du DDK non verifiee (${String(error)}).`);
     }
   }
 }

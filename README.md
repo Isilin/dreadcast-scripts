@@ -52,6 +52,7 @@ vp install
 | `packages/dcsm`       | Dreadcast Script Manager, le gestionnaire intégré au jeu                                       |
 | `packages/registry`   | Schéma de `data/scripts.json` et génération de la liste de secours                             |
 | `packages/game-types` | Déclarations TypeScript des globales du jeu                                                    |
+| `scripts/*`           | Scripts migrés vers l'API v2, en TypeScript (Silhouette+)                                      |
 | `src/`                | Scripts hérités, encore en JavaScript, migrés progressivement                                  |
 | `published/`          | Les userscripts construits, tels que Greasy Fork les sert ([publication](docs/publication.md)) |
 

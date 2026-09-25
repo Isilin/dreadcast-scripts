@@ -10,6 +10,10 @@ export const hasSettings = (id: string): boolean => {
   return definition !== undefined && (definition.settings?.length ?? 0) > 0;
 };
 
+/** Un script v2 fournit-il son propre écran de réglages ? */
+export const hasCustomSettings = (id: string): boolean =>
+  typeof DC.scripts.get(id)?.openSettings === 'function';
+
 const field = (
   setting: Setting,
   value: SettingValue,

@@ -1,8 +1,10 @@
 import DC from '@dreadcast/ddk';
+import type { RegisteredScript } from '@dreadcast/ddk';
 import type { ScriptEntry } from '@dreadcast/registry';
 
+import { isLoaded } from '../loaded.ts';
 import type { EnabledMap } from '../state.ts';
-import { hasSettings, openSettings } from './settings.ts';
+import { hasCustomSettings, hasSettings, openSettings } from './settings.ts';
 
 const { h } = DC.dom;
 
@@ -10,6 +12,59 @@ const BORDER = '1px solid white';
 
 const cell = (content: Node | null, style: Partial<CSSStyleDeclaration> = {}) =>
   h('td', { style: Object.assign({ padding: '5px 5px 0 0' }, style) }, content);
+
+const GEAR_ICON = '<i class="fas fa-cog"></i>';
+
+const gear = (id: string, onClick: () => void): HTMLElement =>
+  DC.ui.tooltip('Réglages', DC.ui.button(`${id}_setting`, GEAR_ICON, onClick));
+
+/**
+ * Engrenage grisé : le script a des réglages, mais rien dans la page ne peut
+ * les ouvrir tant qu'il n'est pas chargé. L'afficher dit qu'ils existent ; le
+ * griser évite un clic qui ne ferait rien.
+ */
+const inactiveGear = (id: string): HTMLElement => {
+  const button = DC.ui.button(`${id}_setting`, GEAR_ICON, () => undefined);
+  button.classList.add('disabled');
+  button.setAttribute('aria-disabled', 'true');
+  Object.assign(button.style, { opacity: '0.35', cursor: 'not-allowed' });
+
+  return DC.ui.tooltip(
+    'Activez le script et rechargez la page pour accéder à ses réglages.',
+    button,
+  );
+};
+
+/**
+ * Engrenage d'un script, s'il a des réglages.
+ *
+ * - Script v2 à écran propre (`openSettings`) : le script l'ouvre lui-même. Il
+ *   prime sur le schéma.
+ * - Script v2 à schéma : le gestionnaire rend le formulaire.
+ * - Script historique marqué `settings` au catalogue, chargé dans la page : un
+ *   bouton `#<id>_setting` sans gestionnaire. Ce n'est pas un no-op : c'est le
+ *   script qui écoute ce clic lui-même,
+ *   `$(document).on('click', '#<id>_setting', …)` -- la convention de l'ancien
+ *   gestionnaire, que Silhouette+ et Visio 3D suivent. Sans ce bouton, leurs
+ *   réglages sont inaccessibles.
+ * - Script marqué `settings` mais pas chargé : engrenage grisé.
+ */
+const settingsButton = (
+  script: ScriptEntry,
+  definition: RegisteredScript | undefined,
+): HTMLElement | null => {
+  if (definition !== undefined && hasCustomSettings(script.id)) {
+    return gear(script.id, () => DC.scripts.openSettings(script.id));
+  }
+
+  if (definition !== undefined && hasSettings(script.id)) {
+    return gear(script.id, () => openSettings(script, definition));
+  }
+
+  if (!script.settings) return null;
+
+  return isLoaded(script.id) ? gear(script.id, () => undefined) : inactiveGear(script.id);
+};
 
 /**
  * Deux lignes par script : la première porte les commandes, la seconde la
@@ -63,18 +118,7 @@ export const scriptRows = (
         }),
       ),
     ),
-    // Le bouton n'apparaît que si le script a déclaré un schéma de réglages
-    // via DC.registerScript : sans schéma, il n'y a rien à afficher.
-    cell(
-      definition !== undefined && hasSettings(script.id)
-        ? DC.ui.tooltip(
-            'Réglages',
-            DC.ui.button(`${script.id}_setting`, '<i class="fas fa-cog"></i>', () =>
-              openSettings(script, definition),
-            ),
-          )
-        : null,
-    ),
+    cell(settingsButton(script, definition)),
     cell(
       script.doc === ''
         ? null

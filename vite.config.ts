@@ -17,7 +17,7 @@ const IGNORED = [
   // du code tiers, qui doit rester tel quel au bit pres.
   'vendor/**',
   'tests/fixtures/vendor/**',
-  'dist/**',
+  '**/dist/**',
   'data/**',
   'packages/game-types/catalogue/**',
   'packages/dcsm/src/fallback.ts',
@@ -29,6 +29,7 @@ const IGNORED = [
   // personne ne peut corriger a la main sans que l'outil la reecrive.
   // Le CHANGELOG.md racine, lui, est redige et reste verifie.
   'packages/*/CHANGELOG.md',
+  'scripts/*/CHANGELOG.md',
 ];
 
 export default defineConfig({
@@ -48,7 +49,7 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
-    include: ['packages/*/tests/**/*.test.ts'],
+    include: ['packages/*/tests/**/*.test.ts', 'scripts/*/tests/**/*.test.ts'],
     // Les sources importent le module client de vite-plugin-monkey, qui n'est
     // fourni qu'au moment du build. Les tests lui substituent une memoire et
     // un client HTTP simules.

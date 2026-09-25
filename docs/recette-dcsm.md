@@ -59,6 +59,13 @@ cinquante scripts publiés utilisent.
    rechargement de la page : sans URL neuve, le DDK servi resterait celui du
    build précédent.
 
+   Pour vérifier à travers le gestionnaire un script de `scripts/` pas encore
+   publié, ajouter `DCSM_LOCAL_LIST=http://localhost:8720/scripts.json` au
+   rebuild. Le serveur sert alors `data/scripts.json`, où chaque script qui
+   déclare `dreadcast.catalogueId` dans son `package.json` pointe sur son build
+   local. Sans cela, le gestionnaire charge la version que sert `main`. La liste
+   est gardée en cache une heure : « Actualiser la liste » la relit tout de suite.
+
 4. **Installer** `http://localhost:8720/dcsm.user.js`, et lui seul. Le DDK n'est
    pas installé : il arrive par `@require`.
 

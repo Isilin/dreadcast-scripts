@@ -1,0 +1,23 @@
+{
+  "name": "@dreadcast/silhouette-plus",
+  "version": "1.0.1",
+  "private": true,
+  "description": "Silhouette+ : silhouettes personnalisees et disposition de la fiche RP.",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite"
+  },
+  "dependencies": {
+    "@dreadcast/ddk": "workspace:*",
+    "@dreadcast/game-types": "workspace:*"
+  },
+  "devDependencies": {
+    "@dreadcast/vite-config": "workspace:*",
+    "@types/node": "catalog:",
+    "vitest": "catalog:"
+  },
+  "dreadcast": {
+    "catalogueId": "silhouettePlus"
+  }
+}

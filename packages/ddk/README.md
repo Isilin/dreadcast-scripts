@@ -58,6 +58,29 @@ DC.registerScript({
 
 Types de réglages : `boolean`, `number`, `text`, `color`, `select`.
 
+### Écran de réglages propre
+
+Quand un formulaire ne suffit pas — une disposition à ajuster avec un aperçu en
+direct, par exemple —, le script fournit son propre écran. L'engrenage du
+gestionnaire l'ouvre à la place du formulaire, avec le contexte déjà passé à
+`init` :
+
+```ts
+DC.registerScript({
+  id: 'monscript',
+  init(ctx) {
+    // …
+  },
+  openSettings(ctx) {
+    DC.ui.popUp('monscript_reglages', 'Mon script', contenu(ctx.storage));
+  },
+});
+```
+
+`openSettings` prime sur `settings` : un script qui déclare les deux n'aura que
+son écran. `DC.scripts.openSettings(id)` renvoie `false` pour un script non
+démarré ou sans écran propre.
+
 Les réglages sont lus au démarrage : une modification prend effet au
 rechargement de la page, comme l'activation d'un script.
 
