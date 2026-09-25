@@ -31,6 +31,10 @@ on:
         description: 'Publier aussi le gestionnaire (décocher pour un essai à blanc)'
         type: boolean
         default: true
+      publish_scripts:
+        description: 'Publier aussi les scripts de scripts/ (décocher pour un essai à blanc)'
+        type: boolean
+        default: true
 
 env:
   CI: '1'
@@ -104,6 +108,7 @@ jobs:
           {
             echo "ddk=$(node -p "require('./packages/ddk/package.json').version")"
             echo "dcsm=$(node -p "require('./packages/dcsm/package.json').version")"
+            echo "silhouette_plus=$(node -p "require('./scripts/silhouette-plus/package.json').version")"
           } >> "$GITHUB_OUTPUT"
 
       - name: Configurer git
@@ -194,6 +199,60 @@ jobs:
           git status --porcelain || true
 
           # `main` a pu bouger pendant l'attente de Greasy Fork.
+          git pull --rebase --autostash origin main
+          git push origin main
+
+      # Les scripts de scripts/ requierent le DDK par `@require`, comme le
+      # gestionnaire : ils partent apres sa synchronisation, epingles sur la
+      # meme revision. Meme garde que le gestionnaire -- une version inchangee
+      # garde l'epingle avec laquelle elle a ete publiee.
+      - name: Publier Silhouette+
+        if: >-
+          (steps.release.outputs.releases_created == 'true' || github.event_name ==
+          'workflow_dispatch') && (github.event_name != 'workflow_dispatch' ||
+          inputs.publish_scripts)
+        env:
+          SILHOUETTE_PLUS_DDK_VERSION: ${{ steps.pin.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          fichier=published/silhouette-plus.user.js
+
+          # Absent avant la premiere publication : le fichier est alors ajoute,
+          # et Greasy Fork se synchronise a la main une premiere fois. Voir
+          # docs/publication.md.
+          publiee=''
+          if [ -f "$fichier" ]; then
+            publiee=$(grep -m1 '^// @version' "$fichier" | awk '{print $3}')
+          fi
+          attendue='${{ steps.versions.outputs.silhouette_plus }}'
+
+          if [ "$publiee" = "$attendue" ]; then
+            echo "Silhouette+ deja publie en $publiee : rien a faire."
+            exit 0
+          fi
+
+          echo "Silhouette+ : ${publiee:-jamais publie} -> $attendue"
+          vp run --filter @dreadcast/silhouette-plus build
+          cp scripts/silhouette-plus/dist/silhouette-plus.user.js \
+            scripts/silhouette-plus/dist/silhouette-plus.meta.js published/
+
+          # `git diff` ignore un fichier non suivi : a la premiere publication,
+          # il conclurait a tort que rien n'a change.
+          if [ -z "$(git status --porcelain -- published/)" ]; then
+            echo 'Silhouette+ inchangé, rien à publier.'
+            exit 0
+          fi
+
+          grep -q "version=${SILHOUETTE_PLUS_DDK_VERSION}" "$fichier" \
+            || { echo "L'épingle du DDK n'a pas été injectée."; exit 1; }
+
+          git add published/
+          git commit -m "build(silhouette-plus): publie la version $attendue"
+
+          echo 'Etat de l arbre avant le rebase :'
+          git status --porcelain || true
+
           git pull --rebase --autostash origin main
           git push origin main
 

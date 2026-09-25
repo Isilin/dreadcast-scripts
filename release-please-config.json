@@ -11,6 +11,11 @@
       "release-type": "node",
       "component": "dcsm",
       "changelog-path": "CHANGELOG.md"
+    },
+    "scripts/silhouette-plus": {
+      "release-type": "node",
+      "component": "silhouette-plus",
+      "changelog-path": "CHANGELOG.md"
     }
   }
 }
