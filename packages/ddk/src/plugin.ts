@@ -65,6 +65,15 @@ export interface ScriptDefinition {
   /** Schema des reglages, rendu par le gestionnaire. */
   settings?: Setting[];
   init: (context: ScriptContext) => void | Promise<void>;
+  /**
+   * Ecran de reglages propre au script, a la place du formulaire genere depuis
+   * `settings`. Le gestionnaire l'appelle au clic sur l'engrenage, avec le
+   * contexte deja passe a `init`.
+   *
+   * Pour les reglages qui ne tiennent pas dans un formulaire : une disposition
+   * a ajuster avec un apercu en direct, par exemple.
+   */
+  openSettings?: (context: ScriptContext) => void;
 }
 
 export interface RegisteredScript extends ScriptDefinition {
@@ -76,6 +85,9 @@ export interface RegisteredScript extends ScriptDefinition {
 // reglages une fois le script demarre.
 const pending = new Map<string, RegisteredScript>();
 const started = new Map<string, RegisteredScript>();
+// Contexte passe a `init`, repris tel quel par `openSettings` : l'ecran de
+// reglages ecrit dans le meme stockage que le script en cours d'execution.
+const contexts = new Map<string, ScriptContext>();
 
 let currentId: string | undefined;
 
@@ -154,9 +166,7 @@ export const writeSettings = (id: string, settings: Settings): void => {
 export const runScript = async (definition: RegisteredScript): Promise<void> => {
   const prefix = `[${definition.id}]`;
 
-  started.set(definition.id, definition);
-
-  await definition.init({
+  const context: ScriptContext = {
     id: definition.id,
     context: getContext(),
     storage: namespace(definition.id),
@@ -164,5 +174,26 @@ export const runScript = async (definition: RegisteredScript): Promise<void> => 
     log: (...args) => console.info(prefix, ...args),
     warn: (...args) => console.warn(prefix, ...args),
     error: (...args) => console.error(prefix, ...args),
-  });
+  };
+
+  started.set(definition.id, definition);
+  contexts.set(definition.id, context);
+
+  await definition.init(context);
+};
+
+/**
+ * Ouvre l'ecran de reglages propre a un script demarre.
+ *
+ * Renvoie `false` si le script n'a pas ete demarre, ou s'il ne declare pas
+ * d'`openSettings` : c'est alors au gestionnaire de rendre le formulaire.
+ */
+export const openScriptSettings = (id: string): boolean => {
+  const definition = started.get(id);
+  const context = contexts.get(id);
+
+  if (definition?.openSettings === undefined || context === undefined) return false;
+
+  definition.openSettings(context);
+  return true;
 };

@@ -51,6 +51,7 @@ const DC = {
     started: plugin.startedScripts,
     take: plugin.takeRegistration,
     run: plugin.runScript,
+    openSettings: plugin.openScriptSettings,
     defaults: plugin.defaultSettings,
     readSettings: plugin.readSettings,
     writeSettings: plugin.writeSettings,
