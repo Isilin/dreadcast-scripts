@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/Isilin/dreadcast-scripts/compare/ddk-v1.4.0...ddk-v1.5.0) (2026-09-25)
+
+
+### Features
+
+* **ddk:** permet a un script de fournir son propre ecran de reglages ([5eaa19c](https://github.com/Isilin/dreadcast-scripts/commit/5eaa19c919c8902bb0212512b09e0426d91067a9))
+
 ## [1.4.0](https://github.com/Isilin/dreadcast-scripts/compare/ddk-v1.3.1...ddk-v1.4.0) (2026-09-24)
 
 

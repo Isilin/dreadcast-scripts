@@ -1,6 +1,6 @@
 {
   "name": "@dreadcast/silhouette-plus",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "private": true,
   "description": "Silhouette+ : silhouettes personnalisees et disposition de la fiche RP.",
   "type": "module",

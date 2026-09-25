@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.8.0](https://github.com/Isilin/dreadcast-scripts/compare/dcsm-v1.7.0...dcsm-v1.8.0) (2026-09-25)
+
+
+### Features
+
+* **dcsm:** grise l'engrenage d'un script qui n'est pas charge ([5b0b3c7](https://github.com/Isilin/dreadcast-scripts/commit/5b0b3c7898453e1a23dec402717e1141d4ac640e))
+* **dcsm:** ouvre l'ecran de reglages propre d'un script v2 ([96c4a30](https://github.com/Isilin/dreadcast-scripts/commit/96c4a301bd2decde450c209e2567d7c38fc7e72a))
+
+
+### Bug Fixes
+
+* **dcsm:** rend l'engrenage aux scripts historiques dotes de reglages ([76db7b4](https://github.com/Isilin/dreadcast-scripts/commit/76db7b4d34c0ff3cf5c940f6f69a6cccb73e95f9))
+
 ## [1.7.0](https://github.com/Isilin/dreadcast-scripts/compare/dcsm-v1.6.0...dcsm-v1.7.0) (2026-09-24)
 
 
