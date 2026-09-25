@@ -1,4 +1,5 @@
 import DC from '@dreadcast/ddk';
+import type { RegisteredScript } from '@dreadcast/ddk';
 import type { ScriptEntry } from '@dreadcast/registry';
 
 import type { EnabledMap } from '../state.ts';
@@ -10,6 +11,32 @@ const BORDER = '1px solid white';
 
 const cell = (content: Node | null, style: Partial<CSSStyleDeclaration> = {}) =>
   h('td', { style: Object.assign({ padding: '5px 5px 0 0' }, style) }, content);
+
+const gear = (id: string, onClick: () => void): HTMLElement =>
+  DC.ui.tooltip('Réglages', DC.ui.button(`${id}_setting`, '<i class="fas fa-cog"></i>', onClick));
+
+/**
+ * Engrenage d'un script, s'il a des réglages.
+ *
+ * - Script v2 à schéma : le gestionnaire rend le formulaire.
+ * - Script historique marqué `settings` au catalogue : un bouton
+ *   `#<id>_setting` sans gestionnaire. Ce n'est pas un no-op : c'est le script
+ *   qui écoute ce clic lui-même, `$(document).on('click', '#<id>_setting', …)`
+ *   -- la convention de l'ancien gestionnaire, que Silhouette+ et Visio 3D
+ *   suivent. Sans ce bouton, leurs réglages sont inaccessibles.
+ */
+const settingsButton = (
+  script: ScriptEntry,
+  definition: RegisteredScript | undefined,
+): HTMLElement | null => {
+  if (definition !== undefined && hasSettings(script.id)) {
+    return gear(script.id, () => openSettings(script, definition));
+  }
+
+  if (script.settings) return gear(script.id, () => undefined);
+
+  return null;
+};
 
 /**
  * Deux lignes par script : la première porte les commandes, la seconde la
@@ -63,18 +90,7 @@ export const scriptRows = (
         }),
       ),
     ),
-    // Le bouton n'apparaît que si le script a déclaré un schéma de réglages
-    // via DC.registerScript : sans schéma, il n'y a rien à afficher.
-    cell(
-      definition !== undefined && hasSettings(script.id)
-        ? DC.ui.tooltip(
-            'Réglages',
-            DC.ui.button(`${script.id}_setting`, '<i class="fas fa-cog"></i>', () =>
-              openSettings(script, definition),
-            ),
-          )
-        : null,
-    ),
+    cell(settingsButton(script, definition)),
     cell(
       script.doc === ''
         ? null
