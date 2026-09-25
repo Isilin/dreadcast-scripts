@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Dreadcast Development Kit
 // @namespace    Dreadcast
-// @version      1.4.0
+// @version      1.5.0
 // @author       Pelagia/Isilin
 // @description  Development kit to ease Dreadcast scripts integration.
 // @license      https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
@@ -772,6 +772,7 @@
 	};
 	var pending = new Map();
 	var started = new Map();
+	var contexts = new Map();
 	var currentId;
 	var setCurrentScript = (id) => {
 		currentId = id;
@@ -805,8 +806,7 @@
 	};
 	var runScript = async (definition) => {
 		const prefix = `[${definition.id}]`;
-		started.set(definition.id, definition);
-		await definition.init({
+		const context = {
 			id: definition.id,
 			context: getContext(),
 			storage: namespace(definition.id),
@@ -814,7 +814,17 @@
 			log: (...args) => console.info(prefix, ...args),
 			warn: (...args) => console.warn(prefix, ...args),
 			error: (...args) => console.error(prefix, ...args)
-		});
+		};
+		started.set(definition.id, definition);
+		contexts.set(definition.id, context);
+		await definition.init(context);
+	};
+	var openScriptSettings = (id) => {
+		const definition = started.get(id);
+		const context = contexts.get(id);
+		if (definition?.openSettings === void 0 || context === void 0) return false;
+		definition.openSettings(context);
+		return true;
 	};
 	var DC = {
 		context: context_exports,
@@ -835,6 +845,7 @@
 			started: startedScripts,
 			take: takeRegistration,
 			run: runScript,
+			openSettings: openScriptSettings,
 			defaults: defaultSettings,
 			readSettings,
 			writeSettings
