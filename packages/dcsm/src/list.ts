@@ -4,8 +4,15 @@ import type { ScriptEntry } from '@dreadcast/registry';
 import { FALLBACK_LIST } from './fallback.ts';
 import { KEYS } from './state.ts';
 
-export const LIST_URL =
+const REMOTE_LIST_URL =
   'https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/data/scripts.json';
+
+/**
+ * `__DCSM_LIST_URL__` n'est defini que par le build local, pour la recette :
+ * voir `DCSM_LOCAL_LIST` dans vite.config.ts. Partout ailleurs -- production,
+ * tests --, l'identifiant n'existe pas et `typeof` le laisse passer sans erreur.
+ */
+export const LIST_URL = typeof __DCSM_LIST_URL__ === 'string' ? __DCSM_LIST_URL__ : REMOTE_LIST_URL;
 
 /** Au dela d'une heure, on retente la source distante. */
 export const CACHE_TTL = 60 * 60 * 1000;

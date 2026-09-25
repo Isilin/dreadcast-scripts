@@ -16,5 +16,8 @@
     "@dreadcast/vite-config": "workspace:*",
     "@types/node": "catalog:",
     "vitest": "catalog:"
+  },
+  "dreadcast": {
+    "catalogueId": "silhouettePlus"
   }
 }

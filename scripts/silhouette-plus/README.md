@@ -78,3 +78,9 @@ SILHOUETTE_PLUS_LOCAL_DDK=http://localhost:8720/ddk.user.js vp run -r build
 Installer `http://localhost:8720/silhouette-plus.user.js`. Le build local prend
 le nom `Silhouette+ (local)` et le namespace `Dreadcast-local` : désactiver
 l'installation Greasy Fork pendant la recette, sans quoi les deux tournent.
+
+Pour le vérifier à travers le gestionnaire, ajouter
+`DCSM_LOCAL_LIST=http://localhost:8720/scripts.json` au rebuild et installer
+`dcsm.user.js` à la place : le catalogue de recette pointe `silhouettePlus` sur
+ce build (`dreadcast.catalogueId` dans le `package.json`). Voir
+[la recette du gestionnaire](../../docs/recette-dcsm.md).

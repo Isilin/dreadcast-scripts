@@ -42,6 +42,21 @@ const ddkRequire = isLocal
   : `${DDK_URL}?version=${DDK_VERSION}`;
 
 /**
+ * Catalogue de recette, servi par `node tools/serve-dist.mjs` : les scripts de
+ * `scripts/` y pointent sur leur build local. Sans lui, le gestionnaire local
+ * chargerait la version que sert `main`, pas celle a verifier.
+ *
+ * Reserve au build local : un build de production qui lirait son catalogue sur
+ * localhost ne chargerait plus rien chez les joueurs.
+ */
+const localList = process.env['DCSM_LOCAL_LIST'];
+const hasLocalList = localList !== undefined && localList !== '';
+
+if (hasLocalList && !isLocal) {
+  throw new Error('DCSM_LOCAL_LIST demande aussi DCSM_LOCAL_DDK : il ne sert qu au build local.');
+}
+
+/**
  * Le build local prend un nom et un namespace distincts : sans cela, il
  * ecraserait l'installation Greasy Fork du joueur, qui l'identifie par ce
  * couple. Il demarre donc aussi sur une memoire vierge, ce qui fait passer la
@@ -109,9 +124,12 @@ export default defineUserscript({
       'googleusercontent.com',
       'sheets.googleapis.com',
       'raw.githubusercontent.com',
+      // Le catalogue de recette et les scripts qu'il designe.
+      ...(hasLocalList ? ['localhost'] : []),
     ],
   },
   externalGlobals: {
     '@dreadcast/ddk': 'DC',
   },
+  ...(hasLocalList ? { extend: { define: { __DCSM_LIST_URL__: JSON.stringify(localList) } } } : {}),
 });
