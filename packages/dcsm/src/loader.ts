@@ -1,6 +1,7 @@
 import DC from '@dreadcast/ddk';
 import type { ScriptEntry } from '@dreadcast/registry';
 
+import { markLoaded } from './loaded.ts';
 import type { EnabledMap } from './state.ts';
 
 /**
@@ -26,6 +27,8 @@ export const loadScript = async (script: ScriptEntry): Promise<void> => {
   } finally {
     DC.scripts.setCurrent(undefined);
   }
+
+  markLoaded(script.id);
 
   const definition = DC.scripts.take(script.id);
   if (definition) await DC.scripts.run(definition);

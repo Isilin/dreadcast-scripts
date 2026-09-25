@@ -2,6 +2,7 @@ import DC from '@dreadcast/ddk';
 import type { RegisteredScript } from '@dreadcast/ddk';
 import type { ScriptEntry } from '@dreadcast/registry';
 
+import { isLoaded } from '../loaded.ts';
 import type { EnabledMap } from '../state.ts';
 import { hasCustomSettings, hasSettings, openSettings } from './settings.ts';
 
@@ -12,8 +13,27 @@ const BORDER = '1px solid white';
 const cell = (content: Node | null, style: Partial<CSSStyleDeclaration> = {}) =>
   h('td', { style: Object.assign({ padding: '5px 5px 0 0' }, style) }, content);
 
+const GEAR_ICON = '<i class="fas fa-cog"></i>';
+
 const gear = (id: string, onClick: () => void): HTMLElement =>
-  DC.ui.tooltip('Réglages', DC.ui.button(`${id}_setting`, '<i class="fas fa-cog"></i>', onClick));
+  DC.ui.tooltip('Réglages', DC.ui.button(`${id}_setting`, GEAR_ICON, onClick));
+
+/**
+ * Engrenage grisé : le script a des réglages, mais rien dans la page ne peut
+ * les ouvrir tant qu'il n'est pas chargé. L'afficher dit qu'ils existent ; le
+ * griser évite un clic qui ne ferait rien.
+ */
+const inactiveGear = (id: string): HTMLElement => {
+  const button = DC.ui.button(`${id}_setting`, GEAR_ICON, () => undefined);
+  button.classList.add('disabled');
+  button.setAttribute('aria-disabled', 'true');
+  Object.assign(button.style, { opacity: '0.35', cursor: 'not-allowed' });
+
+  return DC.ui.tooltip(
+    'Activez le script et rechargez la page pour accéder à ses réglages.',
+    button,
+  );
+};
 
 /**
  * Engrenage d'un script, s'il a des réglages.
@@ -21,11 +41,13 @@ const gear = (id: string, onClick: () => void): HTMLElement =>
  * - Script v2 à écran propre (`openSettings`) : le script l'ouvre lui-même. Il
  *   prime sur le schéma.
  * - Script v2 à schéma : le gestionnaire rend le formulaire.
- * - Script historique marqué `settings` au catalogue : un bouton
- *   `#<id>_setting` sans gestionnaire. Ce n'est pas un no-op : c'est le script
- *   qui écoute ce clic lui-même, `$(document).on('click', '#<id>_setting', …)`
- *   -- la convention de l'ancien gestionnaire, que Silhouette+ et Visio 3D
- *   suivent. Sans ce bouton, leurs réglages sont inaccessibles.
+ * - Script historique marqué `settings` au catalogue, chargé dans la page : un
+ *   bouton `#<id>_setting` sans gestionnaire. Ce n'est pas un no-op : c'est le
+ *   script qui écoute ce clic lui-même,
+ *   `$(document).on('click', '#<id>_setting', …)` -- la convention de l'ancien
+ *   gestionnaire, que Silhouette+ et Visio 3D suivent. Sans ce bouton, leurs
+ *   réglages sont inaccessibles.
+ * - Script marqué `settings` mais pas chargé : engrenage grisé.
  */
 const settingsButton = (
   script: ScriptEntry,
@@ -39,9 +61,9 @@ const settingsButton = (
     return gear(script.id, () => openSettings(script, definition));
   }
 
-  if (script.settings) return gear(script.id, () => undefined);
+  if (!script.settings) return null;
 
-  return null;
+  return isLoaded(script.id) ? gear(script.id, () => undefined) : inactiveGear(script.id);
 };
 
 /**

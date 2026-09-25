@@ -3,6 +3,7 @@ import type { ScriptEntry } from '@dreadcast/registry';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resetStore } from '../../../tests/mocks/monkey.ts';
+import { markLoaded } from '../src/loaded.ts';
 import { scriptRows } from '../src/ui/rows.ts';
 
 const globals = globalThis as unknown as Record<string, unknown>;
@@ -75,7 +76,7 @@ describe('engrenage des reglages', () => {
     expect(gear('sansreglages')).toBeNull();
   });
 
-  it("apparait pour un script historique marque `settings`, dont l'ecouteur delegue recoit le clic", () => {
+  it("apparait pour un script historique charge marque `settings`, dont l'ecouteur delegue recoit le clic", () => {
     // Ce que fait le script historique : il ecoute lui-meme `#<id>_setting`.
     const open = vi.fn();
     const listener = (event: Event): void => {
@@ -84,13 +85,33 @@ describe('engrenage des reglages', () => {
     document.addEventListener('click', listener);
 
     try {
+      markLoaded('historique');
       render(entry('historique', true));
+
+      expect(gear('historique')?.getAttribute('aria-disabled')).toBeNull();
+
       clickGear('historique');
 
       expect(open).toHaveBeenCalledOnce();
     } finally {
       document.removeEventListener('click', listener);
     }
+  });
+
+  it("est grise pour un script marque `settings` qui n'est pas charge", () => {
+    render(entry('inactif', true));
+
+    const button = gear('inactif');
+    expect(button?.getAttribute('aria-disabled')).toBe('true');
+    expect(button?.classList.contains('disabled')).toBe(true);
+    expect(button?.parentElement?.textContent).toContain('Activez le script');
+  });
+
+  it("est grise pour un script v2 marque `settings` qui n'est pas charge", () => {
+    // Aucun enregistrement : le script n'a pas ete charge dans la page.
+    render(entry('v2inactif', true));
+
+    expect(gear('v2inactif')?.getAttribute('aria-disabled')).toBe('true');
   });
 
   it('ouvre le formulaire du gestionnaire pour un script v2 a schema', async () => {
