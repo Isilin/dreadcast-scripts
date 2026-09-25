@@ -143,8 +143,8 @@ publication chez les joueurs :
 
 | Type                                                     | Effet                            |
 | -------------------------------------------------------- | -------------------------------- |
-| `feat(ddk):` / `feat(dcsm):`                             | Version mineure, publication.    |
-| `fix(ddk):` / `fix(dcsm):`                               | Version corrective, publication. |
+| `feat(ddk):` / `feat(dcsm):` / `feat(silhouette-plus):`  | Version mineure, publication.    |
+| `fix(ddk):` / `fix(dcsm):` / `fix(silhouette-plus):`     | Version corrective, publication. |
 | `chore:`, `test:`, `docs:`, `ci:`, `build:`, `refactor:` | Aucune publication.              |
 
 La règle : `feat` et `fix` décrivent ce qui change **pour le joueur**. Une
