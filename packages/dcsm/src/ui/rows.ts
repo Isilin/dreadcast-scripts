@@ -3,7 +3,7 @@ import type { RegisteredScript } from '@dreadcast/ddk';
 import type { ScriptEntry } from '@dreadcast/registry';
 
 import type { EnabledMap } from '../state.ts';
-import { hasSettings, openSettings } from './settings.ts';
+import { hasCustomSettings, hasSettings, openSettings } from './settings.ts';
 
 const { h } = DC.dom;
 
@@ -18,6 +18,8 @@ const gear = (id: string, onClick: () => void): HTMLElement =>
 /**
  * Engrenage d'un script, s'il a des réglages.
  *
+ * - Script v2 à écran propre (`openSettings`) : le script l'ouvre lui-même. Il
+ *   prime sur le schéma.
  * - Script v2 à schéma : le gestionnaire rend le formulaire.
  * - Script historique marqué `settings` au catalogue : un bouton
  *   `#<id>_setting` sans gestionnaire. Ce n'est pas un no-op : c'est le script
@@ -29,6 +31,10 @@ const settingsButton = (
   script: ScriptEntry,
   definition: RegisteredScript | undefined,
 ): HTMLElement | null => {
+  if (definition !== undefined && hasCustomSettings(script.id)) {
+    return gear(script.id, () => DC.scripts.openSettings(script.id));
+  }
+
   if (definition !== undefined && hasSettings(script.id)) {
     return gear(script.id, () => openSettings(script, definition));
   }

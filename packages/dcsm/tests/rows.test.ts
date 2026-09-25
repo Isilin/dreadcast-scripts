@@ -105,4 +105,20 @@ describe('engrenage des reglages', () => {
 
     expect(document.querySelector('#dcsm_settings_schema')).not.toBeNull();
   });
+
+  it("ouvre l'ecran propre d'un script v2, de preference au formulaire", async () => {
+    const openSettings = vi.fn();
+    await startV2({
+      id: 'ecran',
+      settings: [{ key: 'actif', type: 'boolean', label: 'Actif', default: true }],
+      init: () => undefined,
+      openSettings,
+    });
+
+    render(entry('ecran', true));
+    clickGear('ecran');
+
+    expect(openSettings).toHaveBeenCalledOnce();
+    expect(document.querySelector('#dcsm_settings_ecran')).toBeNull();
+  });
 });
