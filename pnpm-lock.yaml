@@ -139,6 +139,25 @@ importers:
         specifier: 'catalog:'
         version: 4.1.10(@types/node@24.13.3)(@vitest/browser-preview@4.1.10)(jsdom@30.0.1)(vite@8.2.1(@types/node@24.13.3))
 
+  scripts/silhouette-plus:
+    dependencies:
+      '@dreadcast/ddk':
+        specifier: workspace:*
+        version: link:../../packages/ddk
+      '@dreadcast/game-types':
+        specifier: workspace:*
+        version: link:../../packages/game-types
+    devDependencies:
+      '@dreadcast/vite-config':
+        specifier: workspace:*
+        version: link:../../packages/vite-config
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.13.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.10(@types/node@24.13.3)(@vitest/browser-preview@4.1.10)(jsdom@30.0.1)(vite@8.2.1(@types/node@24.13.3))
+
 packages:
 
   '@asamuzakjp/css-color@6.0.7':
