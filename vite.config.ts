@@ -1,8 +1,9 @@
 import { defineConfig } from 'vite-plus';
 
-// Le code herite de `src/` et `examples/` est publie tel quel (deux entrees de
-// data/scripts.json pointent directement dessus) : on ne le lint ni ne le
-// formate tant qu'il n'est pas migre dans `scripts/`.
+// Le code herite de `src/` et `examples/` est publie tel quel (une entree de
+// data/scripts.json pointe directement dessus, et les listes de secours des
+// gestionnaires anterieurs au 1.8.0 servent encore l'ancien Silhouette+) : on
+// ne le lint ni ne le formate tant qu'il n'est pas migre dans `scripts/`.
 //
 // Le catalogue d'API du jeu est un inventaire genere depuis un bundle minifie,
 // pas du code : il redeclare des noms de lib.dom (`Navigator`) et n'a rien a
