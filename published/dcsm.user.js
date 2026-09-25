@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Dreadcast Script Manager
 // @namespace    Dreadcast
-// @version      1.7.0
+// @version      1.8.0
 // @author       Pelagia/Isilin
 // @description  Centralize all dreadcast scripts in one single source, integrated to the game.
 // @license      https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
@@ -12,7 +12,7 @@
 // @match        https://www.dreadcast.net/Forum/*
 // @match        https://www.dreadcast.net/EDC
 // @match        https://www.dreadcast.net/EDC/*
-// @require      https://update.greasyfork.org/scripts/507382/Dreadcast%20Development%20Kit.user.js?version=1941660
+// @require      https://update.greasyfork.org/scripts/507382/Dreadcast%20Development%20Kit.user.js?version=1942191
 // @connect      update.greasyfork.org
 // @connect      docs.google.com
 // @connect      googleusercontent.com
@@ -844,7 +844,7 @@
 			"contact": "Mika",
 			"settings": false,
 			"section": ["game"],
-			"category": ["ui"],
+			"category": ["mech"],
 			"experimental": false
 		}
 	];
@@ -905,7 +905,7 @@
 			_dreadcast_ddk.default.storage.set(key, value);
 		}
 	};
-	var LIST_URL = "https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/data/scripts.json";
+	var LIST_URL = typeof __DCSM_LIST_URL__ === "string" ? __DCSM_LIST_URL__ : "https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/data/scripts.json";
 	var FETCH_TIMEOUT = 8e3;
 	var isValidList = (value) => Array.isArray(value) && value.length > 0 && value.every((entry) => {
 		if (typeof entry !== "object" || entry === null) return false;
@@ -966,6 +966,11 @@
 			};
 		}
 	};
+	var loaded = new Set();
+	var markLoaded = (id) => {
+		loaded.add(id);
+	};
+	var isLoaded = (id) => loaded.has(id);
 	var loadScript = async (script) => {
 		const code = await _dreadcast_ddk.default.net.text(script.url);
 		_dreadcast_ddk.default.scripts.setCurrent(script.id);
@@ -974,6 +979,7 @@
 		} finally {
 			_dreadcast_ddk.default.scripts.setCurrent(void 0);
 		}
+		markLoaded(script.id);
 		const definition = _dreadcast_ddk.default.scripts.take(script.id);
 		if (definition) await _dreadcast_ddk.default.scripts.run(definition);
 	};
@@ -1003,6 +1009,7 @@
 		const definition = _dreadcast_ddk.default.scripts.get(id);
 		return definition !== void 0 && (definition.settings?.length ?? 0) > 0;
 	};
+	var hasCustomSettings = (id) => typeof _dreadcast_ddk.default.scripts.get(id)?.openSettings === "function";
 	var field = (setting, value, onChange) => {
 		const id = `dcsm_setting_${setting.key}`;
 		switch (setting.type) {
@@ -1064,6 +1071,24 @@
 	var { h: h$1 } = _dreadcast_ddk.default.dom;
 	var BORDER = "1px solid white";
 	var cell = (content, style = {}) => h$1("td", { style: Object.assign({ padding: "5px 5px 0 0" }, style) }, content);
+	var GEAR_ICON = "<i class=\"fas fa-cog\"></i>";
+	var gear = (id, onClick) => _dreadcast_ddk.default.ui.tooltip("Réglages", _dreadcast_ddk.default.ui.button(`${id}_setting`, GEAR_ICON, onClick));
+	var inactiveGear = (id) => {
+		const button = _dreadcast_ddk.default.ui.button(`${id}_setting`, GEAR_ICON, () => void 0);
+		button.classList.add("disabled");
+		button.setAttribute("aria-disabled", "true");
+		Object.assign(button.style, {
+			opacity: "0.35",
+			cursor: "not-allowed"
+		});
+		return _dreadcast_ddk.default.ui.tooltip("Activez le script et rechargez la page pour accéder à ses réglages.", button);
+	};
+	var settingsButton = (script, definition) => {
+		if (definition !== void 0 && hasCustomSettings(script.id)) return gear(script.id, () => _dreadcast_ddk.default.scripts.openSettings(script.id));
+		if (definition !== void 0 && hasSettings(script.id)) return gear(script.id, () => openSettings(script, definition));
+		if (!script.settings) return null;
+		return isLoaded(script.id) ? gear(script.id, () => void 0) : inactiveGear(script.id);
+	};
 	var scriptRows = (script, index, draft) => {
 		const definition = _dreadcast_ddk.default.scripts.get(script.id);
 		const commands = h$1("tr", { style: {
@@ -1098,7 +1123,7 @@
 			justifyContent: "center"
 		} }, _dreadcast_ddk.default.ui.tooltip("Activer/Désactiver le script ne perdra pas sa configuration.", _dreadcast_ddk.default.ui.checkbox(`${script.id}_check`, draft[script.id] === true, (checked) => {
 			draft[script.id] = checked;
-		}))), cell(definition !== void 0 && hasSettings(script.id) ? _dreadcast_ddk.default.ui.tooltip("Réglages", _dreadcast_ddk.default.ui.button(`${script.id}_setting`, "<i class=\"fas fa-cog\"></i>", () => openSettings(script, definition))) : null), cell(script.doc === "" ? null : _dreadcast_ddk.default.ui.tooltip("Documentation", _dreadcast_ddk.default.ui.button(`${script.id}_doc`, "<i class=\"fas fa-book\"></i>", () => window.open(script.doc, "_blank")))), cell(script.rp === "" ? null : _dreadcast_ddk.default.ui.tooltip("Topic RP", _dreadcast_ddk.default.ui.button(`${script.id}_rp`, "<div class=\"gridCenter\">RP</div>", () => window.open(script.rp, "_blank")))), cell(script.contact === "" ? null : _dreadcast_ddk.default.ui.tooltip("Contact", _dreadcast_ddk.default.ui.button(`${script.id}_contact`, "<i class=\"fas fa-envelope\"></i>", () => nav.getMessagerie().newMessage(script.contact)))));
+		}))), cell(settingsButton(script, definition)), cell(script.doc === "" ? null : _dreadcast_ddk.default.ui.tooltip("Documentation", _dreadcast_ddk.default.ui.button(`${script.id}_doc`, "<i class=\"fas fa-book\"></i>", () => window.open(script.doc, "_blank")))), cell(script.rp === "" ? null : _dreadcast_ddk.default.ui.tooltip("Topic RP", _dreadcast_ddk.default.ui.button(`${script.id}_rp`, "<div class=\"gridCenter\">RP</div>", () => window.open(script.rp, "_blank")))), cell(script.contact === "" ? null : _dreadcast_ddk.default.ui.tooltip("Contact", _dreadcast_ddk.default.ui.button(`${script.id}_contact`, "<i class=\"fas fa-envelope\"></i>", () => nav.getMessagerie().newMessage(script.contact)))));
 		const description = h$1("tr", { style: {
 			borderBottom: BORDER,
 			borderLeft: BORDER,

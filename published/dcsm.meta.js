@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Dreadcast Script Manager
 // @namespace    Dreadcast
-// @version      1.7.0
+// @version      1.8.0
 // @author       Pelagia/Isilin
 // @description  Centralize all dreadcast scripts in one single source, integrated to the game.
 // @license      https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
@@ -12,7 +12,7 @@
 // @match        https://www.dreadcast.net/Forum/*
 // @match        https://www.dreadcast.net/EDC
 // @match        https://www.dreadcast.net/EDC/*
-// @require      https://update.greasyfork.org/scripts/507382/Dreadcast%20Development%20Kit.user.js?version=1941660
+// @require      https://update.greasyfork.org/scripts/507382/Dreadcast%20Development%20Kit.user.js?version=1942191
 // @connect      update.greasyfork.org
 // @connect      docs.google.com
 // @connect      googleusercontent.com
