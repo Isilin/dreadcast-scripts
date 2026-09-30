@@ -878,7 +878,7 @@ export const FALLBACK_LIST: ScriptEntry[] = [
     "description": "Remplace les pions bleus par les avatars des joueurs et ajoute des paramètres de personnalisation",
     "authors": "Darlene",
     "icon": "",
-    "url": "https://update.greasyfork.org/scripts/556113/Dreadcast%20-%20PimpMyPion%20-%20Public%20v%20063.user.js?version=1709845",
+    "url": "https://update.greasyfork.org/scripts/556113/Dreadcast%20-%20PimpMyPion%20-%20Public%20v%20063.user.js?version=1908089",
     "doc": "https://www.dreadcast.net/Forum/2-158238-script-pimpmypion?1",
     "rp": "",
     "contact": "Darlene",
@@ -1009,16 +1009,17 @@ export const FALLBACK_LIST: ScriptEntry[] = [
   {
     "id": "agendaperso",
     "name": "Agenda perso",
-    "description": "Agenda personnel local : calendrier, catégories colorées, tâches, import en masse, sauvegarde JSON et rappels.",
+    "description": "Agenda personnel local : calendrier, catégories colorées, tâches, import en masse, sauvegarde JSON, rappels, et ajout des événements partagés sur le forum.",
     "authors": "Mika",
     "icon": "",
-    "url": "https://update.greasyfork.org/scripts/595206/Dreadcast%20-%20Agenda%20perso.user.js?version=1939188",
+    "url": "https://update.greasyfork.org/scripts/595206/Dreadcast%20-%20Agenda%20perso.user.js?version=1943170",
     "doc": "https://www.dreadcast.net/Forum/2-164889-script-agenda-dreadcast",
     "rp": "",
     "contact": "Mika",
     "settings": false,
     "section": [
-      "game"
+      "game",
+      "forum"
     ],
     "category": [
       "mech"
