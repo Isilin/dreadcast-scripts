@@ -28,7 +28,7 @@ const DDK_VERSION = process.env['DCSM_DDK_VERSION'] ?? '1907758';
  * Build de verification locale.
  *
  * `DCSM_LOCAL_DDK` doit contenir l'URL du DDK servi en local -- voir
- * `node tools/serve-dist.mjs`. Sans elle, le build est celui de production.
+ * `node tools/serve-dist.ts`. Sans elle, le build est celui de production.
  *
  * L'URL recoit un horodatage : les gestionnaires mettent les `@require` en
  * cache et ne les resollicitent pas au rechargement de la page. Une URL neuve a
@@ -42,7 +42,7 @@ const ddkRequire = isLocal
   : `${DDK_URL}?version=${DDK_VERSION}`;
 
 /**
- * Catalogue de recette, servi par `node tools/serve-dist.mjs` : les scripts de
+ * Catalogue de recette, servi par `node tools/serve-dist.ts` : les scripts de
  * `scripts/` y pointent sur leur build local. Sans lui, le gestionnaire local
  * chargerait la version que sert `main`, pas celle a verifier.
  *

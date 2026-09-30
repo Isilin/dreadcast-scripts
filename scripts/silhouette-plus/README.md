@@ -66,7 +66,7 @@ distingue les deux cas par `Util.isDSM()`, que le gestionnaire pose.
 ## Recette locale
 
 ```bash
-vp run -r build && node tools/serve-dist.mjs
+vp run -r build && node tools/serve-dist.ts
 ```
 
 Puis, dans un second terminal, reconstruire contre le DDK servi en local :

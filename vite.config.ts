@@ -68,7 +68,7 @@ export default defineConfig({
   //
   // A activer une fois par copie de travail : `vp hooks enable`.
   staged: {
-    '*.{ts,mts,js,mjs,json,md,yml,yaml}': 'vp check --fix',
+    '*.{ts,mts,js,json,md,yml,yaml}': 'vp check --fix',
   },
   fmt: {
     ignorePatterns: IGNORED,

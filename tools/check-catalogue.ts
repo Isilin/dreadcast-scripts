@@ -1,37 +1,40 @@
 #!/usr/bin/env node
 // Verifie que chaque script du catalogue repond encore.
 //
-//   node tools/check-catalogue.mjs [catalogue]
+//   node tools/check-catalogue.ts [catalogue]
 //
 // Un script retire de Greasy Fork, ou dont l'auteur a supprime la revision
 // epinglee, casse en silence chez les joueurs qui l'avaient active : le
 // gestionnaire signale l'echec en console, et personne ne le lit. Ce controle
-// tourne une fois par semaine.
+// tourne une fois par jour.
 //
 // N'echoue jamais : il imprime ce qu'il trouve, et c'est l'appelant qui decide
-// quoi en faire. Un controle qui rougit toutes les semaines finit ignore.
+// quoi en faire. Un controle qui rougit tous les jours finit ignore.
 //
-// N'utilise que la bibliotheque standard.
+// N'utilise que la bibliotheque standard. Node execute ce fichier tel quel :
+// pas d'installation, pas de compilation.
 
 import { readFile } from 'node:fs/promises';
+
+import type { Registry } from '../packages/registry/src/schema.ts';
 
 /** Cinquante requetes d'affilee sur le meme hote seraient impolies. */
 const INTERVAL_MS = 300;
 const TIMEOUT_MS = 15_000;
 
-const sleep = (ms) =>
+const sleep = (ms: number): Promise<void> =>
   new Promise((done) => {
     setTimeout(done, ms);
   });
 
 /**
- * Etat d'une URL.
+ * Etat d'une URL : undefined si elle sert un userscript, la raison sinon.
  *
  * On demande le fichier en GET et non en HEAD : Greasy Fork sert les
  * userscripts par une redirection que tous les hotes ne traitent pas de la
  * meme facon en HEAD, et un 405 ne dirait rien de la disponibilite reelle.
  */
-const verifier = async (url) => {
+const verifier = async (url: string): Promise<string | undefined> => {
   const abandon = AbortSignal.timeout(TIMEOUT_MS);
 
   try {
@@ -48,13 +51,13 @@ const verifier = async (url) => {
 
     return undefined;
   } catch (error) {
-    return String(error instanceof Error ? error.message : error);
+    return error instanceof Error ? error.message : String(error);
   }
 };
 
 const fichier = process.argv[2] ?? 'data/scripts.json';
-const catalogue = JSON.parse(await readFile(fichier, 'utf8'));
-const injoignables = [];
+const catalogue = JSON.parse(await readFile(fichier, 'utf8')) as Registry;
+const injoignables: { nom: string; id: string; probleme: string }[] = [];
 
 for (const script of catalogue) {
   const probleme = await verifier(script.url);

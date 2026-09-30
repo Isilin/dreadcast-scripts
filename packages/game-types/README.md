@@ -9,7 +9,7 @@ Declarations TypeScript des globales que le client Dreadcast expose a la page :
 DCSM utilisent reellement. C'est volontaire : une signature inventee est pire
 qu'une absence de type.
 
-`catalogue/ingame-api.d.ts` est **genere** par `tools/extract-game-api.mjs`
+`catalogue/ingame-api.d.ts` est **genere** par `tools/extract-game-api.ts`
 depuis le bundle du jeu (47 classes, 884 methodes). Il n'est pas compile : il
 sert d'inventaire quand on cherche le nom d'une methode a typer. Pour le
 regenerer, il faut le bundle du jeu dans `vendor/dreadcast.net/` (non

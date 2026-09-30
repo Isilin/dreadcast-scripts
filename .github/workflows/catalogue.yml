@@ -62,7 +62,7 @@ jobs:
           set -euo pipefail
           {
             echo 'liste<<FIN'
-            node tools/check-catalogue.mjs
+            node tools/check-catalogue.ts
             echo 'FIN'
           } >> "$GITHUB_OUTPUT"
 
