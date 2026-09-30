@@ -145,6 +145,51 @@ livrerait un fichier réclamant l'ancien DDK, dont l'API a changé : il ne
 démarrerait pas. Les scripts de `scripts/` suivent le gestionnaire, épinglés
 sur la même révision.
 
+## Mises à jour du catalogue
+
+Les scripts tiers de `data/scripts.json` sont épinglés sur une révision Greasy
+Fork (`?version=NNNN`). Chaque jour, `.github/workflows/catalogue.yml` compare
+chaque révision épinglée à la dernière publiée par son auteur, et
+`tools/catalogue-pr.mjs` ouvre une **pull request par script en retard**, à la
+manière de Dependabot : branche `catalogue/<id>`, URL repincée, liste de
+secours régénérée, et un rapport d'aide à la relecture (changements d'en-tête,
+motifs sensibles en hausse, nouveaux domaines, lien vers le diff Greasy Fork,
+contenu identique ou non).
+
+- **Rien n'est fusionné automatiquement.** Le rapport oriente la relecture, il
+  ne la remplace pas. Fusionner déploie : le gestionnaire lit le catalogue sur
+  `main`.
+- La checklist de la PR rappelle de vérifier `section`, `description` et
+  `category` : une nouvelle version peut viser un autre contexte (le cas
+  d'Agenda perso 2.1, passé du jeu au jeu et au forum). Pour corriger l'entrée,
+  pousser un commit sur la branche : le bot ne la réécrit plus.
+- Une nouvelle révision en amont met la PR à jour. Une PR devenue sans objet
+  (repin fait à la main, script retiré) est fermée. Fusionner une PR relance
+  la veille, qui recale les autres sur `main`.
+- **Fermer une PR sans la fusionner refuse cette révision**, comme avec
+  Dependabot : le bot n'en rouvre une qu'à la révision suivante.
+- Les scripts injoignables, eux, continuent d'ouvrir une issue.
+
+Le `GITHUB_TOKEN` de ce dépôt ne peut pas ouvrir de pull request, et celles
+qu'il ouvrirait ne déclencheraient pas l'intégration. La veille utilise donc
+`RELEASE_TOKEN`, qui doit avoir, en plus de `Contents: write`, la permission
+`Pull requests: write`. Sans `Issues: write`, le label `catalogue` ne peut pas
+être créé : les PR s'ouvrent alors sans lui.
+
+Essai à blanc, qui n'ouvre ni ne modifie rien :
+
+```bash
+gh workflow run catalogue.yml -f dry_run=true
+```
+
+En local : `node tools/catalogue-pr.mjs --dry-run`, avec `--catalogue=<fichier>`
+pour travailler sur une copie du catalogue.
+
+> Sur `update.greasyfork.org`, la forme `…/<nom>.user.js?version=N` ignore `N`
+> et sert la dernière version. Seule la forme chemin `…/scripts/<id>/N/<nom>.user.js`
+> sert la révision `N`. Le rapport télécharge les révisions sous cette forme,
+> via le `code_url` de l'API.
+
 ## Diagnostic
 
 | Symptôme                                        | Cause                                                                                                                                |
