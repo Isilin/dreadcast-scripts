@@ -145,7 +145,7 @@ jobs:
         run: |
           set -euo pipefail
           {
-            echo "version=$(node tools/greasyfork.mjs wait 507382 '${{ steps.versions.outputs.ddk }}')"
+            echo "version=$(node tools/greasyfork.ts wait 507382 '${{ steps.versions.outputs.ddk }}')"
           } >> "$GITHUB_OUTPUT"
 
       # Sur un declenchement par tag, `inputs` est vide : GitHub convertit la

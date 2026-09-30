@@ -1,7 +1,7 @@
 // Preparation des pull requests de repin du catalogue : modification de
 // data/scripts.json, analyse du code amont, titres et corps de PR.
 //
-// Tout ici est pur : pas de reseau, pas de git. tools/catalogue-pr.mjs
+// Tout ici est pur : pas de reseau, pas de git. tools/catalogue-pr.ts
 // orchestre, ce module calcule -- et c'est lui que les tests couvrent.
 //
 // L'analyse n'est pas une relecture. Elle pointe ce qu'un relecteur doit
@@ -12,15 +12,52 @@
 
 import { createHash } from 'node:crypto';
 
+import type { Ecart } from './greasyfork.ts';
+
 /** Prefixe des branches ouvertes par le bot. */
 export const BRANCH_PREFIX = 'catalogue/';
+
+/** Ce que le rendu lit d'un ecart : tout sauf la liste des versions. */
+export type EcartRendu = Omit<Ecart, 'versions' | 'catalogueUrl'>;
+
+export interface Marque {
+  id: string;
+  revision: string;
+}
+
+export interface HeaderChange {
+  cle: string;
+  ajouts: string[];
+  retraits: string[];
+}
+
+export interface SensitiveHit {
+  motif: string;
+  avant: number;
+  apres: number;
+}
+
+export interface Empreinte {
+  taille: number;
+  sha256: string;
+}
+
+export interface Analyse {
+  /** Absente quand l'auteur a supprime la revision epinglee. */
+  avant: Empreinte | undefined;
+  apres: Empreinte;
+  identique: boolean;
+  entete: HeaderChange[];
+  sensibles: SensitiveHit[];
+  domaines: string[];
+}
 
 // ---------------------------------------------------------------------------
 // Catalogue
 // ---------------------------------------------------------------------------
 
 /** URL du catalogue repincee sur une autre revision, le reste intact. */
-export const repinnedUrl = (url, from, to) => {
+export const repinnedUrl = (url: string, from: string, to: string): string => {
   const pattern = new RegExp(`([?&]version=)${from}(?=&|#|$)`);
 
   if (!pattern.test(url)) {
@@ -38,7 +75,7 @@ export const repinnedUrl = (url, from, to) => {
  * reserialisation a deja reecrit le fichier entier dans un commit de repin, et
  * rendu son diff illisible.
  */
-export const repin = (text, oldUrl, newUrl) => {
+export const repin = (text: string, oldUrl: string, newUrl: string): string => {
   const before = `"url": ${JSON.stringify(oldUrl)}`;
   const count = text.split(before).length - 1;
 
@@ -54,11 +91,11 @@ export const repin = (text, oldUrl, newUrl) => {
  * des accents (`séparationsujets`) : on les retire pour garder des noms de
  * branche sans surprise.
  */
-export const branchName = (id) =>
+export const branchName = (id: string): string =>
   BRANCH_PREFIX +
   id
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/\p{M}/gu, '')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
@@ -71,10 +108,10 @@ export const branchName = (id) =>
  * Le bot retrouve ses pull requests par ce commentaire cache, pas par le nom
  * de branche : il porte l'identifiant exact du script et la revision proposee.
  */
-export const marker = (id, revision) =>
+export const marker = (id: string, revision: string): string =>
   `<!-- catalogue-bot id=${encodeURIComponent(id)} revision=${revision} -->`;
 
-export const parseMarker = (body) => {
+export const parseMarker = (body: string | undefined): Marque | undefined => {
   const found = /<!-- catalogue-bot id=(\S+) revision=(\d+) -->/.exec(body ?? '');
   if (!found) return undefined;
 
@@ -86,11 +123,11 @@ export const parseMarker = (body) => {
  * fusion vaut refus de sa revision ; quand c'est le bot qui la ferme, faute
  * d'objet, il neutralise d'abord le marqueur pour ne pas passer pour un refus.
  */
-export const retireMarker = (body) =>
+export const retireMarker = (body: string | undefined): string =>
   (body ?? '').replace(/(<!-- catalogue-bot id=\S+ revision=\d+) -->/, '$1 sans-objet -->');
 
 /** Marqueur d'un commentaire, pour ne jamais poster deux fois le meme. */
-export const noteMarker = (key) => `<!-- catalogue-bot note=${key} -->`;
+export const noteMarker = (key: string): string => `<!-- catalogue-bot note=${key} -->`;
 
 // ---------------------------------------------------------------------------
 // Analyse du code amont
@@ -108,11 +145,11 @@ export const WATCHED_KEYS = [
   'run-at',
   'inject-into',
   'sandbox',
-];
+] as const;
 
 /** Directives de l'en-tete `==UserScript==`, par cle. */
-export const parseHeader = (code) => {
-  const header = new Map();
+export const parseHeader = (code: string | undefined): Map<string, string[]> => {
+  const header = new Map<string, string[]>();
   const block = /\/\/\s*==UserScript==([\s\S]*?)\/\/\s*==\/UserScript==/.exec(code ?? '');
   if (!block) return header;
 
@@ -128,7 +165,7 @@ export const parseHeader = (code) => {
 };
 
 /** Valeurs ajoutees ou retirees sur les directives surveillees. */
-export const headerChanges = (before, after) => {
+export const headerChanges = (before: string | undefined, after: string): HeaderChange[] => {
   const old = parseHeader(before);
   const next = parseHeader(after);
 
@@ -143,7 +180,7 @@ export const headerChanges = (before, after) => {
 };
 
 /** Motifs a regarder en priorite quand ils se multiplient. */
-export const SENSITIVE_PATTERNS = [
+export const SENSITIVE_PATTERNS: readonly { motif: string; regex: RegExp }[] = [
   { motif: 'fetch(', regex: /\bfetch\s*\(/g },
   { motif: 'XMLHttpRequest', regex: /\bXMLHttpRequest\b/g },
   { motif: 'GM_xmlhttpRequest', regex: /\bGM_xmlhttpRequest\b/g },
@@ -167,17 +204,18 @@ export const SENSITIVE_PATTERNS = [
   { motif: 'fromCharCode', regex: /\bfromCharCode\b/g },
 ];
 
-const count = (code, regex) => (code ?? '').match(regex)?.length ?? 0;
+const count = (code: string | undefined, regex: RegExp): number =>
+  (code ?? '').match(regex)?.length ?? 0;
 
 /** Motifs sensibles dont le nombre d'occurrences augmente. */
-export const sensitiveDelta = (before, after) =>
+export const sensitiveDelta = (before: string | undefined, after: string): SensitiveHit[] =>
   SENSITIVE_PATTERNS.flatMap(({ motif, regex }) => {
     const avant = count(before, regex);
     const apres = count(after, regex);
     return apres > avant ? [{ motif, avant, apres }] : [];
   });
 
-const hostsOf = (code) =>
+const hostsOf = (code: string | undefined): Set<string> =>
   new Set(
     [...(code ?? '').matchAll(/https?:\/\/([a-z0-9.-]+)/gi)].map(([, host = '']) =>
       host.toLowerCase(),
@@ -185,7 +223,7 @@ const hostsOf = (code) =>
   );
 
 /** Domaines cites par la nouvelle revision et absents de l'ancienne. */
-export const newDomains = (before, after) => {
+export const newDomains = (before: string | undefined, after: string): string[] => {
   const old = hostsOf(before);
 
   return [...hostsOf(after)]
@@ -194,7 +232,7 @@ export const newDomains = (before, after) => {
     .sort((a, b) => a.localeCompare(b));
 };
 
-const fingerprint = (code) => ({
+const fingerprint = (code: string): Empreinte => ({
   taille: Buffer.byteLength(code, 'utf8'),
   sha256: createHash('sha256').update(code).digest('hex'),
 });
@@ -204,7 +242,7 @@ const fingerprint = (code) => ({
  * undefined quand l'auteur a supprime la revision epinglee : il n'y a alors
  * rien a comparer.
  */
-export const analyse = (before, after) => {
+export const analyse = (before: string | undefined, after: string): Analyse => {
   const avant = before === undefined ? undefined : fingerprint(before);
   const apres = fingerprint(after);
 
@@ -222,10 +260,10 @@ export const analyse = (before, after) => {
 // Rendu
 // ---------------------------------------------------------------------------
 
-const dateFR = (iso) =>
+const dateFR = (iso: string | undefined): string =>
   iso === undefined ? '?' : new Date(iso).toLocaleDateString('fr-FR', { timeZone: 'UTC' });
 
-const tailleFR = (octets) =>
+const tailleFR = (octets: number | undefined): string =>
   octets === undefined
     ? '?'
     : `${(octets / 1024).toLocaleString('fr-FR', { maximumFractionDigits: 1 })} Ko`;
@@ -234,7 +272,7 @@ const tailleFR = (octets) =>
  * Titre de la PR, repris tel quel comme sujet du commit. Sans accents, comme
  * les autres commits du depot.
  */
-export const renderTitle = (ecart, resultat) => {
+export const renderTitle = (ecart: EcartRendu, resultat: Analyse): string => {
   const cible =
     ecart.de === ecart.vers ? `la revision ${ecart.derniereId} (${ecart.vers})` : ecart.vers;
 
@@ -244,7 +282,7 @@ export const renderTitle = (ecart, resultat) => {
   );
 };
 
-export const renderCommitMessage = (ecart, resultat) =>
+export const renderCommitMessage = (ecart: EcartRendu, resultat: Analyse): string =>
   [
     renderTitle(ecart, resultat),
     '',
@@ -253,13 +291,13 @@ export const renderCommitMessage = (ecart, resultat) =>
     ...(resultat.identique ? ['Contenu identique octet pour octet a la revision epinglee.'] : []),
     'Liste de secours regeneree.',
     '',
-    'Ouvert par tools/catalogue-pr.mjs : relire le code amont avant de fusionner.',
+    'Ouvert par tools/catalogue-pr.ts : relire le code amont avant de fusionner.',
     '',
   ].join('\n');
 
-const code = (value) => `\`${String(value).replaceAll('`', "'")}\``;
+const code = (value: string): string => `\`${value.replaceAll('`', "'")}\``;
 
-export const renderBody = (ecart, resultat) => {
+export const renderBody = (ecart: EcartRendu, resultat: Analyse): string => {
   const { avant, apres } = resultat;
   const greasyfork = `https://greasyfork.org/en/scripts/${ecart.scriptId}`;
   const lignes = [
@@ -342,16 +380,16 @@ export const renderBody = (ecart, resultat) => {
     '### Avant de fusionner',
     '',
     '- [ ] Diff relu : pas de comportement caché, pas d’envoi de données.',
-    `- [ ] \`section\` toujours juste (aujourd’hui ${(ecart.section ?? []).map(code).join(', ')}) : ` +
+    `- [ ] \`section\` toujours juste (aujourd’hui ${ecart.section.map(code).join(', ')}) : ` +
       'une nouvelle fonction peut viser un autre contexte (`game`, `forum`, `edc`, `wiki`).',
-    `- [ ] \`description\` et \`category\` (aujourd’hui ${(ecart.category ?? []).map(code).join(', ')}) toujours justes.`,
+    `- [ ] \`description\` et \`category\` (aujourd’hui ${ecart.category.map(code).join(', ')}) toujours justes.`,
     '- [ ] `experimental` toujours juste.',
     '',
     'Pour corriger l’entrée, ajouter un commit sur cette branche : le bot ne la réécrira plus. ' +
       'Fermer cette PR sans la fusionner refuse cette révision : le bot n’en rouvrira une qu’à la suivante.',
     '',
     '---',
-    '<sub>Ouverte par `tools/catalogue-pr.mjs`. Une nouvelle révision en amont met cette PR à jour ; ' +
+    '<sub>Ouverte par `tools/catalogue-pr.ts`. Une nouvelle révision en amont met cette PR à jour ; ' +
       'elle est fermée si le script n’est plus en retard.</sub>',
     '',
   );

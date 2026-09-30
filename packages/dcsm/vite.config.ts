@@ -16,7 +16,7 @@ const DDK_URL = `https://update.greasyfork.org/scripts/${DDK_SCRIPT_ID}/Dreadcas
 /**
  * Revision du DDK utilisee, figee par `?version=`.
  *
- * La chaine de publication la fournit : `tools/greasyfork.mjs` attend que
+ * La chaine de publication la fournit : `tools/greasyfork.ts` attend que
  * Greasy Fork ait synchronise la version attendue, puis rend son identifiant.
  * La valeur en dur ci-dessous n'est qu'un repli, pour qu'un build local sans
  * variable produise malgre tout un fichier installable -- elle designe la

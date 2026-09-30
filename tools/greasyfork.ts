@@ -2,9 +2,9 @@
 // Interroge l'API Greasy Fork pour retrouver l'URL epinglee d'une version
 // publiee.
 //
-//   node tools/greasyfork.mjs resolve  <scriptId> <version>
-//   node tools/greasyfork.mjs wait     <scriptId> <version> [--timeout=900] [--interval=20]
-//   node tools/greasyfork.mjs outdated [catalogue] [--json]
+//   node tools/greasyfork.ts resolve  <scriptId> <version>
+//   node tools/greasyfork.ts wait     <scriptId> <version> [--timeout=900] [--interval=20]
+//   node tools/greasyfork.ts outdated [catalogue] [--json]
 //
 // Les deux impriment l'identifiant numerique de version, celui qui sert de
 // `?version=NNNN` dans une URL de mise a jour. On rend cet identifiant plutot
@@ -22,18 +22,19 @@
 // la derniere publiee par son auteur. Les URL du catalogue portent un
 // `?version=NNNN` : sans cette veille, la correction qu'un auteur tiers publie
 // n'atteint jamais les joueurs, et rien ne le signale. `--json` rend les ecarts
-// sous une forme lisible par un autre outil (voir tools/catalogue-pr.mjs).
+// sous une forme lisible par un autre outil (voir tools/catalogue-pr.ts).
 //
-// N'utilise que la bibliotheque standard.
+// N'utilise que la bibliotheque standard. Node execute ce fichier tel quel :
+// pas d'installation, pas de compilation.
 
-import { fetchVersions, outdated, pinnedId, sleep } from './lib/greasyfork.mjs';
+import { fetchVersions, outdated, pinnedId, sleep } from './lib/greasyfork.ts';
 
-const fail = (message) => {
+function fail(message: string): never {
   console.error(`greasyfork: ${message}`);
   process.exit(1);
-};
+}
 
-const flag = (name, fallback) => {
+const flag = (name: string, fallback: number): number => {
   const found = process.argv.find((argument) => argument.startsWith(`--${name}=`));
   if (found === undefined) return fallback;
 
@@ -45,8 +46,8 @@ const flag = (name, fallback) => {
  * Identifiant numerique de la version demandee, ou undefined si elle n'est pas
  * publiee.
  */
-const resolve = async (scriptId, version) => {
-  const match = (await fetchVersions(scriptId)).find((entry) => entry?.version === version);
+const resolve = async (scriptId: string, version: string): Promise<string | undefined> => {
+  const match = (await fetchVersions(scriptId)).find((entry) => entry.version === version);
 
   if (typeof match?.code_url !== 'string') return undefined;
 
@@ -69,7 +70,7 @@ if (command !== 'resolve' && command !== 'wait' && command !== 'outdated') {
 
 if (command === 'outdated') {
   const { ecarts, horsGreasyFork, erreurs } = await outdated(scriptId ?? 'data/scripts.json').catch(
-    (error) => fail(String(error)),
+    (error: unknown) => fail(String(error)),
   );
 
   if (process.argv.includes('--json')) {
@@ -95,11 +96,11 @@ if (command === 'outdated') {
 }
 
 if (!scriptId || !version) {
-  fail(`usage : node tools/greasyfork.mjs ${command} <scriptId> <version>`);
+  fail(`usage : node tools/greasyfork.ts ${command} <scriptId> <version>`);
 }
 
 if (command === 'resolve') {
-  const id = await resolve(scriptId, version).catch((error) => fail(String(error)));
+  const id = await resolve(scriptId, version).catch((error: unknown) => fail(String(error)));
 
   if (id === undefined) {
     fail(`la version ${version} du script ${scriptId} n'est pas publiee.`);
@@ -120,7 +121,7 @@ console.error(
 for (;;) {
   // Une erreur reseau ponctuelle ne doit pas interrompre l'attente : seul le
   // delai maximal decide.
-  const id = await resolve(scriptId, version).catch((error) => {
+  const id = await resolve(scriptId, version).catch((error: unknown) => {
     console.error(`greasyfork: tentative en echec, on reessaie (${String(error)}).`);
     return undefined;
   });

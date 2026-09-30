@@ -2,7 +2,7 @@
 // Ouvre une pull request par script du catalogue en retard sur son auteur,
 // a la maniere de Dependabot.
 //
-//   node tools/catalogue-pr.mjs [--dry-run] [--catalogue=data/scripts.json]
+//   node tools/catalogue-pr.ts [--dry-run] [--catalogue=data/scripts.json]
 //
 // Pour chaque script dont la revision epinglee n'est plus la derniere publiee :
 //
@@ -28,13 +28,15 @@
 // RELEASE_TOKEN (voir .github/workflows/catalogue.yml).
 //
 // N'utilise que la bibliotheque standard, plus le rendu de la liste de secours
-// de @dreadcast/registry, qui n'en demande pas davantage.
+// de @dreadcast/registry, qui n'en demande pas davantage. Node execute ce
+// fichier tel quel : pas d'installation, pas de compilation.
 
 import { execFileSync } from 'node:child_process';
 import { appendFileSync, readFileSync, writeFileSync } from 'node:fs';
 
 import { renderFallback, writeFallback } from '../packages/registry/src/fallback.ts';
-import { fetchRevision, outdated } from './lib/greasyfork.mjs';
+import type { Registry } from '../packages/registry/src/schema.ts';
+import { fetchRevision, outdated, type Ecart } from './lib/greasyfork.ts';
 import {
   analyse,
   BRANCH_PREFIX,
@@ -47,7 +49,8 @@ import {
   repin,
   repinnedUrl,
   retireMarker,
-} from './lib/revue.mjs';
+  type Marque,
+} from './lib/revue.ts';
 
 const LABEL = 'catalogue';
 const FALLBACK = 'packages/dcsm/src/fallback.ts';
@@ -59,7 +62,9 @@ const CATALOGUE =
   process.argv.find((argument) => argument.startsWith('--catalogue='))?.slice(12) ??
   'data/scripts.json';
 
-const log = (message) => console.error(`catalogue-pr: ${message}`);
+const log = (message: string): void => {
+  console.error(`catalogue-pr: ${message}`);
+};
 
 // Les branches sont faites depuis `origin/main` : un autre catalogue n'a de
 // sens que pour un essai a blanc.
@@ -68,21 +73,46 @@ if (!DRY_RUN && CATALOGUE !== 'data/scripts.json') {
   process.exit(2);
 }
 
-/** Resume ecrit dans le recapitulatif du job GitHub Actions, s'il y en a un. */
-const resume = [];
+/** PR du bot, telle que `gh pr list` la rend, et son marqueur. */
+interface BotPr {
+  number: number;
+  headRefName: string;
+  body: string;
+  mergeable: string;
+  marque: Marque;
+}
 
-const run = (command, args, input) =>
+interface Commit {
+  authors?: { login?: string; email?: string; name?: string }[];
+}
+
+interface Details {
+  commits?: Commit[];
+  comments?: { body?: string }[];
+}
+
+/** Ce qu'un passage sait avant de traiter les scripts un a un. */
+interface Contexte {
+  labelDisponible: boolean;
+  /** Revisions refusees, `<id>@<revision>` -> numero de la PR fermee. */
+  refusees: Map<string, number>;
+}
+
+/** Resume ecrit dans le recapitulatif du job GitHub Actions, s'il y en a un. */
+const resume: string[] = [];
+
+const run = (command: string, args: string[], input?: string): string =>
   execFileSync(command, args, {
     encoding: 'utf8',
-    input,
+    ...(input === undefined ? {} : { input }),
     stdio: [input === undefined ? 'ignore' : 'pipe', 'pipe', 'inherit'],
   }).trim();
 
-const git = (...args) => run('git', args);
-const gh = (...args) => run('gh', args);
+const git = (...args: string[]): string => run('git', args);
+const gh = (...args: string[]): string => run('gh', args);
 
 /** Commande qui modifie quelque chose : jamais en dry-run. */
-const write = (command, args, input) => {
+const write = (command: string, args: string[], input?: string): string => {
   if (DRY_RUN) {
     log(`[dry-run] ${command} ${args.join(' ')}`);
     return '';
@@ -91,7 +121,7 @@ const write = (command, args, input) => {
 };
 
 /**
- * PR ouvertes par le bot, indexees par identifiant de script.
+ * PR du bot dans un etat donne, avec leur marqueur.
  *
  * Reconnues a leur branche `catalogue/*` et a leur marqueur, pas au label :
  * celui-ci n'est qu'un confort, que le jeton n'a peut-etre pas le droit de
@@ -101,89 +131,58 @@ const write = (command, args, input) => {
  * depasser a GitHub sa limite de noeuds GraphQL. `details` les lit PR par PR,
  * seulement quand il faut decider.
  */
-const botPullRequests = () => {
-  let raw;
+const botPullRequests = <T extends { headRefName: string; body: string }>(
+  state: 'open' | 'closed',
+  fields: string,
+): (T & { marque: Marque })[] => {
+  let raw: string;
 
   try {
-    raw = gh(
-      'pr',
-      'list',
-      '--state',
-      'open',
-      '--limit',
-      '200',
-      '--json',
-      'number,headRefName,body,mergeable',
-    );
+    raw = gh('pr', 'list', '--state', state, '--limit', '200', '--json', fields);
   } catch (error) {
     if (DRY_RUN) {
-      log(`PR existantes illisibles, on fait comme s'il n'y en avait pas (${String(error)}).`);
-      return new Map();
+      log(`PR ${state} illisibles, on fait comme s'il n'y en avait pas (${String(error)}).`);
+      return [];
     }
     throw error;
   }
 
-  const prs = new Map();
-
-  for (const pr of JSON.parse(raw)) {
+  return (JSON.parse(raw) as T[]).flatMap((pr) => {
     const marque = parseMarker(pr.body);
-    if (marque && pr.headRefName?.startsWith(BRANCH_PREFIX)) prs.set(marque.id, { ...pr, marque });
-  }
-
-  return prs;
+    return marque && pr.headRefName.startsWith(BRANCH_PREFIX) ? [{ ...pr, marque }] : [];
+  });
 };
 
 /**
  * Revisions refusees : une PR du bot fermee sans etre fusionnee. Comme avec
  * Dependabot, fermer une PR ecarte cette revision ; seule une revision plus
- * recente en rouvre une. Cles de la forme `<id>@<revision>`.
+ * recente en rouvre une.
  */
-const rejectedRevisions = () => {
-  let raw;
-
-  try {
-    raw = gh(
-      'pr',
-      'list',
-      '--state',
+const rejectedRevisions = (): Map<string, number> =>
+  new Map(
+    botPullRequests<{ number: number; headRefName: string; body: string; mergedAt: string | null }>(
       'closed',
-      '--limit',
-      '200',
-      '--json',
       'number,headRefName,body,mergedAt',
-    );
-  } catch (error) {
-    if (DRY_RUN) return new Map();
-    throw error;
-  }
+    )
+      .filter((pr) => !pr.mergedAt)
+      .map((pr) => [`${pr.marque.id}@${pr.marque.revision}`, pr.number]),
+  );
 
-  const refus = new Map();
-
-  for (const pr of JSON.parse(raw)) {
-    const marque = parseMarker(pr.body);
-    if (!marque || !pr.headRefName?.startsWith(BRANCH_PREFIX) || pr.mergedAt) continue;
-    refus.set(`${marque.id}@${marque.revision}`, pr.number);
-  }
-
-  return refus;
-};
-
-const isBot = (commit) =>
+const isBot = (commit: Commit): boolean =>
   (commit.authors ?? []).every((author) =>
-    [author.login, author.email, author.name].some((value) =>
-      String(value ?? '').includes(BOT_NAME),
-    ),
+    [author.login, author.email, author.name].some((value) => (value ?? '').includes(BOT_NAME)),
   );
 
 /** Commits et commentaires d'une PR. */
-const details = (pr) =>
-  JSON.parse(gh('pr', 'view', String(pr.number), '--json', 'commits,comments'));
+const details = (pr: BotPr): Details =>
+  JSON.parse(gh('pr', 'view', String(pr.number), '--json', 'commits,comments')) as Details;
 
 /** Un humain a pousse sur la branche : le bot ne doit plus la reecrire. */
-const touchedByHand = (pr) => (details(pr).commits ?? []).some((commit) => !isBot(commit));
+const touchedByHand = (pr: BotPr): boolean =>
+  (details(pr).commits ?? []).some((commit) => !isBot(commit));
 
 /** Poste un commentaire, une seule fois par cle. */
-const noteOnce = (pr, key, text) => {
+const noteOnce = (pr: BotPr, key: string, text: string): void => {
   const marque = noteMarker(key);
   if ((details(pr).comments ?? []).some((comment) => comment.body?.includes(marque))) return;
 
@@ -191,7 +190,7 @@ const noteOnce = (pr, key, text) => {
 };
 
 /** Branche refaite depuis main, avec le repin et la liste de secours. */
-const commitRepin = (ecart, message) => {
+const commitRepin = (ecart: Ecart, message: string): string => {
   const branche = branchName(ecart.id);
 
   // `-f` : un script en echec a mi-parcours ne doit pas laisser ses
@@ -201,7 +200,7 @@ const commitRepin = (ecart, message) => {
   const nouvelle = repinnedUrl(ecart.catalogueUrl, ecart.epingleeId, ecart.derniereId);
   const texte = repin(readFileSync(CATALOGUE, 'utf8'), ecart.catalogueUrl, nouvelle);
   writeFileSync(CATALOGUE, texte, 'utf8');
-  writeFallback(renderFallback(JSON.parse(texte)));
+  writeFallback(renderFallback(JSON.parse(texte) as Registry));
 
   git('add', CATALOGUE, FALLBACK);
   run(
@@ -214,9 +213,9 @@ const commitRepin = (ecart, message) => {
   return branche;
 };
 
-const traiter = async (ecart, pr) => {
+const traiter = async (ecart: Ecart, pr: BotPr | undefined, contexte: Contexte): Promise<void> => {
   const revisionChangee = pr !== undefined && pr.marque.revision !== ecart.derniereId;
-  const refus = refusees.get(`${ecart.id}@${ecart.derniereId}`);
+  const refus = contexte.refusees.get(`${ecart.id}@${ecart.derniereId}`);
 
   if (pr === undefined && refus !== undefined) {
     log(`${ecart.nom} : revision ${ecart.derniereId} refusee (PR #${refus} fermee).`);
@@ -303,7 +302,7 @@ const traiter = async (ecart, pr) => {
       branche,
       '--title',
       titre,
-      ...(labelDisponible ? ['--label', LABEL] : []),
+      ...(contexte.labelDisponible ? ['--label', LABEL] : []),
       '--body-file',
       '-',
     ],
@@ -335,24 +334,29 @@ try {
     '--color',
     '5319e7',
     '--description',
-    'Repin automatique du catalogue (tools/catalogue-pr.mjs)',
+    'Repin automatique du catalogue (tools/catalogue-pr.ts)',
   ]);
 } catch (error) {
   labelDisponible = false;
   log(`label '${LABEL}' indisponible, PR ouvertes sans (${String(error)}).`);
 }
 
-const prs = botPullRequests();
-const refusees = rejectedRevisions();
+const prs = new Map(
+  botPullRequests<Omit<BotPr, 'marque'>>('open', 'number,headRefName,body,mergeable').map((pr) => [
+    pr.marque.id,
+    pr,
+  ]),
+);
+const contexte: Contexte = { labelDisponible, refusees: rejectedRevisions() };
 const catalogueIds = new Set(
-  JSON.parse(readFileSync(CATALOGUE, 'utf8')).map((script) => script.id),
+  (JSON.parse(readFileSync(CATALOGUE, 'utf8')) as Registry).map((script) => script.id),
 );
 let echecs = 0;
 
 try {
   for (const ecart of ecarts) {
     try {
-      await traiter(ecart, prs.get(ecart.id));
+      await traiter(ecart, prs.get(ecart.id), contexte);
     } catch (error) {
       echecs += 1;
       log(`${ecart.nom} : echec, ${String(error)}`);

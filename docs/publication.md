@@ -71,7 +71,7 @@ publié pour la première fois demande donc quelques gestes manuels :
 
 1. Synchroniser le nouveau script à la main sur sa fiche Greasy Fork.
 2. Si le gestionnaire en dépend, relever la révision attribuée :
-   `node tools/greasyfork.mjs resolve <scriptId> <version>`, et la reporter dans
+   `node tools/greasyfork.ts resolve <scriptId> <version>`, et la reporter dans
    la constante correspondante de sa configuration Vite.
 
 C'est cette seconde étape, omise lors de la bascule vers la version TypeScript,
@@ -92,7 +92,7 @@ Greasy Fork l'ignore (voir plus bas, « Le fichier doit apparaître en
    puis synchroniser à la main. Les publications suivantes modifient le fichier,
    et le webhook prend le relais.
 3. Relever la révision attribuée,
-   `node tools/greasyfork.mjs resolve <scriptId> <version>`, et pointer l'entrée
+   `node tools/greasyfork.ts resolve <scriptId> <version>`, et pointer l'entrée
    de `data/scripts.json` sur
    `https://update.greasyfork.org/scripts/<scriptId>/<Nom>.user.js?version=NNNN`.
    Régénérer la liste de secours (`vp run --filter @dreadcast/registry sync`) et
@@ -139,7 +139,7 @@ dès sa création, plutôt que rempli par la première exécution.
 
 **Le DDK part avant le gestionnaire.** Celui-ci l'épingle par `?version=NNNN`,
 identifiant que Greasy Fork n'attribue qu'après avoir synchronisé. Le workflow
-attend donc, via `tools/greasyfork.mjs`, que la version attendue apparaisse dans
+attend donc, via `tools/greasyfork.ts`, que la version attendue apparaisse dans
 l'API avant de construire le gestionnaire. Publier le gestionnaire d'abord
 livrerait un fichier réclamant l'ancien DDK, dont l'API a changé : il ne
 démarrerait pas. Les scripts de `scripts/` suivent le gestionnaire, épinglés
@@ -150,7 +150,7 @@ sur la même révision.
 Les scripts tiers de `data/scripts.json` sont épinglés sur une révision Greasy
 Fork (`?version=NNNN`). Chaque jour, `.github/workflows/catalogue.yml` compare
 chaque révision épinglée à la dernière publiée par son auteur, et
-`tools/catalogue-pr.mjs` ouvre une **pull request par script en retard**, à la
+`tools/catalogue-pr.ts` ouvre une **pull request par script en retard**, à la
 manière de Dependabot : branche `catalogue/<id>`, URL repincée, liste de
 secours régénérée, et un rapport d'aide à la relecture (changements d'en-tête,
 motifs sensibles en hausse, nouveaux domaines, lien vers le diff Greasy Fork,
@@ -182,7 +182,7 @@ Essai à blanc, qui n'ouvre ni ne modifie rien :
 gh workflow run catalogue.yml -f dry_run=true
 ```
 
-En local : `node tools/catalogue-pr.mjs --dry-run`, avec `--catalogue=<fichier>`
+En local : `node tools/catalogue-pr.ts --dry-run`, avec `--catalogue=<fichier>`
 pour travailler sur une copie du catalogue.
 
 > Sur `update.greasyfork.org`, la forme `…/<nom>.user.js?version=N` ignore `N`

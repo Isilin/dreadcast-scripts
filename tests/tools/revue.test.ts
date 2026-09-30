@@ -13,7 +13,7 @@ import {
   repinnedUrl,
   retireMarker,
   sensitiveDelta,
-} from '../../tools/lib/revue.mjs';
+} from '../../tools/lib/revue.ts';
 
 const OLD = 'https://update.greasyfork.org/scripts/595206/Agenda.user.js?version=1939188';
 const NEW = 'https://update.greasyfork.org/scripts/595206/Agenda.user.js?version=1943170';

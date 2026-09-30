@@ -2,10 +2,7 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "types": ["node"],
-    "allowImportingTsExtensions": true,
-    // Les tests de tests/tools importent les modules .mjs de tools/ : leurs
-    // types sont inferes du code, sans fichier de declaration a tenir a jour.
-    "allowJs": true
+    "allowImportingTsExtensions": true
   },
-  "include": ["tests/**/*.ts", "tools/**/*.mjs", "vite.config.ts"]
+  "include": ["tests/**/*.ts", "tools/**/*.ts", "tools/**/*.mjs", "vite.config.ts"]
 }

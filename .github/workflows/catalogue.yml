@@ -12,7 +12,7 @@ name: Veille sur le catalogue
 # un job qui rougit tous les jours finit ignoré, une issue se traite.
 #
 # Le second ouvre une pull request par script, à la manière de Dependabot
-# (tools/catalogue-pr.mjs) : repin, liste de secours régénérée, et un rapport
+# (tools/catalogue-pr.ts) : repin, liste de secours régénérée, et un rapport
 # d'aide à la relecture. Rien n'est fusionné automatiquement : le catalogue
 # engage la responsabilité du projet, et fusionner déploie.
 
@@ -138,4 +138,4 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
           DRY_RUN: ${{ inputs.dry_run && '--dry-run' || '' }}
-        run: node tools/catalogue-pr.mjs $DRY_RUN
+        run: node tools/catalogue-pr.ts $DRY_RUN
