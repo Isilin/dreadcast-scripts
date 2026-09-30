@@ -11,7 +11,7 @@
     }
   },
   "scripts": {
-    "extract": "node ../../tools/extract-game-api.mjs"
+    "extract": "node ../../tools/extract-game-api.ts"
   },
   "dependencies": {
     "@types/jquery": "catalog:"

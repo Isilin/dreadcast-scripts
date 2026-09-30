@@ -2,21 +2,24 @@
 // Sert les userscripts construits, pour les installer dans un gestionnaire sans
 // passer par Greasy Fork.
 //
-//   node tools/serve-dist.mjs [port]
+//   node tools/serve-dist.ts [port]
 //
 // N'utilise que la bibliotheque standard : aucune dependance a installer, et le
-// serveur demarre meme sans node_modules.
+// serveur demarre meme sans node_modules. Node execute ce fichier tel quel :
+// pas de compilation.
 
 import { createReadStream, existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { dirname, extname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import type { Registry } from '../packages/registry/src/schema.ts';
+
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const WORKSPACES = ['packages', 'scripts'].map((nom) => join(ROOT, nom));
 const PORT = Number.parseInt(process.argv[2] ?? '8720', 10);
 
-const TYPES = {
+const TYPES: Record<string, string> = {
   '.js': 'text/javascript; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
   '.html': 'text/html; charset=utf-8',
@@ -26,8 +29,8 @@ const TYPES = {
  * Fichiers servis : <espace>/<nom>/dist/<fichier> devient /<fichier>, pour
  * `packages/` comme pour `scripts/`.
  */
-const collect = () => {
-  const files = new Map();
+const collect = (): Map<string, string> => {
+  const files = new Map<string, string>();
 
   for (const workspace of WORKSPACES) {
     if (!existsSync(workspace)) continue;
@@ -56,19 +59,21 @@ const CATALOGUE = join(ROOT, 'data', 'scripts.json');
  * Scripts de `scripts/` a substituer dans le catalogue : identifiant du
  * catalogue (`dreadcast.catalogueId` de leur package.json) -> fichier servi.
  */
-const localScripts = () => {
-  const found = new Map();
+const localScripts = (): Map<string, string> => {
+  const found = new Map<string, string>();
   if (!existsSync(SCRIPTS)) return found;
 
   for (const pkg of readdirSync(SCRIPTS)) {
     const manifest = join(SCRIPTS, pkg, 'package.json');
     if (!existsSync(manifest)) continue;
 
-    const id = JSON.parse(readFileSync(manifest, 'utf8')).dreadcast?.catalogueId;
+    const id = (
+      JSON.parse(readFileSync(manifest, 'utf8')) as { dreadcast?: { catalogueId?: unknown } }
+    ).dreadcast?.catalogueId;
     const dist = join(SCRIPTS, pkg, 'dist');
-    const file = [...files.keys()].find(
-      (name) => name.endsWith('.user.js') && files.get(name).startsWith(dist),
-    );
+    const file = [...files.entries()].find(
+      ([name, path]) => name.endsWith('.user.js') && path.startsWith(dist),
+    )?.[0];
 
     if (typeof id === 'string' && file !== undefined) found.set(id, file);
   }
@@ -82,14 +87,13 @@ const localScripts = () => {
  * sert `main` -- la version publiee, pas celle a verifier. Relu a chaque
  * requete, pour suivre les modifications du catalogue.
  */
-const localCatalogue = () => {
+const localCatalogue = (): Registry => {
   const substitutions = localScripts();
 
-  return JSON.parse(readFileSync(CATALOGUE, 'utf8')).map((entry) =>
-    substitutions.has(entry.id)
-      ? { ...entry, url: `http://localhost:${PORT}${substitutions.get(entry.id)}` }
-      : entry,
-  );
+  return (JSON.parse(readFileSync(CATALOGUE, 'utf8')) as Registry).map((entry) => {
+    const file = substitutions.get(entry.id);
+    return file === undefined ? entry : { ...entry, url: `http://localhost:${PORT}${file}` };
+  });
 };
 
 if (files.size === 0) {

@@ -39,7 +39,7 @@ cinquante scripts publiés utilisent.
 3. **Construire et servir** :
 
    ```bash
-   vp run -r build && node tools/serve-dist.mjs
+   vp run -r build && node tools/serve-dist.ts
    ```
 
    Puis, dans un second terminal, reconstruire le gestionnaire contre le DDK

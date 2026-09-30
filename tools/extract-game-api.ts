@@ -2,7 +2,7 @@
 // Extrait la surface d'API du jeu depuis le bundle minifie recupere dans
 // vendor/, et genere un point de depart pour @dreadcast/game-types.
 //
-//   node tools/extract-game-api.mjs
+//   node tools/extract-game-api.ts
 //
 // Le resultat n'est PAS une source de verite : les signatures sont inconnues et
 // sortent en `(...args: any[]) => any`. On affine a la main, dans
@@ -34,7 +34,8 @@ const NATIVES = new Set([
 
 // Les noms d'un ou deux caracteres sont des variables locales minifiees, pas des
 // classes du jeu.
-const isGameClass = (name) => /^[A-Z][A-Za-z0-9_]{2,}$/.test(name) && !NATIVES.has(name);
+const isGameClass = (name: string): boolean =>
+  /^[A-Z][A-Za-z0-9_]{2,}$/.test(name) && !NATIVES.has(name);
 
 if (!existsSync(SOURCE)) {
   console.error(
@@ -47,13 +48,15 @@ if (!existsSync(SOURCE)) {
 
 const source = readFileSync(SOURCE, 'utf8');
 
-const classes = new Map();
-for (const [, name, member] of source.matchAll(
+const classes = new Map<string, Set<string>>();
+for (const [, name = '', member = ''] of source.matchAll(
   /\b([A-Za-z_$][A-Za-z0-9_$]*)\.prototype\.([A-Za-z_$][A-Za-z0-9_$]*)\s*=/g,
 )) {
   if (!isGameClass(name)) continue;
-  if (!classes.has(name)) classes.set(name, new Set());
-  classes.get(name).add(member);
+
+  const members = classes.get(name) ?? new Set<string>();
+  members.add(member);
+  classes.set(name, members);
 }
 
 if (classes.size === 0) {
@@ -75,7 +78,7 @@ const body = sorted
 
 const header = [
   '/* eslint-disable */',
-  '// Genere par tools/extract-game-api.mjs -- ne pas editer a la main.',
+  '// Genere par tools/extract-game-api.ts -- ne pas editer a la main.',
   `// Source : vendor/dreadcast.net/${basename(SOURCE)}`,
   `// ${sorted.length} classes, ${sorted.reduce((n, [, m]) => n + m.size, 0)} methodes.`,
   '',

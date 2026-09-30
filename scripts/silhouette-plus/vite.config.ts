@@ -21,7 +21,7 @@ const DDK_VERSION = process.env['SILHOUETTE_PLUS_DDK_VERSION'] ?? '1941660';
 
 /**
  * Build de verification locale : `SILHOUETTE_PLUS_LOCAL_DDK` contient l'URL du
- * DDK servi par `node tools/serve-dist.mjs`. L'horodatage force les
+ * DDK servi par `node tools/serve-dist.ts`. L'horodatage force les
  * gestionnaires a relire un `@require` qu'ils mettent en cache.
  */
 const localDdk = process.env['SILHOUETTE_PLUS_LOCAL_DDK'];

@@ -1,5 +1,5 @@
 /* eslint-disable */
-// Genere par tools/extract-game-api.mjs -- ne pas editer a la main.
+// Genere par tools/extract-game-api.ts -- ne pas editer a la main.
 // Source : vendor/dreadcast.net/ingame.min.4.15.3.js
 // 47 classes, 884 methodes.
 
@@ -301,7 +301,6 @@ declare class Deck {
 }
 
 declare class Engine {
-  RestartTuto(...args: any[]): any;
   accordion(...args: any[]): any;
   activeDecompte(...args: any[]): any;
   activeEvilBox(...args: any[]): any;
@@ -351,8 +350,8 @@ declare class Engine {
   checkNames(...args: any[]): any;
   checkText(...args: any[]): any;
   choixAssurance(...args: any[]): any;
-  clearATimeOut(...args: any[]): any;
   clearAnInterval(...args: any[]): any;
+  clearATimeOut(...args: any[]): any;
   clearCtl(...args: any[]): any;
   clearLightBox(...args: any[]): any;
   clearMainArea(...args: any[]): any;
@@ -393,8 +392,8 @@ declare class Engine {
   findPosStart(...args: any[]): any;
   findPosStop(...args: any[]): any;
   formulaire(...args: any[]): any;
-  getATimeOut(...args: any[]): any;
   getAnInterval(...args: any[]): any;
+  getATimeOut(...args: any[]): any;
   getCtl(...args: any[]): any;
   getCtlById(...args: any[]): any;
   getDraggablePosition(...args: any[]): any;
@@ -430,13 +429,14 @@ declare class Engine {
   regenerateDataBox(...args: any[]): any;
   replaceDataBox(...args: any[]): any;
   resetWrapperWidth(...args: any[]): any;
+  RestartTuto(...args: any[]): any;
   sauvegarderPerso(...args: any[]): any;
   saveDraggablePosition(...args: any[]): any;
   screenshot(...args: any[]): any;
-  setATimeOut(...args: any[]): any;
   setAction(...args: any[]): any;
   setActionPrecision(...args: any[]): any;
   setAnInterval(...args: any[]): any;
+  setATimeOut(...args: any[]): any;
   setCtl(...args: any[]): any;
   setData(...args: any[]): any;
   setIB(...args: any[]): any;
@@ -457,8 +457,6 @@ declare class Engine {
   transfertCompteBancaire(...args: any[]): any;
   triListe(...args: any[]): any;
   unsetCtl(...args: any[]): any;
-  upNombre(...args: any[]): any;
-  upNombreCounter(...args: any[]): any;
   updateBox(...args: any[]): any;
   updateBuildingInfos(...args: any[]): any;
   updateMenu(...args: any[]): any;
@@ -466,6 +464,8 @@ declare class Engine {
   updateQueteTitre(...args: any[]): any;
   updateToolTip(...args: any[]): any;
   upgradeCompteBancaire(...args: any[]): any;
+  upNombre(...args: any[]): any;
+  upNombreCounter(...args: any[]): any;
   useAjaxReturn(...args: any[]): any;
   useKey(...args: any[]): any;
   validation(...args: any[]): any;
@@ -759,10 +759,10 @@ declare class MenuInventaire {
   start(...args: any[]): any;
   stopCraft(...args: any[]): any;
   timeDown(...args: any[]): any;
-  upNombre(...args: any[]): any;
   updateCaseObjet(...args: any[]): any;
   updateEffectsCaseObjet(...args: any[]): any;
   updateEffectsInventaire(...args: any[]): any;
+  upNombre(...args: any[]): any;
 }
 
 declare class MenuLogement {
@@ -810,12 +810,19 @@ declare class MenuMessagerie {
 declare class MenuStatistiques {
   downNombre(...args: any[]): any;
   keyEvent(...args: any[]): any;
-  upNombre(...args: any[]): any;
   updateMedecine(...args: any[]): any;
   updateStat(...args: any[]): any;
+  upNombre(...args: any[]): any;
 }
 
 declare class MenuTravail {
+  _getRpContentContainer(...args: any[]): any;
+  _truncateWithButton(...args: any[]): any;
+  abandonLieu(...args: any[]): any;
+  acheterBatiment(...args: any[]): any;
+  acheterLieu(...args: any[]): any;
+  acheterPropriete(...args: any[]): any;
+  addResponsable(...args: any[]): any;
   AITLcensure(...args: any[]): any;
   AITLdeleteCitation(...args: any[]): any;
   AITLdeleteTips(...args: any[]): any;
@@ -824,13 +831,6 @@ declare class MenuTravail {
   AITLpublieArticle(...args: any[]): any;
   AITLpublieCitation(...args: any[]): any;
   AITLpublieTips(...args: any[]): any;
-  _getRpContentContainer(...args: any[]): any;
-  _truncateWithButton(...args: any[]): any;
-  abandonLieu(...args: any[]): any;
-  acheterBatiment(...args: any[]): any;
-  acheterLieu(...args: any[]): any;
-  acheterPropriete(...args: any[]): any;
-  addResponsable(...args: any[]): any;
   ameliorerLieu(...args: any[]): any;
   analysePlace(...args: any[]): any;
   askForAGroupJob(...args: any[]): any;
@@ -840,8 +840,8 @@ declare class MenuTravail {
   buyLicence(...args: any[]): any;
   buyProduct(...args: any[]): any;
   changeBudget(...args: any[]): any;
-  changeDG(...args: any[]): any;
   changeDePage(...args: any[]): any;
+  changeDG(...args: any[]): any;
   changeFormatCercle(...args: any[]): any;
   changeQuantite(...args: any[]): any;
   changeQuantiteGroup(...args: any[]): any;
@@ -930,11 +930,11 @@ declare class Navigator {
   place_devant(...args: any[]): any;
   place_window(...args: any[]): any;
   removeMenu(...args: any[]): any;
+  set_menu(...args: any[]): any;
   setEnregistrement(...args: any[]): any;
   setMenu(...args: any[]): any;
   setNewOnTop(...args: any[]): any;
   setOnTop(...args: any[]): any;
-  set_menu(...args: any[]): any;
   toggle_menu(...args: any[]): any;
 }
 

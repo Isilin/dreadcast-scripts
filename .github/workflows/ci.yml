@@ -60,6 +60,19 @@ jobs:
 
       - run: vp install --frozen-lockfile
 
+      # release.yml lance tools/greasyfork.ts avec ce même `node`, celui de
+      # Vite+, entre la publication du DDK et celle du gestionnaire : s'il ne
+      # savait pas exécuter du TypeScript, la publication casserait à mi-chemin.
+      # Hors ligne, pour ne pas dépendre de Greasy Fork.
+      - name: Node exécute les outils TypeScript
+        run: |
+          node --version
+          node --input-type=module -e "
+            const { branchName } = await import('./tools/lib/revue.ts');
+            if (branchName('séparationsujets') !== 'catalogue/separationsujets') process.exit(1);
+          "
+          node tools/greasyfork.ts inconnue 2>&1 | grep -q 'commande inconnue'
+
       # Une seule passe : formatage, lint et vérification de types.
       - run: vp check
 

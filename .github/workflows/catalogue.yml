@@ -8,13 +8,28 @@ name: Veille sur le catalogue
 # - une correction publiée en amont n'atteint jamais personne, puisque chaque
 #   entrée est figée sur une révision précise.
 #
-# Le résultat part dans une issue plutôt que dans un échec d'intégration : un
-# job qui rougit toutes les semaines finit ignoré, une issue se traite.
+# Le premier cas part dans une issue plutôt que dans un échec d'intégration :
+# un job qui rougit tous les jours finit ignoré, une issue se traite.
+#
+# Le second ouvre une pull request par script, à la manière de Dependabot
+# (tools/catalogue-pr.ts) : repin, liste de secours régénérée, et un rapport
+# d'aide à la relecture. Rien n'est fusionné automatiquement : le catalogue
+# engage la responsabilité du projet, et fusionner déploie.
 
 on:
   schedule:
-    - cron: '17 6 * * 1'
+    - cron: '17 6 * * *'
+  # Après une fusion, les autres pull requests sont recalées sur `main` et
+  # celles devenues sans objet fermées, sans attendre le lendemain.
+  push:
+    branches: [main]
+    paths: ['data/scripts.json']
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Essai à blanc : n'ouvre ni ne modifie aucune pull request, ne touche pas à l'issue"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -25,17 +40,18 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  TITRE: 'Catalogue : scripts à vérifier'
+  TITRE: 'Catalogue : scripts injoignables'
 
 jobs:
   veille:
+    if: ${{ !inputs.dry_run }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      # Les deux outils n'utilisent que la bibliothèque standard : pas
-      # d'installation de dépendances, pas de toolchain.
+      # L'outil n'utilise que la bibliothèque standard : pas d'installation de
+      # dépendances, pas de toolchain.
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version-file: .node-version
@@ -46,17 +62,7 @@ jobs:
           set -euo pipefail
           {
             echo 'liste<<FIN'
-            node tools/check-catalogue.mjs
-            echo 'FIN'
-          } >> "$GITHUB_OUTPUT"
-
-      - name: Mises à jour disponibles en amont
-        id: retard
-        run: |
-          set -euo pipefail
-          {
-            echo 'liste<<FIN'
-            node tools/greasyfork.mjs outdated
+            node tools/check-catalogue.ts
             echo 'FIN'
           } >> "$GITHUB_OUTPUT"
 
@@ -64,17 +70,16 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           INJOIGNABLES: ${{ steps.injoignables.outputs.liste }}
-          RETARD: ${{ steps.retard.outputs.liste }}
         run: |
           set -euo pipefail
 
-          numero=$(gh issue list --state open --search "$TITRE in:title" \
-            --json number --jq '.[0].number // empty')
+          numero=$(gh issue list --state open --limit 100 --json number,title \
+            --jq '[.[] | select(.title == env.TITRE)][0].number // empty')
 
-          if [ -z "$INJOIGNABLES" ] && [ -z "$RETARD" ]; then
+          if [ -z "$INJOIGNABLES" ]; then
             if [ -n "$numero" ]; then
               gh issue close "$numero" \
-                --comment 'Le catalogue est de nouveau intact : tous les scripts répondent et aucun n'"'"'est en retard.'
+                --comment 'Le catalogue est de nouveau intact : tous les scripts répondent.'
             fi
             echo 'Catalogue intact.'
             exit 0
@@ -83,26 +88,13 @@ jobs:
           {
             echo "Relevé automatique du $(date -u '+%d/%m/%Y'). Voir .github/workflows/catalogue.yml."
             echo
-
-            if [ -n "$INJOIGNABLES" ]; then
-              echo '## Injoignables'
-              echo
-              echo 'Ces scripts ne se chargent plus chez les joueurs qui les ont activés.'
-              echo 'Une révision épinglée supprimée par son auteur donne un 410.'
-              echo
-              echo "$INJOIGNABLES"
-              echo
-            fi
-
-            if [ -n "$RETARD" ]; then
-              echo '## Mises à jour disponibles en amont'
-              echo
-              echo 'La révision épinglée dans data/scripts.json est plus ancienne que'
-              echo "celle que l'auteur publie aujourd'hui. Relire avant de repincer :"
-              echo 'le catalogue engage la responsabilité du projet.'
-              echo
-              echo "$RETARD"
-            fi
+            echo '## Injoignables'
+            echo
+            echo 'Ces scripts ne se chargent plus chez les joueurs qui les ont activés.'
+            echo 'Une révision épinglée supprimée par son auteur donne un 410 : la pull'
+            echo 'request de repin ouverte par la veille, s'"'"'il y en a une, la corrige.'
+            echo
+            echo "$INJOIGNABLES"
           } > corps.md
 
           if [ -n "$numero" ]; then
@@ -111,3 +103,39 @@ jobs:
           else
             gh issue create --title "$TITRE" --body-file corps.md
           fi
+
+  mises-a-jour:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      # Le GITHUB_TOKEN de ce dépôt ne peut pas ouvrir de pull request, et
+      # celles qu'il ouvrirait ne déclencheraient pas l'intégration. Le jeton
+      # dédié, celui de release-please, lève les deux.
+      - name: Jeton disponible
+        env:
+          RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        run: |
+          if [ -z "$RELEASE_TOKEN" ]; then
+            echo "::error::Le secret RELEASE_TOKEN manque : impossible d'ouvrir les pull requests de repin."
+            exit 1
+          fi
+
+      # Ce jeton est aussi celui que git utilisera pour pousser les branches
+      # `catalogue/*`.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_TOKEN }}
+
+      # Pas d'installation de dépendances : l'outil n'utilise que la
+      # bibliothèque standard, et le rendu de la liste de secours de
+      # @dreadcast/registry, que Node exécute sans toolchain.
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .node-version
+
+      - name: Ouvrir ou mettre à jour les pull requests
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run && '--dry-run' || '' }}
+        run: node tools/catalogue-pr.ts $DRY_RUN

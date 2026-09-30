@@ -25,7 +25,8 @@
     "typescript": "catalog:",
     "vite": "catalog:",
     "vite-plugin-monkey": "catalog:",
-    "vite-plus": "catalog:"
+    "vite-plus": "catalog:",
+    "vitest": "catalog:"
   },
   "devEngines": {
     "runtime": {

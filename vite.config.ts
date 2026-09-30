@@ -50,7 +50,12 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
-    include: ['packages/*/tests/**/*.test.ts', 'scripts/*/tests/**/*.test.ts'],
+    include: [
+      'packages/*/tests/**/*.test.ts',
+      'scripts/*/tests/**/*.test.ts',
+      // Outillage du depot (tools/), hors paquets.
+      'tests/tools/**/*.test.ts',
+    ],
     // Les sources importent le module client de vite-plugin-monkey, qui n'est
     // fourni qu'au moment du build. Les tests lui substituent une memoire et
     // un client HTTP simules.
@@ -63,7 +68,7 @@ export default defineConfig({
   //
   // A activer une fois par copie de travail : `vp hooks enable`.
   staged: {
-    '*.{ts,mts,js,mjs,json,md,yml,yaml}': 'vp check --fix',
+    '*.{ts,mts,js,json,md,yml,yaml}': 'vp check --fix',
   },
   fmt: {
     ignorePatterns: IGNORED,

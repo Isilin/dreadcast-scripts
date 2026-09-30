@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Verifie que `published/` correspond bien a ce que le build produit.
 //
-//   node tools/check-published.mjs [--offline]
+//   node tools/check-published.ts [--offline]
 //
 // `published/` est ce que Greasy Fork sert aux joueurs. Rien d'autre ne garde ce
 // dossier : une retouche a la main, ou un rebuild oublie apres une modification
@@ -26,14 +26,16 @@ import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { fetchVersions, pinnedId } from './lib/greasyfork.ts';
+
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLISHED = join(ROOT, 'published');
-const DDK_SCRIPT_ID = 507382;
+const DDK_SCRIPT_ID = '507382';
 
 // `espace` : dossier du paquet, `packages/` pour la bibliotheque et le
 // gestionnaire, `scripts/` pour les scripts migres. Un script de `scripts/` peut
 // ne jamais avoir ete publie : la premiere publication ajoute son fichier.
-const ARTEFACTS = [
+const ARTEFACTS: { espace: 'packages' | 'scripts'; paquet: string; fichiers: string[] }[] = [
   { espace: 'packages', paquet: 'ddk', fichiers: ['ddk.user.js', 'ddk.meta.js'] },
   { espace: 'packages', paquet: 'dcsm', fichiers: ['dcsm.user.js', 'dcsm.meta.js'] },
   {
@@ -46,16 +48,16 @@ const ARTEFACTS = [
 /** Fichiers publies qui epinglent une revision du DDK par leur `@require`. */
 const EPINGLES = ['dcsm.user.js', 'silhouette-plus.user.js'];
 
-const erreurs = [];
+const erreurs: string[] = [];
 
 /** Le `@require` est injecte a la publication : il ne peut pas etre compare. */
-const comparable = (contenu) =>
+const comparable = (contenu: string): string =>
   contenu
     .split('\n')
     .filter((ligne) => !ligne.startsWith('// @require'))
     .join('\n');
 
-const premiereDifference = (attendu, obtenu) => {
+const premiereDifference = (attendu: string, obtenu: string): string => {
   const a = attendu.split('\n');
   const b = obtenu.split('\n');
 
@@ -63,7 +65,8 @@ const premiereDifference = (attendu, obtenu) => {
     if (a[index] !== b[index]) {
       // Echappe le contenu : une difference de fin de ligne serait invisible
       // autrement, et `published/` doit rester au bit pres ce qui est servi.
-      const montre = (ligne) => (ligne === undefined ? '(fin de fichier)' : JSON.stringify(ligne));
+      const montre = (ligne: string | undefined): string =>
+        ligne === undefined ? '(fin de fichier)' : JSON.stringify(ligne);
 
       return `ligne ${index + 1}\n    build     : ${montre(a[index])}\n    published : ${montre(b[index])}`;
     }
@@ -72,7 +75,7 @@ const premiereDifference = (attendu, obtenu) => {
   return 'longueurs differentes';
 };
 
-const lire = async (chemin) => {
+const lire = async (chemin: string): Promise<string | undefined> => {
   try {
     return await readFile(chemin, 'utf8');
   } catch {
@@ -81,7 +84,9 @@ const lire = async (chemin) => {
 };
 
 for (const { espace, paquet, fichiers } of ARTEFACTS) {
-  const manifeste = JSON.parse(await readFile(join(ROOT, espace, paquet, 'package.json'), 'utf8'));
+  const manifeste = JSON.parse(
+    await readFile(join(ROOT, espace, paquet, 'package.json'), 'utf8'),
+  ) as { version: string };
 
   for (const fichier of fichiers) {
     const construit = await lire(join(ROOT, espace, paquet, 'dist', fichier));
@@ -121,19 +126,11 @@ for (const { espace, paquet, fichiers } of ARTEFACTS) {
 
 if (!process.argv.includes('--offline')) {
   // Revisions publiees du DDK, demandees une seule fois pour tous les fichiers.
-  let revisions;
+  let revisions: Set<string | null> | undefined;
 
   try {
-    const reponse = await fetch(
-      `https://api.greasyfork.org/en/scripts/${DDK_SCRIPT_ID}/versions.json`,
-    );
-
-    if (!reponse.ok) throw new Error(`statut ${reponse.status}`);
-
-    const versions = await reponse.json();
-    revisions = new Set(
-      versions.map((entree) => new URL(entree.code_url).searchParams.get('version')),
-    );
+    const versions = await fetchVersions(DDK_SCRIPT_ID);
+    revisions = new Set(versions.map((entree) => pinnedId(entree.code_url)));
   } catch (error) {
     // Injoignable n'est pas invalide.
     console.warn(`check-published: revisions du DDK non verifiees (${String(error)}).`);
