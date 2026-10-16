@@ -1025,5 +1025,24 @@ export const FALLBACK_LIST: ScriptEntry[] = [
       "mech"
     ],
     "experimental": false
+  },
+  {
+    "id": "grandeImageObjets",
+    "name": "Grande image des objets",
+    "description": "Agrandit uniquement les visuels des objets avec réglage intégré de 70 à 250 px",
+    "authors": "Twelve",
+    "icon": "",
+    "url": "https://update.greasyfork.org/scripts/597282/DreadCast%20-%20Grande%20image%20des%20objets.user.js?version=1942305",
+    "doc": "https://www.dreadcast.net/Forum/2-165285-script-grand-visuels",
+    "rp": "",
+    "contact": "",
+    "settings": false,
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui"
+    ],
+    "experimental": false
   }
 ];
