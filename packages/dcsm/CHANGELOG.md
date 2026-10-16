@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9.0](https://github.com/Isilin/dreadcast-scripts/compare/dcsm-v1.8.0...dcsm-v1.9.0) (2026-10-16)
+
+
+### Features
+
+* **catalogue:** ajoute Grande image des objets ([9ac65b3](https://github.com/Isilin/dreadcast-scripts/commit/9ac65b33d303729ff5b45f94979902a56839d781))
+* **catalogue:** ajoute Grande image des objets ([85c876c](https://github.com/Isilin/dreadcast-scripts/commit/85c876c041753100640d8deb3d191ff2d7d8050c))
+
 ## [1.8.0](https://github.com/Isilin/dreadcast-scripts/compare/dcsm-v1.7.0...dcsm-v1.8.0) (2026-09-25)
 
 
