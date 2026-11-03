@@ -19,4 +19,4 @@ catalog:
   vite-plugin-monkey: ^8.1.0
   vite-plus: ^0.2.9
   vitest: ^4.1.10
-  zod: ^4.4.3
+  zod: ^4.6.6
