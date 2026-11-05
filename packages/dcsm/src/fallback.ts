@@ -838,7 +838,7 @@ export const FALLBACK_LIST: ScriptEntry[] = [
     "description": "Affiche une bulle de tchat au-dessus des personnages",
     "authors": "Asalia",
     "icon": "",
-    "url": "https://update.greasyfork.org/scripts/554530/ChatBulle.user.js?version=1852302",
+    "url": "https://update.greasyfork.org/scripts/554530/ChatBulle.user.js?version=1986162",
     "doc": "https://www.dreadcast.net/Forum/2-158092-script-chatbulle?1",
     "rp": "",
     "contact": "Asalia",
