@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.1](https://github.com/Isilin/dreadcast-scripts/compare/silhouette-plus-v1.1.0...silhouette-plus-v1.1.1) (2026-11-10)
+
+
+### Bug Fixes
+
+* actualise Silhouette+ et retire Pimp My Pion ([ac067ca](https://github.com/Isilin/dreadcast-scripts/commit/ac067caefd6f510b049a54daf3976c45ec48b157))
+* **silhouette-plus:** actualise les destinataires des demandes ([4eaba57](https://github.com/Isilin/dreadcast-scripts/commit/4eaba5777787ad574c1614ca7edca9db2c04d7ae))
+
 ## [1.1.0](https://github.com/Isilin/dreadcast-scripts/compare/silhouette-plus-v1.0.1...silhouette-plus-v1.1.0) (2026-09-25)
 
 
