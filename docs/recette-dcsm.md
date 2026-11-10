@@ -107,10 +107,18 @@ rouge.
 3. Éteindre : il disparaît aussitôt.
 
 Contrôle chiffré : filtres sur « Tous », la colonne `#` numérote à partir de 0.
-Dernière ligne à **49** mode éteint, **51** mode allumé.
+Dernière ligne à **50** mode éteint, **52** mode allumé.
 
 Laisser le mode éteint avant de sauvegarder : sauvegarder avec le mode allumé
 rend les deux scripts expérimentaux réellement chargeables.
+
+### Retrait de Pimp My Pion
+
+Importer une ancienne configuration où `pimpmypion` est activé, puis recharger :
+le script ne doit pas apparaître ni être chargé, et les autres activations
+doivent rester intactes. Répéter avec un ancien cache frais et avec un cache
+périmé lorsque la source est injoignable. Les réglages du script dans le
+`localStorage` partagé du jeu sont conservés.
 
 ### Détail de l'étape 12
 

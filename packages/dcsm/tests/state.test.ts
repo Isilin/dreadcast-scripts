@@ -43,6 +43,13 @@ describe('state.load', () => {
     expect(state.allDisabled).toBe(true);
     expect(Object.keys(snapshot())).not.toContain('dcm_list');
   });
+
+  it('retire Pimp My Pion meme apres migration de la configuration historique', () => {
+    resetStore({ dcm_list: { pimpmypion: true, comback: true } });
+
+    expect(load().enabled).toEqual({ comback: true });
+    expect(snapshot()[KEYS.enabled]).toEqual({ comback: true });
+  });
 });
 
 describe('state.synchronize', () => {
@@ -73,6 +80,13 @@ describe('state.synchronize', () => {
 
     expect(snapshot()[KEYS.enabled]).toEqual({ a: false });
   });
+
+  it('retire Pimp My Pion meme sur une liste degradee sans effacer les autres activations', () => {
+    expect(synchronize({ pimpmypion: true, absent: true }, [entry('pimpmypion')], false)).toEqual({
+      absent: true,
+    });
+    expect(snapshot()[KEYS.enabled]).toEqual({ absent: true });
+  });
 });
 
 describe('state import/export', () => {
@@ -90,5 +104,12 @@ describe('state import/export', () => {
 
     expect(Object.keys(snapshot())).not.toContain(KEYS.cache);
     expect(snapshot()[KEYS.enabled]).toEqual({ a: true });
+  });
+
+  it('ne restaure pas Pimp My Pion depuis une ancienne configuration', () => {
+    importConfig({ [KEYS.enabled]: { pimpmypion: true, a: true } });
+
+    expect(snapshot()[KEYS.enabled]).toEqual({ a: true });
+    expect(load().enabled).toEqual({ a: true });
   });
 });

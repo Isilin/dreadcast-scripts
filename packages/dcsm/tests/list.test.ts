@@ -25,6 +25,7 @@ const remoteList: ScriptEntry[] = [
 ];
 
 const cached: ScriptEntry[] = [{ ...remoteList[0]!, id: 'du-cache', name: 'Du cache' }];
+const retired: ScriptEntry = { ...remoteList[0]!, id: 'pimpmypion', name: 'Pimp My Pion' };
 
 const NOW = 1_700_000_000_000;
 
@@ -93,7 +94,7 @@ describe('resolveList', () => {
     const result = await resolveList();
 
     expect(result.source).toBe('embedded');
-    expect(result.scripts).toBe(FALLBACK_LIST);
+    expect(result.scripts).toEqual(FALLBACK_LIST);
   });
 
   it('traite une reponse malformee comme un echec', async () => {
@@ -108,5 +109,28 @@ describe('resolveList', () => {
     setResponder(() => ({ response: remoteList }));
 
     await expect(resolveList()).resolves.toMatchObject({ source: 'remote' });
+  });
+
+  it('exclut Pimp My Pion de la source distante et du cache sauvegarde', async () => {
+    setResponder(() => ({ response: [...remoteList, retired] }));
+
+    await expect(resolveList()).resolves.toMatchObject({ source: 'remote', scripts: remoteList });
+    expect(snapshot()[KEYS.cache]).toEqual({ ts: NOW, scripts: remoteList });
+  });
+
+  it.each([
+    ['cache', NOW - 1000],
+    ['cache-stale', NOW - CACHE_TTL - 1],
+  ])('exclut Pimp My Pion du %s sans changer sa date', async (source, ts) => {
+    resetStore({ [KEYS.cache]: { ts, scripts: [...cached, retired] } });
+
+    await expect(resolveList()).resolves.toEqual({ source, ts, scripts: cached });
+    expect(snapshot()[KEYS.cache]).toEqual({ ts, scripts: [...cached, retired] });
+  });
+
+  it('ne contient pas Pimp My Pion dans la liste embarquee', async () => {
+    const result = await resolveList();
+    expect(result.source).toBe('embedded');
+    expect(result.scripts.some((script) => script.id === 'pimpmypion')).toBe(false);
   });
 });

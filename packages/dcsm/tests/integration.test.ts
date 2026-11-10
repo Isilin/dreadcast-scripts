@@ -188,6 +188,29 @@ describe.each<Assembly>(['portees-separees', 'concatenation'])(
       });
     });
 
+    it('ne chargent pas Pimp My Pion present dans un ancien cache', async () => {
+      const requested: string[] = [];
+      window.localStorage.setItem('dreadcast_avatar_size', '125');
+      gm.resetStore({
+        dcsm_list: { pimpmypion: true, legacy: true },
+        dcsm_scripts_cache: { ts: Date.now(), scripts: [entry('pimpmypion'), entry('legacy')] },
+      });
+      gm.setResponder((request) => {
+        requested.push(request.url);
+        if (request.url.endsWith('/legacy.user.js')) return { response: LEGACY_CODE };
+        throw new Error(`URL non simulee : ${request.url}`);
+      });
+      run(assembly);
+
+      await vi.waitFor(() => expect(globals['__legacy']).toBe(1));
+      expect(gm.snapshot()['dcsm_list']).toEqual({ legacy: true });
+      expect(requested).toEqual(['https://example.test/legacy.user.js']);
+      expect(window.localStorage.getItem('dreadcast_avatar_size')).toBe('125');
+      window.localStorage.removeItem('dreadcast_avatar_size');
+      const menu = document.querySelector('.parametres ul');
+      expect(menu?.textContent).toContain('Scripts & Skins');
+    });
+
     it('demarrent un script v2 avec son contexte et son stockage cloisonne', async () => {
       run(assembly);
 

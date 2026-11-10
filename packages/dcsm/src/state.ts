@@ -1,6 +1,8 @@
 import DC from '@dreadcast/ddk';
 import type { ScriptEntry } from '@dreadcast/registry';
 
+import { isRetired } from './retired.ts';
+
 /**
  * Cles de la memoire persistante.
  *
@@ -30,6 +32,9 @@ export interface ManagerState {
   devMode: boolean;
 }
 
+const withoutRetired = <T>(enabled: Record<string, T>): Record<string, T> =>
+  Object.fromEntries(Object.entries(enabled).filter(([id]) => !isRetired(id)));
+
 const migrate = (): void => {
   for (const [field, oldKey] of Object.entries(LEGACY_KEYS)) {
     const value = DC.storage.get(oldKey);
@@ -48,8 +53,14 @@ export const load = (): ManagerState => {
 
   migrate();
 
+  const enabled = DC.storage.get<EnabledMap>(KEYS.enabled) ?? {};
+  const active = withoutRetired(enabled);
+  if (Object.keys(active).length !== Object.keys(enabled).length) {
+    DC.storage.set(KEYS.enabled, active);
+  }
+
   return {
-    enabled: DC.storage.get<EnabledMap>(KEYS.enabled) ?? {},
+    enabled: active,
     allDisabled: DC.storage.get<boolean>(KEYS.allDisabled) ?? false,
     introDisabled: DC.storage.get<boolean>(KEYS.introDisabled) ?? false,
     devMode: DC.storage.get<boolean>(KEYS.devMode) ?? false,
@@ -57,7 +68,7 @@ export const load = (): ManagerState => {
 };
 
 export const save = (state: ManagerState): void => {
-  DC.storage.set(KEYS.enabled, state.enabled);
+  DC.storage.set(KEYS.enabled, withoutRetired(state.enabled));
   DC.storage.set(KEYS.allDisabled, state.allDisabled);
   DC.storage.set(KEYS.devMode, state.devMode);
 };
@@ -78,9 +89,10 @@ export const synchronize = (
   scripts: ScriptEntry[],
   prune: boolean,
 ): EnabledMap => {
-  const next: EnabledMap = { ...enabled };
+  const next: EnabledMap = withoutRetired(enabled);
 
   for (const script of scripts) {
+    if (isRetired(script.id)) continue;
     if (!Object.hasOwn(next, script.id)) next[script.id] = false;
   }
 
@@ -123,6 +135,15 @@ export const exportConfig = (): Record<string, unknown> =>
 export const importConfig = (data: Record<string, unknown>): void => {
   for (const [key, value] of Object.entries(data)) {
     if (key === KEYS.cache) continue;
-    DC.storage.set(key, value);
+    if (
+      key === KEYS.enabled &&
+      typeof value === 'object' &&
+      value !== null &&
+      !Array.isArray(value)
+    ) {
+      DC.storage.set(key, withoutRetired(Object.fromEntries(Object.entries(value))));
+    } else {
+      DC.storage.set(key, value);
+    }
   }
 };
