@@ -146,7 +146,7 @@ export const FALLBACK_LIST: ScriptEntry[] = [
     "description": "Il ajoute de nombreuses fonctionnalités pour le chat et des options de customisation.",
     "authors": "Valion, Odul, Ladoria, Pelagia",
     "icon": "",
-    "url": "https://update.greasyfork.org/scripts/21359/Dreadcast%20Chat%20Enhancer.user.js?version=1068608",
+    "url": "https://update.greasyfork.org/scripts/21359/Dreadcast%20Chat%20Enhancer.user.js?version=1979085",
     "doc": "https://www.dreadcast.net/Forum/2-67353-script-dc-chat-enhancer?5",
     "rp": "",
     "contact": "Odul, Pelagia",
