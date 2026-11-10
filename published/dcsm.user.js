@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Dreadcast Script Manager
 // @namespace    Dreadcast
-// @version      1.8.0
+// @version      1.9.0
 // @author       Pelagia/Isilin
 // @description  Centralize all dreadcast scripts in one single source, integrated to the game.
 // @license      https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
@@ -163,7 +163,7 @@
 			"description": "Il ajoute de nombreuses fonctionnalités pour le chat et des options de customisation.",
 			"authors": "Valion, Odul, Ladoria, Pelagia",
 			"icon": "",
-			"url": "https://update.greasyfork.org/scripts/21359/Dreadcast%20Chat%20Enhancer.user.js?version=1068608",
+			"url": "https://update.greasyfork.org/scripts/21359/Dreadcast%20Chat%20Enhancer.user.js?version=1979085",
 			"doc": "https://www.dreadcast.net/Forum/2-67353-script-dc-chat-enhancer?5",
 			"rp": "",
 			"contact": "Odul, Pelagia",
@@ -523,7 +523,7 @@
 			"description": "Pour personnaliser entièrement sa feuille RP avec silhouette et plus. Réunit les scripts SkinSilhouette et ShowSilhouette.",
 			"authors": "Isilin/Pelagia",
 			"icon": "",
-			"url": "https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/src/scripts/silhouette/silhouette-plus.js",
+			"url": "https://update.greasyfork.org/scripts/524423/Silhouette%2B.user.js?version=1942193",
 			"doc": "https://www.dreadcast.net/Forum/2-150257-script-silhouette",
 			"rp": "",
 			"contact": "Pelagia",
@@ -703,7 +703,7 @@
 			"description": "Affiche une bulle de tchat au-dessus des personnages",
 			"authors": "Asalia",
 			"icon": "",
-			"url": "https://update.greasyfork.org/scripts/554530/ChatBulle.user.js?version=1852302",
+			"url": "https://update.greasyfork.org/scripts/554530/ChatBulle.user.js?version=1986162",
 			"doc": "https://www.dreadcast.net/Forum/2-158092-script-chatbulle?1",
 			"rp": "",
 			"contact": "Asalia",
@@ -725,21 +725,6 @@
 			"settings": false,
 			"section": ["game"],
 			"category": ["ui", "fix"],
-			"experimental": false
-		},
-		{
-			"id": "pimpmypion",
-			"name": "Pimp My Pion",
-			"description": "Remplace les pions bleus par les avatars des joueurs et ajoute des paramètres de personnalisation",
-			"authors": "Darlene",
-			"icon": "",
-			"url": "https://update.greasyfork.org/scripts/556113/Dreadcast%20-%20PimpMyPion%20-%20Public%20v%20063.user.js?version=1709845",
-			"doc": "https://www.dreadcast.net/Forum/2-158238-script-pimpmypion?1",
-			"rp": "",
-			"contact": "Darlene",
-			"settings": false,
-			"section": ["game"],
-			"category": ["ui"],
 			"experimental": false
 		},
 		{
@@ -835,19 +820,37 @@
 		{
 			"id": "agendaperso",
 			"name": "Agenda perso",
-			"description": "Agenda personnel local : calendrier, catégories colorées, tâches, import en masse, sauvegarde JSON et rappels.",
+			"description": "Agenda personnel local : calendrier, catégories colorées, tâches, import en masse, sauvegarde JSON, rappels, et ajout des événements partagés sur le forum.",
 			"authors": "Mika",
 			"icon": "",
-			"url": "https://update.greasyfork.org/scripts/595206/Dreadcast%20-%20Agenda%20perso.user.js?version=1939188",
+			"url": "https://update.greasyfork.org/scripts/595206/Dreadcast%20-%20Agenda%20perso.user.js?version=1962454",
 			"doc": "https://www.dreadcast.net/Forum/2-164889-script-agenda-dreadcast",
 			"rp": "",
 			"contact": "Mika",
 			"settings": false,
-			"section": ["game"],
+			"section": ["game", "forum"],
 			"category": ["mech"],
+			"experimental": false
+		},
+		{
+			"id": "grandeImageObjets",
+			"name": "Grande image des objets",
+			"description": "Agrandit uniquement les visuels des objets avec réglage intégré de 70 à 250 px",
+			"authors": "Twelve",
+			"icon": "",
+			"url": "https://update.greasyfork.org/scripts/597282/DreadCast%20-%20Grande%20image%20des%20objets.user.js?version=1942305",
+			"doc": "https://www.dreadcast.net/Forum/2-165285-script-grand-visuels",
+			"rp": "",
+			"contact": "",
+			"settings": false,
+			"section": ["game"],
+			"category": ["ui"],
 			"experimental": false
 		}
 	];
+	var RETIRED_IDS = new Set(["pimpmypion"]);
+	var isRetired = (id) => RETIRED_IDS.has(id);
+	var withoutRetiredScripts = (scripts) => scripts.filter((script) => !isRetired(script.id));
 	var KEYS = {
 		enabled: "dcsm_list",
 		allDisabled: "dcsm_all_disabled",
@@ -859,6 +862,7 @@
 		enabled: "dcm_list",
 		allDisabled: "dcm_all_disabled"
 	};
+	var withoutRetired = (enabled) => Object.fromEntries(Object.entries(enabled).filter(([id]) => !isRetired(id)));
 	var migrate = () => {
 		for (const [field, oldKey] of Object.entries(LEGACY_KEYS)) {
 			const value = _dreadcast_ddk.default.storage.get(oldKey);
@@ -873,15 +877,18 @@
 		_dreadcast_ddk.default.storage.init(KEYS.introDisabled, false);
 		_dreadcast_ddk.default.storage.init(KEYS.devMode, false);
 		migrate();
+		const enabled = _dreadcast_ddk.default.storage.get(KEYS.enabled) ?? {};
+		const active = withoutRetired(enabled);
+		if (Object.keys(active).length !== Object.keys(enabled).length) _dreadcast_ddk.default.storage.set(KEYS.enabled, active);
 		return {
-			enabled: _dreadcast_ddk.default.storage.get(KEYS.enabled) ?? {},
+			enabled: active,
 			allDisabled: _dreadcast_ddk.default.storage.get(KEYS.allDisabled) ?? false,
 			introDisabled: _dreadcast_ddk.default.storage.get(KEYS.introDisabled) ?? false,
 			devMode: _dreadcast_ddk.default.storage.get(KEYS.devMode) ?? false
 		};
 	};
 	var save = (state) => {
-		_dreadcast_ddk.default.storage.set(KEYS.enabled, state.enabled);
+		_dreadcast_ddk.default.storage.set(KEYS.enabled, withoutRetired(state.enabled));
 		_dreadcast_ddk.default.storage.set(KEYS.allDisabled, state.allDisabled);
 		_dreadcast_ddk.default.storage.set(KEYS.devMode, state.devMode);
 	};
@@ -889,8 +896,11 @@
 		_dreadcast_ddk.default.storage.set(KEYS.introDisabled, true);
 	};
 	var synchronize = (enabled, scripts, prune) => {
-		const next = { ...enabled };
-		for (const script of scripts) if (!Object.hasOwn(next, script.id)) next[script.id] = false;
+		const next = withoutRetired(enabled);
+		for (const script of scripts) {
+			if (isRetired(script.id)) continue;
+			if (!Object.hasOwn(next, script.id)) next[script.id] = false;
+		}
 		const result = prune ? Object.fromEntries(Object.entries(next).filter(([id]) => scripts.some((script) => script.id === id))) : next;
 		_dreadcast_ddk.default.storage.set(KEYS.enabled, result);
 		return result;
@@ -902,7 +912,8 @@
 	var importConfig = (data) => {
 		for (const [key, value] of Object.entries(data)) {
 			if (key === KEYS.cache) continue;
-			_dreadcast_ddk.default.storage.set(key, value);
+			if (key === KEYS.enabled && typeof value === "object" && value !== null && !Array.isArray(value)) _dreadcast_ddk.default.storage.set(key, withoutRetired(Object.fromEntries(Object.entries(value))));
+			else _dreadcast_ddk.default.storage.set(key, value);
 		}
 	};
 	var LIST_URL = typeof __DCSM_LIST_URL__ === "string" ? __DCSM_LIST_URL__ : "https://raw.githubusercontent.com/Isilin/dreadcast-scripts/main/data/scripts.json";
@@ -935,13 +946,13 @@
 		if (!force && cache !== void 0 && Date.now() - cache.ts < 36e5) {
 			console.info("DCSM - Liste des scripts lue depuis le cache.");
 			return {
-				scripts: cache.scripts,
+				scripts: withoutRetiredScripts(cache.scripts),
 				source: "cache",
 				ts: cache.ts
 			};
 		}
 		try {
-			const scripts = await fetchList();
+			const scripts = withoutRetiredScripts(await fetchList());
 			console.info("DCSM - Liste des scripts mise a jour depuis la source distante.");
 			return {
 				scripts,
@@ -952,17 +963,18 @@
 			if (cache !== void 0) {
 				console.warn(`DCSM - Mise a jour impossible, la liste en cache est conservee : ${String(error)}`);
 				return {
-					scripts: cache.scripts,
+					scripts: withoutRetiredScripts(cache.scripts),
 					source: "cache-stale",
 					ts: cache.ts
 				};
 			}
 			if (!isValidList(FALLBACK_LIST)) throw new Error("ni cache, ni liste distante, ni liste embarquee utilisable");
 			console.error(`DCSM - Chargement impossible, la liste embarquee est utilisee : ${String(error)}`);
+			const scripts = withoutRetiredScripts(FALLBACK_LIST);
 			return {
-				scripts: FALLBACK_LIST,
+				scripts,
 				source: "embedded",
-				ts: writeCache(FALLBACK_LIST).ts
+				ts: writeCache(scripts).ts
 			};
 		}
 	};
