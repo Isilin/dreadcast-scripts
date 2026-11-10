@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Silhouette+
 // @namespace    Dreadcast
-// @version      1.1.0
+// @version      1.1.1
 // @author       Pelagia/Isilin
 // @description  Personnalise entierement la fiche RP : silhouettes et disposition des emplacements. Reunit SkinSilhouette et ShowSilhouette.
 // @license      https://github.com/Isilin/dreadcast-scripts?tab=GPL-3.0-1-ov-file
