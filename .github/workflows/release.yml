@@ -89,8 +89,11 @@ jobs:
       - name: Installer Vite+
         if: steps.release.outputs.releases_created == 'true' || github.event_name == 'workflow_dispatch'
         run: |
+          set -o pipefail
+          export VP_HOME="$HOME/.vite-plus"
+          echo "VP_HOME=$VP_HOME" >> "$GITHUB_ENV"
           curl -fsSL https://vite.plus | bash
-          echo "$HOME/.vite-plus/bin" >> "$GITHUB_PATH"
+          echo "$VP_HOME/bin" >> "$GITHUB_PATH"
 
       - name: Vérifier et construire
         if: steps.release.outputs.releases_created == 'true' || github.event_name == 'workflow_dispatch'
