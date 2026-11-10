@@ -178,7 +178,7 @@ describe('Silhouette+', () => {
     element('#silhouettePlus_request').dispatchEvent(new MouseEvent('click'));
 
     expect(newMessage).toHaveBeenCalledWith(
-      'Phylène, Izo, Pelagia',
+      'Phylène, Sylas, Pelagia',
       '[HRP] Silhouette',
       expect.stringContaining('Pseudo : Pelagia\nID : #76113\n'),
     );

@@ -8,7 +8,7 @@ const { h } = DC.dom;
 export const WINDOW_ID = 'silhouettePlus_modal';
 
 /** Animateurs a qui s'adresse une demande de silhouette. */
-export const RECIPIENTS = 'Phylène, Izo, Pelagia';
+export const RECIPIENTS = 'Phylène, Sylas, Pelagia';
 
 export const REQUEST_SUBJECT = '[HRP] Silhouette';
 

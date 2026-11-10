@@ -131,6 +131,18 @@ describe("bouton d'actualisation de la liste", () => {
     expect(snapshot()[KEYS.enabled]).toEqual({ ancien: true });
   });
 
+  it('ne reintroduit pas Pimp My Pion lors de l actualisation', async () => {
+    setResponder(() => ({ response: [entry('ancien'), entry('pimpmypion')] }));
+    openManager(options());
+
+    clickRefresh();
+
+    await vi.waitFor(() => {
+      expect(document.querySelector('#scripts_modal')?.textContent).toContain('Liste à jour');
+    });
+    expect(names()).toEqual(['ancien']);
+  });
+
   it('signale une source injoignable et garde la liste en cache', async () => {
     setOffline();
     openManager(options());

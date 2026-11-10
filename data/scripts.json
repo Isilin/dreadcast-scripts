@@ -865,25 +865,6 @@
     "experimental": false
   },
   {
-    "id": "pimpmypion",
-    "name": "Pimp My Pion",
-    "description": "Remplace les pions bleus par les avatars des joueurs et ajoute des paramètres de personnalisation",
-    "authors": "Darlene",
-    "icon": "",
-    "url": "https://update.greasyfork.org/scripts/556113/Dreadcast%20-%20PimpMyPion%20-%20Public%20v%20063.user.js?version=1908089",
-    "doc": "https://www.dreadcast.net/Forum/2-158238-script-pimpmypion?1",
-    "rp": "",
-    "contact": "Darlene",
-    "settings": false,
-    "section": [
-      "game"
-    ],
-    "category": [
-      "ui"
-    ],
-    "experimental": false
-  },
-  {
     "id": "fouilletracker",
     "name": "DC Fouille Tracker",
     "description": "Minuteur fouille draggable, lock/unlock, historique déroulant, vide de l'historique, copier de l'historique (thème bleu)",

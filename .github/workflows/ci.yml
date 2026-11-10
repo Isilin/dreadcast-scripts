@@ -14,7 +14,7 @@ env:
   # `curl | bash` installerait sinon la dernière version publiée : l'intégration
   # pourrait casser sans qu'une ligne du dépôt ait bougé. À garder aligné sur la
   # dépendance `vite-plus` du package.json racine.
-  VP_VERSION: '0.2.9'
+  VP_VERSION: '1.4.0'
 
 # Une poussée en chasse une autre sur la même pull request. Sur `main`, chaque
 # exécution va au bout : elle valide un état qui sera publié.
@@ -41,8 +41,11 @@ jobs:
 
       - name: Installer Vite+
         run: |
+          set -o pipefail
+          export VP_HOME="$HOME/.vite-plus"
+          echo "VP_HOME=$VP_HOME" >> "$GITHUB_ENV"
           curl -fsSL https://vite.plus | bash
-          echo "$HOME/.vite-plus/bin" >> "$GITHUB_PATH"
+          echo "$VP_HOME/bin" >> "$GITHUB_PATH"
 
       - name: Cache du store pnpm
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -107,7 +110,7 @@ jobs:
 
           echo 'published/ intact.'
 
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: dreadcast-userscripts
           path: |

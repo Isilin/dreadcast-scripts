@@ -2,6 +2,7 @@ import DC from '@dreadcast/ddk';
 import type { ScriptEntry } from '@dreadcast/registry';
 
 import { FALLBACK_LIST } from './fallback.ts';
+import { withoutRetiredScripts } from './retired.ts';
 import { KEYS } from './state.ts';
 
 const REMOTE_LIST_URL =
@@ -104,11 +105,11 @@ export const resolveList = async (force = false): Promise<ResolvedList> => {
 
   if (!force && cache !== undefined && Date.now() - cache.ts < CACHE_TTL) {
     console.info('DCSM - Liste des scripts lue depuis le cache.');
-    return { scripts: cache.scripts, source: 'cache', ts: cache.ts };
+    return { scripts: withoutRetiredScripts(cache.scripts), source: 'cache', ts: cache.ts };
   }
 
   try {
-    const scripts = await fetchList();
+    const scripts = withoutRetiredScripts(await fetchList());
     console.info('DCSM - Liste des scripts mise a jour depuis la source distante.');
     return { scripts, source: 'remote', ts: writeCache(scripts).ts };
   } catch (error) {
@@ -118,7 +119,7 @@ export const resolveList = async (force = false): Promise<ResolvedList> => {
       console.warn(
         `DCSM - Mise a jour impossible, la liste en cache est conservee : ${String(error)}`,
       );
-      return { scripts: cache.scripts, source: 'cache-stale', ts: cache.ts };
+      return { scripts: withoutRetiredScripts(cache.scripts), source: 'cache-stale', ts: cache.ts };
     }
 
     if (!isValidList(FALLBACK_LIST)) {
@@ -129,10 +130,11 @@ export const resolveList = async (force = false): Promise<ResolvedList> => {
       `DCSM - Chargement impossible, la liste embarquee est utilisee : ${String(error)}`,
     );
 
+    const scripts = withoutRetiredScripts(FALLBACK_LIST);
     return {
-      scripts: FALLBACK_LIST,
+      scripts,
       source: 'embedded',
-      ts: writeCache(FALLBACK_LIST).ts,
+      ts: writeCache(scripts).ts,
     };
   }
 };
