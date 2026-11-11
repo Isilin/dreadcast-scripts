@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.10.0](https://github.com/Isilin/dreadcast-scripts/compare/dcsm-v1.9.0...dcsm-v1.10.0) (2026-11-11)
+
+
+### Features
+
+* **catalogue:** ajoute Pyrope ([ca52df7](https://github.com/Isilin/dreadcast-scripts/commit/ca52df7e9b512b9685dc88ad8e167269acc1011d))
+* **catalogue:** ajoute Pyrope ([166fb61](https://github.com/Isilin/dreadcast-scripts/commit/166fb615c95839ae7a432e06040db238616714c3))
+
 ## [1.9.0](https://github.com/Isilin/dreadcast-scripts/compare/dcsm-v1.8.0...dcsm-v1.9.0) (2026-11-10)
 
 
