@@ -331,6 +331,26 @@ export const FALLBACK_LIST: ScriptEntry[] = [
     "experimental": false
   },
   {
+    "id": "pyrope",
+    "name": "Pyrope",
+    "description": "Personnalise le deck et ajoute des commandes et des plugins.",
+    "authors": "Ezio",
+    "icon": "https://i.imgur.com/KMwsoeW.png",
+    "url": "https://update.greasyfork.org/scripts/601766/Pyrope%20%E2%80%94%20Framework%20de%20decking%20pour%20DreadCast.user.js?version=1986548",
+    "doc": "https://www.dreadcast.net/Forum/2-165456-script-pyrope--customiseur-de-deck-couleur-presse-papier-et-plus-encore-?1",
+    "rp": "",
+    "contact": "Ezio",
+    "settings": false,
+    "section": [
+      "game"
+    ],
+    "category": [
+      "ui",
+      "mech"
+    ],
+    "experimental": false
+  },
+  {
     "id": "datefixed",
     "name": "DC - Date fixed",
     "description": "Affiche la date en jeu, et des commandes sur le deck.",

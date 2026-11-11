@@ -107,10 +107,102 @@ rouge.
 3. Éteindre : il disparaît aussitôt.
 
 Contrôle chiffré : filtres sur « Tous », la colonne `#` numérote à partir de 0.
-Dernière ligne à **50** mode éteint, **52** mode allumé.
+Dernière ligne à **51** mode éteint, **53** mode allumé.
 
 Laisser le mode éteint avant de sauvegarder : sauvegarder avec le mode allumé
-rend les deux scripts expérimentaux réellement chargeables.
+rend les scripts expérimentaux réellement chargeables.
+
+### Pyrope : recette d'intégration
+
+Pyrope est référencé en version Greasy Fork **0.3.1** (`1986548`). La recette
+en jeu a été validée par l'utilisateur. La compatibilité des plugins externes
+et leur ordre de chargement restent à vérifier au cas par cas.
+Pyrope est un script externe ; ses anomalies doivent être signalées à son
+auteur, Ezio, et non corrigées dans ce dépôt.
+
+**Préparation.** Suivre la préparation générale et construire le DCSM local
+avec **les deux** variables `DCSM_LOCAL_DDK` et `DCSM_LOCAL_LIST` : sans le
+catalogue local, le gestionnaire ne voit pas l'entrée avant sa publication.
+Dans PowerShell, après avoir lancé le serveur local :
+
+```powershell
+$env:DCSM_LOCAL_DDK='http://localhost:8720/ddk.user.js'
+$env:DCSM_LOCAL_LIST='http://localhost:8720/scripts.json'
+vp run -r build
+```
+
+Exporter la configuration, désactiver les installations autonomes de Pyrope,
+du DCSM et du DDK, puis installer le DCSM local seul. Actualiser le catalogue,
+cocher Pyrope, sauvegarder et recharger.
+Ne pas installer Pyrope simultanément comme userscript autonome : cela
+installerait deux instances ou deux jeux de hooks.
+
+| Action                                                                                                                        | Résultat à vérifier                                                                                                                                                                                                                          |
+| ----------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Consulter la console et ouvrir un deck                                                                                        | Le DCSM annonce le chargement, puis Pyrope annonce son initialisation ; le deck affiche `[+] Pyrope loaded`. Une annonce DCSM seule ne prouve pas l'initialisation asynchrone de Pyrope.                                                     |
+| Fermer et rouvrir le deck, puis recharger la page                                                                             | Le message apparaît une fois par ouverture, sans erreur ni duplication.                                                                                                                                                                      |
+| Exécuter `pyropectl list-plugins` et `pyropectl --help`                                                                       | La liste contient `pyropectl`, `clipboard`, `setcolor` et `native-commands-overrider` ; l'aide s'affiche et la saisie redevient possible.                                                                                                    |
+| Exécuter `setColor lime`, une commande produisant un résultat, puis recharger                                                 | La couleur est appliquée et conservée. Une couleur invalide produit une erreur ; `setColor reset` rétablit l'affichage par défaut. Vérifier aussi les résultats natifs, car la règle CSS de Pyrope s'applique aux lignes du deck en général. |
+| Exécuter plusieurs commandes puis cliquer sur le bouton de copie                                                              | Une coche confirme la copie. Coller dans un endroit privé : la version 0.3.1 copie tout le terminal, commandes et résultats compris, et non uniquement le dernier résultat. Ne pas partager les données copiées.                             |
+| Exécuter une commande native sûre, puis `assurance <personnage>` et `assurance <personnage> --legacy` sur une cible autorisée | La commande native fonctionne ; l'assurance affiche respectivement les détails et les flags, sans doublons ni erreur, et le prompt revient.                                                                                                  |
+| Activer séparément puis ensemble **DC - Date fixed** et **DeckExportData**                                                    | Leurs commandes habituelles et celles de Pyrope continuent de fonctionner ; vérifier aussi la copie, les résultats et les éventuels doublons.                                                                                                |
+| Désactiver Pyrope, sauvegarder et recharger                                                                                   | Son message, ses commandes et son bouton disparaissent ; le deck et les autres scripts continuent de fonctionner.                                                                                                                            |
+
+**Cyberdeck.** Si un cyberdeck est accessible, comparer avec et sans Pyrope
+une commande sûre, puis une commande Pyrope appropriée telle que
+`deck assurance <personnage>`, dans des conditions autorisées. Le code du
+jeu archivé attend une promesse de `Deck.executeCommand`, tandis que Pyrope
+ne renvoie rien pour ses commandes interceptées : une erreur sur `.done()`
+est donc possible. Relever le contexte et l'erreur exacte. Si l'accès est
+impossible, noter ce point comme non vérifié, pas comme réussi.
+
+**Plugin externe.** Les quatre plugins ci-dessus sont intégrés à Pyrope et
+n'ont pas d'entrée séparée dans le DCSM. Pour tester un plugin externe, dans
+une copie de travail de recette uniquement, placer le code ci-dessous dans
+`packages/dcsm/dist/pyrope-test.user.js` avant de démarrer le serveur local.
+Ajouter temporairement à `data/scripts.json` une entrée de script `game`,
+activable en mode développeur, dont l'URL est
+`http://localhost:8720/pyrope-test.user.js`. Avec le catalogue local, activer
+Pyrope et ce plugin, sauvegarder et recharger. La console doit afficher
+`[Pyrope test] enregistré` et la commande `pyropetest` doit répondre
+`Plugin de test chargé.`. Répéter avec le plugin exécuté avant Pyrope, puis
+après son initialisation : l'ordre des entrées ne garantit pas l'ordre
+d'exécution, car le DCSM télécharge les scripts en parallèle. Pour maîtriser
+ces deux cas, déclencher au besoin le code de test dans la console de la page
+avant ou après l'initialisation, en complément du chargement par le DCSM.
+
+```js
+(() => {
+  const register = (pyrope) => {
+    void pyrope
+      .registerPlugin({
+        name: 'dcsm-test',
+        init(api) {
+          api.registerCommand({
+            name: 'pyropetest',
+            execute: () => api.print('Plugin de test chargé.'),
+          });
+        },
+      })
+      .then(() => console.info('[Pyrope test] enregistré'))
+      .catch((error) => console.error('[Pyrope test] échec', error));
+  };
+
+  if (window.pyrope?.isInitialized()) {
+    register(window.pyrope);
+  } else {
+    window.addEventListener('pyrope:ready', (event) => register(event.detail.pyrope), {
+      once: true,
+    });
+  }
+})();
+```
+
+Ne pas exécuter le test deux fois dans la même page : Pyrope refuse les noms
+de plugins en double. Un userscript installé séparément peut avoir un contexte
+différent selon le gestionnaire ; vérifier ce cas séparément avant de conclure.
+Après la recette, supprimer uniquement l'entrée et le fichier temporaires,
+recharger et rétablir la configuration exportée. Ne pas les publier.
 
 ### Retrait de Pimp My Pion
 
